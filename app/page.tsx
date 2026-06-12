@@ -1,19 +1,41 @@
-import { Button } from "@/components/ui/button"
+import { Users, BookOpenText, Timer } from "lucide-react"
 
-export default function Page() {
+import Link from "next/link"
+
+const opciones = [
+  {
+    id: 1,
+    nombre: "CARGAR NUEVA TAREA",
+    icono: <Timer />,
+    enlace: "/cargar-tarea",
+  },
+  {
+    id: 2,
+    nombre: "VER REGISTROS",
+    icono: <BookOpenText />,
+    enlace: "/registros",
+  },
+  {
+    id: 3,
+    nombre: "OPERARIOS",
+    icono: <Users />,
+    enlace: "/operarios",
+  },
+]
+
+export default function Home() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
+    <div className="flex h-full w-full items-center justify-center gap-5 p-5">
+      {opciones.map((opcion) => (
+        <Link
+          key={opcion.id}
+          href={opcion.enlace}
+          className="bg-background2 hover:bg-background4 flex aspect-square w-1/4 cursor-pointer flex-col items-center justify-center gap-5 rounded-md p-6 text-center transition"
+        >
+          <div className="text-9xl">{opcion.icono}</div>
+          <div className="text-xl font-semibold">{opcion.nombre}</div>
+        </Link>
+      ))}
     </div>
   )
 }
