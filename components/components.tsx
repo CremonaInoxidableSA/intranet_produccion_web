@@ -18,10 +18,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import { Field, FieldGroup } from "@/components/ui/field"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
-import { Input } from "@/components/ui/input";
 import { PencilLine, Trash2 } from "lucide-react"
 
 //---------------------------------------SELECTORES---------------------------------------//
@@ -206,5 +220,48 @@ export function EditarButton({
         className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
       />
     </button>
+  )
+}
+
+//----------------------------------------DIALOGS---------------------------------------//
+export function DialogTemplate({
+  title,
+  description,
+  fields,
+  dialogClose,
+  dialogSubmit,
+  open,
+  onOpenChange,
+}: {
+  title: string
+  description?: string
+  fields: React.ReactNode
+  dialogClose: string
+  dialogSubmit: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <form>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="flex max-h-[65vh] scrollbar-gutter-stable flex-col gap-4 overflow-y-auto pr-1">
+            {fields}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">{dialogClose}</Button>
+            </DialogClose>
+            <Button type="submit">{dialogSubmit}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
   )
 }

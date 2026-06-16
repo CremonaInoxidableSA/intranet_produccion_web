@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { secciones, opcionesNuevaTarea, tareasEnCurso } from "./data";
-import { EditarButton, EliminarButton, TextScrollArea } from "@/components/components";
+import { DialogTemplate, EditarButton, EliminarButton, TextScrollArea } from "@/components/components";
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1);
@@ -69,30 +70,28 @@ export default function CargarTarea() {
         )}
       </div>
 
-      <Dialog
+      <DialogTemplate
+        title={tareaEditando ?? ""}
+        description="Editar los detalles de la tarea seleccionada."
+        fields={
+          <>
+            {opcionesNuevaTarea.map((opcion) => (
+              <div className="rounded-md bg-background2 p-4" key={opcion.id}>
+                {opcion.contenido}
+              </div>
+            ))}
+            <Button className="w-full border-bluecremona bg-bluecremona/80 text-white hover:bg-bluecremona">
+              FINALIZAR TAREA
+            </Button>
+          </>
+        }
+        dialogClose="Cancelar"
+        dialogSubmit="Guardar Cambios"
         open={tareaEditando !== null}
         onOpenChange={(open) => {
           if (!open) setTareaEditando(null)
         }}
-      >
-        <form>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>{tareaEditando}</DialogTitle>
-            </DialogHeader>
-            <div className="flex max-h-[65vh] scrollbar-gutter-stable flex-col gap-4 overflow-y-auto pr-1">
-              {opcionesNuevaTarea.map((opcion) => (
-                <div className="rounded-md bg-background2 p-4" key={opcion.id}>
-                  {opcion.contenido}
-                </div>
-              ))}
-              <Button className="w-full border-bluecremona bg-bluecremona/80 text-white hover:bg-bluecremona">
-                FINALIZAR TAREA
-              </Button>
-            </div>
-          </DialogContent>
-        </form>
-      </Dialog>
+      />
     </div>
   )
 }
