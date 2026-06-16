@@ -1,3 +1,5 @@
+import * as React from "react"
+
 import {
   Select,
   SelectContent,
@@ -10,14 +12,17 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+
 import { Input } from "@/components/ui/input";
+import { PencilLine, Trash2 } from "lucide-react"
 
 //---------------------------------------SELECTORES---------------------------------------//
 export function Selector({ placeholder }: { placeholder: string }) {
@@ -65,6 +70,71 @@ export function Tabla({
   );
 }
 
+export function TablaEdicion({
+  columns,
+  data,
+}: {
+  columns: string[]
+  data: Record<string, string>[]
+}) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow className="bg-background3">
+          {columns.map((column, index) => (
+            <TableHead key={index}>{column}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {data.map((row, rowIndex) => (
+          <TableRow key={rowIndex}>
+            {columns.map((column, colIndex) => (
+              <TableCell key={colIndex}>{row[column]}</TableCell>
+            ))}
+            
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+export function TextScrollArea({
+  tags,
+  extraClass,
+  placeholder,
+  placeholderExtraClass,
+  extras,
+}: {
+  tags: string[]
+  extraClass?: string
+  placeholder?: string
+  placeholderExtraClass?: string
+  extras?: (tag: string) => React.ReactNode
+}) {
+  return (
+    <ScrollArea className={`rounded border ${extraClass || ""}`}>
+      {placeholder ? (
+        <h4
+          className={`mb-5 leading-none font-medium ${placeholderExtraClass || ""}`}
+        >
+          {placeholder}
+        </h4>
+      ) : null}
+      {tags.map((tag) => (
+        <React.Fragment key={tag}>
+          <div className="text-md flex flex-row items-center justify-between">
+            {tag}
+            {extras && extras(tag)}
+          </div>
+          <Separator className="my-5" />
+        </React.Fragment>
+      ))}
+    </ScrollArea>
+  )
+}
+
 //---------------------------------------INPUTS---------------------------------------//
 export function Inputs({
   placeholder,
@@ -99,4 +169,42 @@ export function GuardarButton() {
       GUARDAR
     </button>
   );
+}
+
+export function EliminarButton({
+  extraClass,
+  onClick,
+}: {
+  extraClass: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      className="aspect-square h-full cursor-pointer items-center justify-center"
+      onClick={onClick}
+    >
+      <Trash2
+        className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
+      />
+    </button>
+  )
+}
+
+export function EditarButton({
+  extraClass,
+  onClick,
+}: {
+  extraClass: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      className="aspect-square h-full cursor-pointer items-center justify-center"
+      onClick={onClick}
+    >
+      <PencilLine
+        className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
+      />
+    </button>
+  )
 }

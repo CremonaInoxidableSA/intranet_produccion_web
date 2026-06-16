@@ -1,25 +1,28 @@
-import { Selector } from "@/components/components";
-import { DateRangePicker } from "@/components/componentsClient";
+import { Selector, TablaEdicion } from "@/components/components";
 import { Button } from "@/components/ui/button";
-import { Tabla } from "@/components/components";
+import { Inputs } from "@/components/components";
 
 const Datos = Array.from({ length: 10 }).map((_) => ({
-  OP: "851-5871AQB",
-  OPERARIO: "Ricardo Arjona",
+  NOMBRE_APELLIDO: "Ricardo Arjona",
+  LEGAJO: "1192",
+  SECTOR: "MECANICO",
+  ROL: "SUPERVISOR",
 }));
 
 const Opciones = [
   {
     id: 1,
+    className: "md:w-1/4",
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">
-          FILTRO DE DATOS
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">
+          CARGAR NUEVO OPERARIO
         </h1>
-        <div className="flex flex-col gap-5 ">
-          <DateRangePicker placeholder="SELECCIONE EL RANGO DE FECHAS" />
-          <Selector placeholder="SELECCIONE EL NUMERO DE OP" />
-          <Selector placeholder="SELECCIONE EL NUMERO DE PLANO" />
+        <div className="flex flex-col gap-5">
+          <Inputs placeholder="NOMBRE Y APELLIDO" type="number" />
+          <Inputs placeholder="LEGAJO" type="input" />
+          <Selector placeholder="SECTOR" />
+          <Selector placeholder="ROL" />
           <Button className="w-full bg-bluecremona hover:bg-bluecremona/80">
             APLICAR FILTRO
           </Button>
@@ -29,29 +32,30 @@ const Opciones = [
   },
   {
     id: 2,
+    className: "md:w-2/3",
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">
           REGISTROS
         </h1>
-        <p className="w-full flex text-sm items-center opacity-60">
+        <p className="flex w-full items-center text-sm opacity-60">
           DD-MM-AAAA
         </p>
-        <Tabla columns={["OP", "OPERARIO"]} data={Datos} />
+        <TablaEdicion columns={["NOMBRE_APELLIDO", "LEGAJO", "SECTOR", "ROL"]} data={Datos} />
       </div>
     ),
   },
-];
+]
 
 export default function Registros() {
   return (
     <div className="h-full w-full flex flex-col p-5 gap-5">
       <h1 className="w-full flex justify-center text-xl font-bold">
-        LISTADO DE REGISTROS
+        LISTADO DE OPERARIOS
       </h1>
       <div className="w-full flex flex-row justify-center gap-5 items-start">
-        {Opciones.map(({ id, contenido }) => (
-          <div key={id} className={`bg-background2 w-1/4 rounded-md p-5`}>
+        {Opciones.map(({ id, className, contenido }) => (
+          <div key={id} className={`bg-background2 ${className} rounded-md p-5`}>
             {contenido}
           </div>
         ))}
