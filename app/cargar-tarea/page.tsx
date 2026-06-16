@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { secciones, opcionesNuevaTarea, tareasEnCurso } from "./data";
-import { DialogTemplate, EditarButton, EliminarButton, TextScrollArea } from "@/components/components";
+import { DialogTemplate } from "@/components/componentsClient";
+import { EditarButton, EliminarButton, TextScrollArea } from "@/components/components";
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1);

@@ -18,25 +18,59 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 
-import { Field, FieldGroup } from "@/components/ui/field"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 import { PencilLine, Trash2 } from "lucide-react"
+
+//---------------------------------------BOTONES---------------------------------------//
+export function GuardarButton() {
+  return (
+    <button className="w-full bg-green-500 text-white py-2 rounded">
+      GUARDAR
+    </button>
+  );
+}
+
+export function EliminarButton({
+  extraClass,
+  onClick,
+}: {
+  extraClass: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      className="aspect-square h-full cursor-pointer items-center justify-center"
+      onClick={onClick}
+    >
+      <Trash2
+        className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
+      />
+    </button>
+  )
+}
+
+export function EditarButton({
+  extraClass,
+  onClick,
+}: {
+  extraClass: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      className="aspect-square h-full cursor-pointer items-center justify-center"
+      onClick={onClick}
+    >
+      <PencilLine
+        className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
+      />
+    </button>
+  )
+}
 
 //---------------------------------------SELECTORES---------------------------------------//
 export function Selector({ placeholder }: { placeholder: string }) {
@@ -82,36 +116,6 @@ export function Tabla({
       </TableBody>
     </Table>
   );
-}
-
-export function TablaEdicion({
-  columns,
-  data,
-}: {
-  columns: string[]
-  data: Record<string, string>[]
-}) {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-background3">
-          {columns.map((column, index) => (
-            <TableHead key={index}>{column}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((row, rowIndex) => (
-          <TableRow key={rowIndex}>
-            {columns.map((column, colIndex) => (
-              <TableCell key={colIndex}>{row[column]}</TableCell>
-            ))}
-            
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )
 }
 
 export function TextScrollArea({
@@ -174,94 +178,4 @@ export function Textarea({ placeholder }: { placeholder: string }) {
       className="w-full min-h-24 bg-background3 border-2 border-background6 focus:outline-none focus:border-background6 rounded-md px-3 py-2 resize-none text-md"
     />
   );
-}
-
-//---------------------------------------BOTONES---------------------------------------//
-export function GuardarButton() {
-  return (
-    <button className="w-full bg-green-500 text-white py-2 rounded">
-      GUARDAR
-    </button>
-  );
-}
-
-export function EliminarButton({
-  extraClass,
-  onClick,
-}: {
-  extraClass: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      className="aspect-square h-full cursor-pointer items-center justify-center"
-      onClick={onClick}
-    >
-      <Trash2
-        className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
-      />
-    </button>
-  )
-}
-
-export function EditarButton({
-  extraClass,
-  onClick,
-}: {
-  extraClass: string
-  onClick: () => void
-}) {
-  return (
-    <button
-      className="aspect-square h-full cursor-pointer items-center justify-center"
-      onClick={onClick}
-    >
-      <PencilLine
-        className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
-      />
-    </button>
-  )
-}
-
-//----------------------------------------DIALOGS---------------------------------------//
-export function DialogTemplate({
-  title,
-  description,
-  fields,
-  dialogClose,
-  dialogSubmit,
-  open,
-  onOpenChange,
-}: {
-  title: string
-  description?: string
-  fields: React.ReactNode
-  dialogClose: string
-  dialogSubmit: string
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <form>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
-          </DialogHeader>
-          <div className="flex max-h-[65vh] scrollbar-gutter-stable flex-col gap-4 overflow-y-auto pr-1">
-            {fields}
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">{dialogClose}</Button>
-            </DialogClose>
-            <Button type="submit">{dialogSubmit}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
-  )
 }
