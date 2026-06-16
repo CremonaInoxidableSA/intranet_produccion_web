@@ -21,15 +21,23 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
-
+import { Button } from "@/components/ui/button"
 import { PencilLine, Trash2 } from "lucide-react"
 
 //---------------------------------------BOTONES---------------------------------------//
-export function GuardarButton() {
+export function GuardarButton({
+  extraClass,
+  placeholder,
+  onClick,
+}: {
+  extraClass: string
+  placeholder: string
+  onClick: () => void
+}) {
   return (
-    <button className="w-full rounded bg-green-500 py-2 text-white">
+    <Button className={`w-full rounded bg-green-500 py-2 text-white ${extraClass}`}>
       GUARDAR
-    </button>
+    </Button>
   )
 }
 
@@ -123,15 +131,17 @@ export function TextScrollArea({
   placeholder,
   placeholderExtraClass,
   extras,
+  height = "h-96",
 }: {
   tags: string[]
   extraClass?: string
   placeholder?: string
   placeholderExtraClass?: string
   extras?: (tag: string) => React.ReactNode
+  height?: string
 }) {
   return (
-    <ScrollArea className={`rounded border ${extraClass || ""}`}>
+    <div className={`rounded border ${extraClass || ""}`}>
       {placeholder ? (
         <h4
           className={`mb-5 leading-none font-medium ${placeholderExtraClass || ""}`}
@@ -139,16 +149,18 @@ export function TextScrollArea({
           {placeholder}
         </h4>
       ) : null}
-      {tags.map((tag) => (
-        <React.Fragment key={tag}>
-          <div className="text-md flex flex-row items-center justify-between">
-            {tag}
-            {extras && extras(tag)}
-          </div>
-          <Separator className="my-5" />
-        </React.Fragment>
-      ))}
-    </ScrollArea>
+      <ScrollArea className={height}>
+        {tags.map((tag) => (
+          <React.Fragment key={tag}>
+            <div className="text-md mr-4 flex flex-row items-center justify-between">
+              {tag}
+              {extras && extras(tag)}
+            </div>
+            <Separator className="my-3" />
+          </React.Fragment>
+        ))}
+      </ScrollArea>
+    </div>
   )
 }
 
