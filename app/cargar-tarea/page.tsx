@@ -1,14 +1,22 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { secciones, opcionesNuevaTarea, tareasEnCurso } from "./data";
-import { DialogTemplate } from "@/components/componentsClient";
-import { EditarButton, EliminarButton, TextScrollArea } from "@/components/components";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { secciones, opcionesNuevaTarea, tareasEnCurso } from "./data"
+import {
+  AlertDialogTemplate,
+  DialogTemplate,
+} from "@/components/componentsClient"
+import {
+  EditarButton,
+  EliminarButton,
+  TextScrollArea,
+} from "@/components/components"
 
 export default function CargarTarea() {
-  const [seccionActiva, setSeccionActiva] = useState<number>(1);
-  const [tareaEditando, setTareaEditando] = useState<string | null>(null);
+  const [seccionActiva, setSeccionActiva] = useState<number>(1)
+  const [tareaEditando, setTareaEditando] = useState<string | null>(null)
+  const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
 
   return (
     <div className="flex h-full w-full flex-col gap-5 p-5">
@@ -57,7 +65,10 @@ export default function CargarTarea() {
                   extraClass="size-6"
                   onClick={() => setTareaEditando(tag)}
                 />
-                <EliminarButton extraClass="size-6" onClick={() => {}} />
+                <EliminarButton
+                  extraClass="size-6"
+                  onClick={() => setFilaEliminando(tag)}
+                />
               </div>
             )}
           />
@@ -85,6 +96,16 @@ export default function CargarTarea() {
         onOpenChange={(open) => {
           if (!open) setTareaEditando(null)
         }}
+      />
+
+      <AlertDialogTemplate
+        open={filaEliminando !== null}
+        onOpenChange={(open) => {
+          if (!open) setFilaEliminando(null)
+        }}
+        title="¿Eliminar tarea?"
+        description={`Esta acción no se puede deshacer. Se eliminará la tarea ${filaEliminando ?? ""}.`}
+        onConfirm={() => setFilaEliminando(null)}
       />
     </div>
   )

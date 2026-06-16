@@ -9,7 +9,7 @@ import {
 import { Selector, Inputs } from "@/components/components"
 import { Button } from "@/components/ui/button"
 
-const Datos = Array.from({ length: 10 }).map((_) => ({
+const Datos = Array.from({ length: 10 }).map(() => ({
   NOMBRE_APELLIDO: "Ricardo Arjona",
   LEGAJO: "1192",
   SECTOR: "MECANICO",
@@ -44,7 +44,7 @@ export default function Operarios() {
               <Selector placeholder="SECTOR" />
               <Selector placeholder="ROL" />
               <Button className="w-full bg-bluecremona hover:bg-bluecremona/80">
-                APLICAR FILTRO
+                CARGAR OPERARIO
               </Button>
             </div>
           </div>

@@ -1,7 +1,3 @@
-const hosts = {
-  localHost: `http://${process.env.NEXT_PUBLIC_IP}:${process.env.NEXT_PUBLIC_PORT}`,
-}
-
 export const urlConfig = {
   /* URL globales */
   externalUrl: "https://creminox.com",
@@ -14,7 +10,7 @@ export const urlConfig = {
   registrosUrl: `${process.env.REGISTROS}`,
   productosUrl: `${process.env.PRODUCTOS}`,
   monitoreoUrl: `${process.env.MONITOREO}`,
-  backupUrl: `${process.env.BACKUP}`
+  backupUrl: `${process.env.BACKUP}`,
 } as const
 
 /* 

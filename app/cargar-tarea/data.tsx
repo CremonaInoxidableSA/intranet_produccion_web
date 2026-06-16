@@ -1,19 +1,21 @@
-import { Selector, Inputs, Textarea } from "@/components/components";
-import { TimePicker } from "@/components/componentsClient";
-import Cronometro from "./cronometro";
+import { Selector, Inputs, Textarea } from "@/components/components"
+import { TimePicker } from "@/components/componentsClient"
+import Cronometro from "./cronometro"
 
 export const secciones = [
   {
     id: 1,
     nombre: "NUEVA TAREA",
-    extraClasses: "bg-redcremona/60 border-redcremona border-2",
+    extraClasses:
+      "bg-redcremona/60 border-redcremona border-2 hover:bg-redcremona/80",
   },
   {
     id: 2,
     nombre: "TAREAS EN CURSO",
-    extraClasses: "bg-greencremona/60 border-greencremona border-2",
+    extraClasses:
+      "bg-greencremona/60 border-greencremona border-2 hover:bg-greencremona/80",
   },
-];
+]
 
 export const ordenDeProduccion = [
   { id: 1, placerholder: "NUMERO DE OP", type: "number" },
@@ -25,28 +27,28 @@ export const ordenDeProduccion = [
     placerholder: "DETALLES DE LA TAREA, OBSERVACIONES...",
     type: "textarea",
   },
-];
+]
 
 export function renderField(input: {
-  id: number;
-  placerholder: string;
-  type: string;
+  id: number
+  placerholder: string
+  type: string
 }) {
   if (input.type === "select")
-    return <Selector key={input.id} placeholder={input.placerholder} />;
+    return <Selector key={input.id} placeholder={input.placerholder} />
   if (input.type === "textarea")
-    return <Textarea key={input.id} placeholder={input.placerholder} />;
+    return <Textarea key={input.id} placeholder={input.placerholder} />
   return (
     <Inputs key={input.id} placeholder={input.placerholder} type={input.type} />
-  );
+  )
 }
 
 export const opcionesNuevaTarea = [
   {
     id: 1,
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">OPERARIO</h1>
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">OPERARIO</h1>
         <div className="flex flex-col gap-5">
           <Selector placeholder="SELECCIONE EL OPERARIO" />
           <Selector placeholder="SELECCIONE EL SECTOR" />
@@ -57,8 +59,8 @@ export const opcionesNuevaTarea = [
   {
     id: 2,
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">
           ORDEN DE PRODUCCION
         </h1>
         <div className="flex flex-col gap-5">
@@ -70,8 +72,8 @@ export const opcionesNuevaTarea = [
   {
     id: 3,
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">
           TIEMPO EXTRA
         </h1>
         <p className="text-sm opacity-60">
@@ -85,32 +87,30 @@ export const opcionesNuevaTarea = [
   {
     id: 4,
     contenido: (
-      <div className="flex flex-col bg-background2 gap-2">
-        <h1 className="w-full flex text-xl font-bold items-center">
+      <div className="flex flex-col gap-2 bg-background2">
+        <h1 className="flex w-full items-center text-xl font-bold">
           CRONOMETRO
         </h1>
         <Cronometro />
       </div>
     ),
   },
-];
-
-
+]
 
 //---------------------------------------TAREAS EN CURSO---------------------------------------//
 export const tareasEnCurso = [
-  { "NumeroTarea": "TAREA 92: OPERARIO1 - TORRE" },
-  { "NumeroTarea": "TAREA 93: OPERARIO2 - TORRE" },
-  { "NumeroTarea": "TAREA 94: OPERARIO3 - TORRE" },
-  { "NumeroTarea": "TAREA 95: OPERARIO4 - TORRE" },
-  { "NumeroTarea": "TAREA 96: OPERARIO5 - TORRE" },
-  { "NumeroTarea": "TAREA 97: OPERARIO6 - TORRE" },
-  { "NumeroTarea": "TAREA 98: OPERARIO7 - TORRE" },
-  { "NumeroTarea": "TAREA 99: OPERARIO8 - TORRE" },
-  { "NumeroTarea": "TAREA 100: OPERARIO9 - TORRE" },
-  { "NumeroTarea": "TAREA 101: OPERARIO10 - TORRE" },
-  { "NumeroTarea": "TAREA 102: OPERARIO11 - TORRE" },
-  { "NumeroTarea": "TAREA 103: OPERARIO12 - TORRE" },
-  { "NumeroTarea": "TAREA 104: OPERARIO13 - TORRE" },
-  { "NumeroTarea": "TAREA 105: OPERARIO14 - TORRE" },
+  { NumeroTarea: "TAREA 92: OPERARIO1 - TORRE" },
+  { NumeroTarea: "TAREA 93: OPERARIO2 - TORRE" },
+  { NumeroTarea: "TAREA 94: OPERARIO3 - TORRE" },
+  { NumeroTarea: "TAREA 95: OPERARIO4 - TORRE" },
+  { NumeroTarea: "TAREA 96: OPERARIO5 - TORRE" },
+  { NumeroTarea: "TAREA 97: OPERARIO6 - TORRE" },
+  { NumeroTarea: "TAREA 98: OPERARIO7 - TORRE" },
+  { NumeroTarea: "TAREA 99: OPERARIO8 - TORRE" },
+  { NumeroTarea: "TAREA 100: OPERARIO9 - TORRE" },
+  { NumeroTarea: "TAREA 101: OPERARIO10 - TORRE" },
+  { NumeroTarea: "TAREA 102: OPERARIO11 - TORRE" },
+  { NumeroTarea: "TAREA 103: OPERARIO12 - TORRE" },
+  { NumeroTarea: "TAREA 104: OPERARIO13 - TORRE" },
+  { NumeroTarea: "TAREA 105: OPERARIO14 - TORRE" },
 ]

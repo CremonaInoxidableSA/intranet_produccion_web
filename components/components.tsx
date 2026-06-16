@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 
 import {
   Table,
@@ -16,8 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-
+} from "@/components/ui/table"
 
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -28,10 +27,10 @@ import { PencilLine, Trash2 } from "lucide-react"
 //---------------------------------------BOTONES---------------------------------------//
 export function GuardarButton() {
   return (
-    <button className="w-full bg-green-500 text-white py-2 rounded">
+    <button className="w-full rounded bg-green-500 py-2 text-white">
       GUARDAR
     </button>
-  );
+  )
 }
 
 export function EliminarButton({
@@ -76,7 +75,7 @@ export function EditarButton({
 export function Selector({ placeholder }: { placeholder: string }) {
   return (
     <Select>
-      <SelectTrigger className="w-full min-h-10 bg-background3 border-2 border-background6 focus:border-background6 rounded-md px-3 py-2">
+      <SelectTrigger className="min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent position="popper">
@@ -85,7 +84,7 @@ export function Selector({ placeholder }: { placeholder: string }) {
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
+  )
 }
 
 //---------------------------------------TABLAS---------------------------------------//
@@ -93,8 +92,8 @@ export function Tabla({
   columns,
   data,
 }: {
-  columns: string[];
-  data: Record<string, string>[];
+  columns: string[]
+  data: Record<string, string>[]
 }) {
   return (
     <Table>
@@ -115,7 +114,7 @@ export function Tabla({
         ))}
       </TableBody>
     </Table>
-  );
+  )
 }
 
 export function TextScrollArea({
@@ -158,16 +157,16 @@ export function Inputs({
   placeholder,
   type,
 }: {
-  placeholder: string;
-  type: string;
+  placeholder: string
+  type: string
 }) {
   return (
     <Input
       type={type}
       placeholder={placeholder}
-      className="w-full min-h-10 bg-background3 border-2 border-background6 focus:border-background6 rounded-md px-3 py-2"
+      className="min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
     />
-  );
+  )
 }
 
 //---------------------------------------TEXTAREA---------------------------------------//
@@ -175,7 +174,7 @@ export function Textarea({ placeholder }: { placeholder: string }) {
   return (
     <textarea
       placeholder={placeholder}
-      className="w-full min-h-24 bg-background3 border-2 border-background6 focus:outline-none focus:border-background6 rounded-md px-3 py-2 resize-none text-md"
+      className="text-md min-h-24 w-full resize-none rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
     />
-  );
+  )
 }
