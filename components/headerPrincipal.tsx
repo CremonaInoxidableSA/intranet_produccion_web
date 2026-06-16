@@ -62,7 +62,7 @@ export default function HeaderPrincipal() {
 
         {/* Título centrado */}
         <p className="header flex flex-1 justify-center font-bold xl:w-[40%]">
-          Intranet General de Trabajo Cremona Inoxidable S.A.
+          Producción Cremona Inoxidable S.A.
         </p>
 
         {/* Desktop: links + logo */}

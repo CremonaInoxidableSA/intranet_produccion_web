@@ -1,4 +1,4 @@
-import { Users, BookOpenText, Timer } from "lucide-react"
+import { Users, BookOpenText, Timer, PackageSearch, DatabaseBackup, CircuitBoard } from "lucide-react"
 
 import Link from "next/link"
 
@@ -21,16 +21,34 @@ const opciones = [
     icono: <Users />,
     enlace: "/operarios",
   },
+  {
+    id: 4,
+    nombre: "PRODUCTOS",
+    icono: <PackageSearch />,
+    enlace: "/productos",
+  },
+  {
+    id: 5,
+    nombre: "MONITOREO",
+    icono: <CircuitBoard />,
+    enlace: "/monitoreo",
+  },
+  {
+    id: 6,
+    nombre: "BACKUP",
+    icono: <DatabaseBackup />,
+    enlace: "/backup",
+  },
 ]
 
 export default function Home() {
   return (
-    <div className="flex h-full w-full items-center justify-center gap-5 p-5">
+    <div className="flex flex-1 flex-wrap content-start justify-center gap-5 px-50 py-20">
       {opciones.map((opcion) => (
         <Link
           key={opcion.id}
           href={opcion.enlace}
-          className="bg-background2 hover:bg-background4 flex aspect-square w-1/4 cursor-pointer flex-col items-center justify-center gap-5 rounded-md p-6 text-center transition"
+          className="flex aspect-square w-1/5 min-w-45 cursor-pointer flex-col items-center justify-center gap-5 rounded-md bg-background2 p-6 text-center transition hover:bg-background4"
         >
           <div className="text-9xl">{opcion.icono}</div>
           <div className="text-xl font-semibold">{opcion.nombre}</div>
