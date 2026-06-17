@@ -40,7 +40,6 @@ import { type DateRange } from "react-day-picker"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
 import { Field, FieldLabel } from "@/components/ui/field"
 import {
   Popover,
@@ -91,18 +90,6 @@ export function DateRangePicker({ placeholder }: { placeholder: string }) {
         </PopoverContent>
       </Popover>
     </Field>
-  )
-}
-
-export function TimePicker() {
-  return (
-    <Input
-      type="time"
-      id="time-picker-optional"
-      step="1"
-      defaultValue="00:00:00"
-      className="min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 text-xl focus:border-background6"
-    />
   )
 }
 

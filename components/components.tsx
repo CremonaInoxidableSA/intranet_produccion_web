@@ -137,7 +137,7 @@ export function TextScrollArea({
   onTagClick?: (tag: string) => void
 }) {
   return (
-    <div className={`rounded border ${extraClass || ""}`}>
+    <div className={`rounded ${extraClass || ""}`}>
       {placeholder ? (
         <h4
           className={`mb-5 leading-none font-medium ${placeholderExtraClass || ""}`}

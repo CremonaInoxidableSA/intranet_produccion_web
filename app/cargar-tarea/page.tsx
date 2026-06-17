@@ -18,12 +18,12 @@ export default function CargarTarea() {
 
   return (
     <div className="flex flex-1 flex-col p-5">
-      <h1 className="flex w-full justify-center text-xl md:text-2xl font-bold">
+      <h1 className="flex w-full justify-center text-xl font-bold md:text-2xl">
         CARGAR NUEVA TAREA
       </h1>
 
       {/* Botones de sección — solo visibles en mobile */}
-      <div className="flex w-full flex-row items-center justify-center gap-5 md:hidden my-5">
+      <div className="my-5 flex w-full flex-row items-center justify-center gap-5 md:hidden">
         {secciones.map(({ id, nombre, extraClasses }) => {
           const isActive = seccionActiva === id
           return (
@@ -42,23 +42,25 @@ export default function CargarTarea() {
         })}
       </div>
 
-      <div className="flex flex-col md:gap-20 md:flex-row">
+      <div className="flex flex-col md:flex-row md:gap-20">
         {/* Sección 1 — mobile: solo si activa | desktop: siempre visible */}
         <div
-          className={`w-full md:flex md:w-1/2 md:flex-col md:gap-5 ${seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"}`}
+          className={`w-full md:gap-5 md:flex md:w-1/2 md:flex-col ${seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"}`}
         >
           {/* Título de columna solo en desktop */}
           <h2 className="hidden w-full justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 1)?.nombre}
           </h2>
-          {opcionesNuevaTarea.map((opcion) => (
-            <div
-              className="w-full rounded-md bg-background2 p-5"
-              key={opcion.id}
-            >
-              {opcion.contenido}
-            </div>
-          ))}
+          <div className="flex flex-1 flex-col md:justify-between gap-5">
+            {opcionesNuevaTarea.map((opcion) => (
+              <div
+                className="w-full rounded-md bg-background2 p-5"
+                key={opcion.id}
+              >
+                {opcion.contenido}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Sección 2 — mobile: solo si activa | desktop: siempre visible */}
@@ -66,7 +68,7 @@ export default function CargarTarea() {
           className={`md:flex md:w-1/2 md:flex-col md:gap-5 ${seccionActiva === 2 ? "flex flex-col gap-5" : "hidden"}`}
         >
           {/* Título de columna solo en desktop */}
-          <h2 className="hidden justify-center text-lg font-semibold md:flex ">
+          <h2 className="hidden justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 2)?.nombre}
           </h2>
           <TextScrollArea
@@ -75,6 +77,7 @@ export default function CargarTarea() {
             extraClass="bg-background2 p-5 flex-1"
             placeholderExtraClass="text-md"
             onTagClick={(tag) => setTareaEditando(tag)}
+            height="md:h-screen h-96"
           />
         </div>
       </div>
@@ -83,7 +86,7 @@ export default function CargarTarea() {
         title={tareaEditando ?? ""}
         description="Editar los detalles de la tarea seleccionada."
         fields={opcionesNuevaTarea.map((opcion) => (
-          <div className="rounded-md bg-background2 p-4 w-full" key={opcion.id}>
+          <div className="w-full rounded-md bg-background2 p-4" key={opcion.id}>
             {opcion.contenido}
           </div>
         ))}
@@ -96,14 +99,14 @@ export default function CargarTarea() {
                 setTareaEditando(null)
               }}
             >
-              ELIMINAR TAREA
+              ELIMINAR
             </Button>
             <div className="flex w-full flex-row items-center justify-end gap-5">
               <Button className="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona">
-                FINALIZAR TAREA
+                FINALIZAR
               </Button>
               <Button className="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona">
-                GUARDAR CAMBIOS
+                GUARDAR
               </Button>
             </div>
           </div>

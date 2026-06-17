@@ -1,6 +1,5 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
-import { TimePicker } from "@/components/componentsClient"
-import Cronometro from "./cronometro"
+import { Cronometro, DuracionInput } from "./cronometro"
 
 export const secciones = [
   {
@@ -81,7 +80,7 @@ export const opcionesNuevaTarea = [
             Agregado al tiempo cronometrado, por si el operario realizó alguna
             parte de la tarea fuera del horario cronometrado
           </p>
-          <TimePicker />
+          <DuracionInput />
         </div>
         <div className="flex flex-col gap-2 bg-background2">
           <h1 className="text-md flex w-full items-center font-bold">

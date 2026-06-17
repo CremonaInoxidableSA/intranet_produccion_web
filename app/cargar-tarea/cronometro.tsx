@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Pause, Play } from "lucide-react"
 
-export default function Cronometro() {
+export function Cronometro() {
   const [time, setTime] = useState<number>(0)
   const [isRunning, setIsRunning] = useState<boolean>(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -85,6 +85,37 @@ export default function Cronometro() {
           </AlertDialog>
         )}
       </div>
+    </div>
+  )
+}
+
+export function DuracionInput() {
+  const [duracion, setDuracion] = useState("00:00:00")
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+
+    // Permite escribir números y :
+    if (/^[0-9:]*$/.test(value)) {
+      setDuracion(value)
+    }
+  }
+
+  const esValido = /^\d+:[0-5]\d:[0-5]\d$/.test(duracion)
+
+  return (
+    <div className="flex flex-col gap-2">
+      <input
+        type="text"
+        value={duracion}
+        onChange={handleChange}
+        placeholder="HH:MM:SS"
+        className="min-h-10 rounded border-2 border-background6 bg-background3 px-3 py-2 text-xl focus:border-background6"
+      />
+
+      {!esValido && (
+        <span className="text-sm text-red-500">Formato válido: HH:MM:SS</span>
+      )}
     </div>
   )
 }
