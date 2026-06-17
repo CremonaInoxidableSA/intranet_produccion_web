@@ -48,7 +48,7 @@ export const opcionesNuevaTarea = [
     id: 1,
     contenido: (
       <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="flex w-full items-center text-xl font-bold">OPERARIO</h1>
+        <h1 className="text-md flex w-full items-center font-bold">OPERARIO</h1>
         <div className="flex flex-col gap-5">
           <Selector placeholder="SELECCIONE EL OPERARIO" />
           <Selector placeholder="SELECCIONE EL SECTOR" />
@@ -60,7 +60,7 @@ export const opcionesNuevaTarea = [
     id: 2,
     contenido: (
       <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="flex w-full items-center text-xl font-bold">
+        <h1 className="text-md flex w-full items-center font-bold">
           ORDEN DE PRODUCCION
         </h1>
         <div className="flex flex-col gap-5">
@@ -74,13 +74,7 @@ export const opcionesNuevaTarea = [
     contenido: (
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2 bg-background2">
-          <h1 className="flex w-full items-center text-xl font-bold">
-            CRONOMETRO
-          </h1>
-          <Cronometro />
-        </div>
-        <div className="flex flex-col gap-2 bg-background2">
-          <h1 className="flex w-full items-center text-xl font-bold">
+          <h1 className="text-md flex w-full items-center font-bold">
             TIEMPO EXTRA
           </h1>
           <p className="text-sm opacity-60">
@@ -88,6 +82,12 @@ export const opcionesNuevaTarea = [
             parte de la tarea fuera del horario cronometrado
           </p>
           <TimePicker />
+        </div>
+        <div className="flex flex-col gap-2 bg-background2">
+          <h1 className="text-md flex w-full items-center font-bold">
+            CRONOMETRO
+          </h1>
+          <Cronometro />
         </div>
       </div>
     ),

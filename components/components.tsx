@@ -30,13 +30,15 @@ export function GuardarButton({
   placeholder,
   onClick,
 }: {
-  extraClass: string
-  placeholder: string
-  onClick: () => void
+  extraClass?: string
+  placeholder?: string
+  onClick?: () => void
 }) {
   return (
-    <Button className={`w-full rounded bg-green-500 py-2 text-white ${extraClass}`}>
-      GUARDAR
+    <Button
+      className={`w-full rounded border-2 border-greencremona bg-greencremona/50 py-2 text-white hover:bg-greencremona/90 ${extraClass}`}
+    >
+      {placeholder}
     </Button>
   )
 }
@@ -45,18 +47,14 @@ export function EliminarButton({
   extraClass,
   onClick,
 }: {
-  extraClass: string
-  onClick: () => void
+  extraClass?: string
+  onClick?: () => void
 }) {
   return (
-    <button
-      className="aspect-square h-full cursor-pointer items-center justify-center"
+    <Trash2
+      className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
       onClick={onClick}
-    >
-      <Trash2
-        className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
-      />
-    </button>
+    />
   )
 }
 
@@ -64,18 +62,14 @@ export function EditarButton({
   extraClass,
   onClick,
 }: {
-  extraClass: string
-  onClick: () => void
+  extraClass?: string
+  onClick?: () => void
 }) {
   return (
-    <button
-      className="aspect-square h-full cursor-pointer items-center justify-center"
+    <PencilLine
+      className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
       onClick={onClick}
-    >
-      <PencilLine
-        className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
-      />
-    </button>
+    />
   )
 }
 
@@ -83,7 +77,7 @@ export function EditarButton({
 export function Selector({ placeholder }: { placeholder: string }) {
   return (
     <Select>
-      <SelectTrigger className="min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
+      <SelectTrigger className="text-sm min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent position="popper">
@@ -154,7 +148,7 @@ export function TextScrollArea({
       <ScrollArea className={height}>
         {tags.map((tag) => (
           <React.Fragment key={tag}>
-            <div className="text-md mr-4 flex flex-row items-center justify-between">
+            <div className="mr-4 flex flex-row items-center justify-between">
               <span
                 onClick={() => onTagClick?.(tag)}
                 className={`flex-1 truncate transition-colors duration-150 ${
@@ -187,7 +181,7 @@ export function Inputs({
     <Input
       type={type}
       placeholder={placeholder}
-      className="min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
+      className="text-sm min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
     />
   )
 }
@@ -197,7 +191,7 @@ export function Textarea({ placeholder }: { placeholder: string }) {
   return (
     <textarea
       placeholder={placeholder}
-      className="text-md min-h-24 w-full resize-none rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
+      className="text-sm min-h-24 w-full resize-none rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
     />
   )
 }

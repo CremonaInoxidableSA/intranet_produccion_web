@@ -69,7 +69,7 @@ export default function HeaderPrincipal() {
 
   return (
     <>
-      <header className="-header flex items-center bg-headerbg p-5">
+      <header className="-header sticky top-0 left-0 z-50 flex w-full items-center bg-headerbg p-5">
         {/* Desktop: iconos izquierda */}
         <div className="hidden h-full w-[30%] flex-row items-center justify-start gap-5 xl:flex">
           <X />

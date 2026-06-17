@@ -16,47 +16,53 @@ export default function Operarios() {
       <h1 className="flex w-full justify-center text-xl font-bold">
         PRODUCTOS
       </h1>
-      <div className="flex w-full flex-col items-center justify-center gap-5">
-        <TextScrollArea
-          tags={Datos.map((dato) => dato)}
-          placeholder="LISTADO DE PRODUCTOS"
-          extraClass="bg-background2 p-5 md:w-1/3"
-          placeholderExtraClass="text-xl"
-          height="h-100"
-          extras={(dato) => (
-            <div className="flex items-center justify-end gap-2">
+      <div className="items-strech flex w-full flex-col justify-center gap-5 xl:flex-row h-[76vh]">
+        <div className="self-strech flex flex-col gap-2 bg-background2 p-5 md:w-1/3 rounded">
+          <TextScrollArea
+            tags={Datos.map((dato) => dato)}
+            placeholder="LISTADO DE PRODUCTOS"
+            extraClass="p-5"
+            placeholderExtraClass="md:text-xl text-md"
+            height="xl:h-[34vh] h-96"
+            extras={(dato) => (
               <EliminarButton
                 extraClass="size-6"
                 onClick={() => setFilaEliminando(dato)}
               />
-            </div>
-          )}
-        />
-        <TextScrollArea
-          tags={Datos.map((dato) => dato)}
-          placeholder="LISTADO DE LABORES"
-          extraClass="bg-background2 p-5 md:w-1/3"
-          placeholderExtraClass="text-xl"
-          height="h-100"
-          extras={(dato) => (
-            <div className="flex items-center justify-end gap-2">
-              <EliminarButton
-                extraClass="size-6"
-                onClick={() => setFilaEliminando(dato)}
-              />
-            </div>
-          )}
-        />
-        <div className="flex flex-col gap-2 bg-background2">
+            )}
+          />
           <h1 className="flex w-full items-center text-xl font-bold">
             CARGAR NUEVO PRODUCTO
           </h1>
-          <div className="flex flex-col gap-5">
-            <Inputs placeholder="NOMBRE Y APELLIDO" type="text" />
-            <Inputs placeholder="LEGAJO" type="text" />
+          <div className="flex h-full w-full flex-col justify-between">
+            <Inputs placeholder="NOMBRE" type="text" />
+            <Selector placeholder="SECTORES" />
+            <GuardarButton placeholder="CREAR NUEVO PRODUCTO" />
+          </div>
+        </div>
+
+        <div className="self-strech flex flex-col gap-2 bg-background2 p-5 md:w-1/3 rounded">
+          <TextScrollArea
+            tags={Datos.map((dato) => dato)}
+            placeholder="LISTADO DE LABORES - Mesa50"
+            extraClass="p-5"
+            placeholderExtraClass="md:text-xl text-md"
+            height="xl:h-[34vh] h-96"
+            extras={(dato) => (
+              <EliminarButton
+                extraClass="size-6"
+                onClick={() => setFilaEliminando(dato)}
+              />
+            )}
+          />
+          <h1 className="flex w-full items-center text-xl font-bold">
+            CARGAR NUEVO LABOR
+          </h1>
+          <div className="flex h-full w-full flex-col justify-between">
+            <Inputs placeholder="NOMBRE LABOR" type="text" />
+            <Inputs placeholder="PRODUCTO" type="text" />
             <Selector placeholder="SECTOR" />
-            <Selector placeholder="ROL" />
-              
+            <GuardarButton placeholder="CREAR NUEVO LABOR" />
           </div>
         </div>
       </div>

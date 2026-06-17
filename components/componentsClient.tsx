@@ -177,7 +177,7 @@ export function DialogTemplate({
               <DialogDescription>{description}</DialogDescription>
             )}
           </DialogHeader>
-          <div className="flex max-h-[65vh] scrollbar-gutter-stable flex-col gap-4 overflow-y-auto pr-1">
+          <div className="flex w-full max-h-[60vh] flex-col gap-4 overflow-y-auto pr-1">
             {fields}
           </div>
           <DialogFooter>
