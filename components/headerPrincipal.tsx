@@ -62,7 +62,11 @@ export default function HeaderPrincipal() {
 
         {/* Título centrado */}
         <p className="header flex flex-1 justify-center font-bold xl:w-[40%]">
-          Producción Cremona Inoxidable S.A.
+          <span className="hidden md:inline">
+            Producción Cremona Inoxidable S.A.
+          </span>
+
+          <span className="md:hidden">Producción Cremona</span>
         </p>
 
         {/* Desktop: links + logo */}
