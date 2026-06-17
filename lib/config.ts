@@ -5,20 +5,9 @@ export const urlConfig = {
   homeUrl: "/",
 
   /* URL de módulos */
-  cargaUrl: `${process.env.CARGAR_TAREA}`,
-  operariosUrl: `${process.env.OPERARIOS}`,
-  registrosUrl: `${process.env.REGISTROS}`,
-  productosUrl: `${process.env.PRODUCTOS}`,
-  monitoreoUrl: `${process.env.MONITOREO}`,
-  backupUrl: `${process.env.BACKUP}`,
+  cargaUrl: "/cargar-tarea",
+  operariosUrl: "/operarios",
+  productosUrl: "/productos",
+  monitoreoUrl: "/monitoreo",
+  backupUrl: "/backup",
 } as const
-
-/* 
-Listado de variables de entorno
-CARGAR_TAREA
-OPERARIOS
-REGISTROS
-PRODUCTOS
-MONITOREO
-BACKUP
-*/

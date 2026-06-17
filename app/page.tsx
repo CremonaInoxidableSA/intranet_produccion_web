@@ -20,15 +20,15 @@ const opciones = [
   },
   {
     id: 2,
-    nombre: "REGISTROS",
-    icono: <BookOpenText className={estilosIconos} />,
-    enlace: "/registros",
-  },
-  {
-    id: 3,
     nombre: "OPERARIOS",
     icono: <Users className={estilosIconos} />,
     enlace: "/operarios",
+  },
+  {
+    id: 3,
+    nombre: "REGISTROS",
+    icono: <BookOpenText className={estilosIconos} />,
+    enlace: "/registros",
   },
   {
     id: 4,

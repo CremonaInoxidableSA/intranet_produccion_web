@@ -53,7 +53,7 @@ export default function Registros() {
       <h1 className="flex w-full justify-center text-xl font-bold">
         LISTADO DE REGISTROS
       </h1>
-      <div className="flex w-full flex-row items-start justify-center gap-5">
+      <div className="flex w-full flex-col md:flex-row items-start justify-center gap-5">
         {Opciones.map(({ id, className, contenido }) => (
           <div
             key={id}

@@ -1,34 +1,71 @@
 "use client"
 
 import { ThemeSwitcher } from "@/components/theme/themeSwitcher"
-// import UserIcon from "@/components/userIcon/userIcon"
-
 import Link from "next/link"
 import { useState } from "react"
 import { urlConfig } from "@/lib/config"
 import { LogoCreminox as Logo } from "@/components/Logos"
+import { Menu, X, ChevronDown, ChevronRight } from "lucide-react"
 
-import { Menu, X } from "lucide-react"
+import { headerNavLeft, headerNavRight, type NavItem } from "./headerConfig"
+
+// ─── Subcomponente: item con subitems colapsables (solo usado en el drawer) ───
+
+function DrawerNavItem({
+  item,
+  onClose,
+}: {
+  item: NavItem
+  onClose: () => void
+}) {
+  const [open, setOpen] = useState(false)
+  const hasSubItems = item.subItems && item.subItems.length > 0
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <Link
+          href={item.href}
+          className="text-base opacity-70 transition-opacity hover:opacity-100"
+          onClick={onClose}
+        >
+          {item.label}
+        </Link>
+
+        {hasSubItems && (
+          <button
+            onClick={() => setOpen((prev) => !prev)}
+            className="cursor-pointer p-1 opacity-70 hover:opacity-100"
+            aria-label={`${open ? "Colapsar" : "Expandir"} ${item.label}`}
+          >
+            {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </button>
+        )}
+      </div>
+
+      {hasSubItems && open && (
+        <div className="mt-1 ml-4 flex flex-col gap-2 border-l border-current/20 pl-3">
+          {item.subItems!.map((sub, idx) => (
+            <Link
+              key={idx}
+              href={sub.href}
+              className="text-sm opacity-60 transition-opacity hover:opacity-100"
+              onClick={onClose}
+            >
+              {sub.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function HeaderPrincipal() {
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const HeaderIzquierda = [
-    {
-      label: "Home",
-      href: urlConfig.homeUrl,
-      className: "text-base opacity-70 transition-opacity hover:opacity-100",
-      onClick: () => setDrawerOpen(false),
-    },
-  ]
-
-  const HeaderDerecha = [
-    {
-      label: "Intranet",
-      href: urlConfig.intranetUrl,
-      className: "text-base opacity-70 transition-opacity hover:opacity-100",
-      onClick: () => setDrawerOpen(false),
-    },
-  ]
+  const closeDrawer = () => setDrawerOpen(false)
 
   return (
     <>
@@ -37,13 +74,8 @@ export default function HeaderPrincipal() {
         <div className="hidden h-full w-[30%] flex-row items-center justify-start gap-5 xl:flex">
           <X />
           <ThemeSwitcher />
-          {HeaderIzquierda.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className={item.className}
-              onClick={item.onClick}
-            >
+          {headerNavLeft.map((item, index) => (
+            <Link key={index} href={item.href} className={item.className}>
               {item.label}
             </Link>
           ))}
@@ -65,18 +97,16 @@ export default function HeaderPrincipal() {
           <span className="hidden md:inline">
             Producción Cremona Inoxidable S.A.
           </span>
-
           <span className="md:hidden">Producción Cremona</span>
         </p>
 
         {/* Desktop: links + logo */}
         <div className="hidden w-[30%] justify-end gap-5 xl:flex">
-          {HeaderDerecha.map((item, index) => (
+          {headerNavRight.map((item, index) => (
             <Link
               key={index}
               href={item.href}
               className="text-base opacity-70 transition-opacity hover:opacity-100"
-              onClick={() => setDrawerOpen(false)}
             >
               {item.label}
             </Link>
@@ -107,7 +137,7 @@ export default function HeaderPrincipal() {
       {drawerOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 xl:hidden"
-          onClick={() => setDrawerOpen(false)}
+          onClick={closeDrawer}
         />
       )}
 
@@ -117,24 +147,24 @@ export default function HeaderPrincipal() {
           drawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Fila superior: perfil + theme + cerrar */}
+        {/* Fila superior: iconos + link derecha + cerrar */}
         <div className="flex items-center justify-between border-b border-current/20 px-4 py-4">
           <div className="flex items-center gap-4">
             <X />
             <ThemeSwitcher />
           </div>
-          {HeaderDerecha.map((item, index) => (
+          {headerNavRight.map((item, index) => (
             <Link
               key={index}
               href={item.href}
               className="text-base opacity-70 transition-opacity hover:opacity-100"
-              onClick={() => setDrawerOpen(false)}
+              onClick={closeDrawer}
             >
               {item.label}
             </Link>
           ))}
           <button
-            onClick={() => setDrawerOpen(false)}
+            onClick={closeDrawer}
             aria-label="Cerrar menú"
             className="flex cursor-pointer items-center justify-center"
           >
@@ -142,17 +172,10 @@ export default function HeaderPrincipal() {
           </button>
         </div>
 
-        {/* Links de navegación */}
-        <nav className="flex flex-col gap-5 px-4 py-5">
-          {HeaderIzquierda.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className="text-base opacity-70 transition-opacity hover:opacity-100"
-              onClick={() => setDrawerOpen(false)}
-            >
-              {item.label}
-            </Link>
+        {/* Links de navegación con subitems */}
+        <nav className="flex flex-col gap-2 px-4 py-5">
+          {headerNavLeft.map((item, index) => (
+            <DrawerNavItem key={index} item={item} onClose={closeDrawer} />
           ))}
         </nav>
       </div>
