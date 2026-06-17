@@ -132,6 +132,7 @@ export function TextScrollArea({
   placeholderExtraClass,
   extras,
   height = "h-96",
+  onTagClick,
 }: {
   tags: string[]
   extraClass?: string
@@ -139,6 +140,7 @@ export function TextScrollArea({
   placeholderExtraClass?: string
   extras?: (tag: string) => React.ReactNode
   height?: string
+  onTagClick?: (tag: string) => void
 }) {
   return (
     <div className={`rounded border ${extraClass || ""}`}>
@@ -153,7 +155,16 @@ export function TextScrollArea({
         {tags.map((tag) => (
           <React.Fragment key={tag}>
             <div className="text-md mr-4 flex flex-row items-center justify-between">
-              {tag}
+              <span
+                onClick={() => onTagClick?.(tag)}
+                className={`flex-1 truncate transition-colors duration-150 ${
+                  onTagClick
+                    ? "cursor-pointer rounded px-1 hover:bg-foreground/10"
+                    : ""
+                }`}
+              >
+                {tag}
+              </span>
               {extras && extras(tag)}
             </div>
             <Separator className="my-3" />

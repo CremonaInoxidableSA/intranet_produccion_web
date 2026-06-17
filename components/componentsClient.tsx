@@ -156,17 +156,15 @@ export function DialogTemplate({
   title,
   description,
   fields,
-  dialogClose,
-  dialogSubmit,
   open,
   onOpenChange,
+  dialogFooter
 }: {
   title: string
   description?: string
   fields: React.ReactNode
-  dialogClose: string
-  dialogSubmit: string
   open: boolean
+  dialogFooter: React.ReactNode
   onOpenChange: (open: boolean) => void
 }) {
   return (
@@ -183,10 +181,7 @@ export function DialogTemplate({
             {fields}
           </div>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">{dialogClose}</Button>
-            </DialogClose>
-            <Button type="submit">{dialogSubmit}</Button>
+            {dialogFooter}
           </DialogFooter>
         </DialogContent>
       </form>

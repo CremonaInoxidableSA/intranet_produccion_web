@@ -72,26 +72,23 @@ export const opcionesNuevaTarea = [
   {
     id: 3,
     contenido: (
-      <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="flex w-full items-center text-xl font-bold">
-          TIEMPO EXTRA
-        </h1>
-        <p className="text-sm opacity-60">
-          Agregado al tiempo cronometrado, por si el operario realizó alguna
-          parte de la tarea fuera del horario cronometrado
-        </p>
-        <TimePicker />
-      </div>
-    ),
-  },
-  {
-    id: 4,
-    contenido: (
-      <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="flex w-full items-center text-xl font-bold">
-          CRONOMETRO
-        </h1>
-        <Cronometro />
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2 bg-background2">
+          <h1 className="flex w-full items-center text-xl font-bold">
+            CRONOMETRO
+          </h1>
+          <Cronometro />
+        </div>
+        <div className="flex flex-col gap-2 bg-background2">
+          <h1 className="flex w-full items-center text-xl font-bold">
+            TIEMPO EXTRA
+          </h1>
+          <p className="text-sm opacity-60">
+            Agregado al tiempo cronometrado, por si el operario realizó alguna
+            parte de la tarea fuera del horario cronometrado
+          </p>
+          <TimePicker />
+        </div>
       </div>
     ),
   },
@@ -113,4 +110,60 @@ export const tareasEnCurso = [
   { NumeroTarea: "TAREA 103: OPERARIO12 - TORRE" },
   { NumeroTarea: "TAREA 104: OPERARIO13 - TORRE" },
   { NumeroTarea: "TAREA 105: OPERARIO14 - TORRE" },
+  { NumeroTarea: "TAREA 106: OPERARIO1 - TORRE" },
+  { NumeroTarea: "TAREA 107: OPERARIO2 - TORRE" },
+  { NumeroTarea: "TAREA 108: OPERARIO3 - TORRE" },
+  { NumeroTarea: "TAREA 109: OPERARIO4 - TORRE" },
+  { NumeroTarea: "TAREA 110: OPERARIO5 - TORRE" },
+  { NumeroTarea: "TAREA 111: OPERARIO6 - TORRE" },
+  { NumeroTarea: "TAREA 112: OPERARIO7 - TORRE" },
+  { NumeroTarea: "TAREA 113: OPERARIO8 - TORRE" },
+  { NumeroTarea: "TAREA 114: OPERARIO9 - TORRE" },
+  { NumeroTarea: "TAREA 115: OPERARIO10 - TORRE" },
+  { NumeroTarea: "TAREA 116: OPERARIO11 - TORRE" },
+  { NumeroTarea: "TAREA 117: OPERARIO12 - TORRE" },
+  { NumeroTarea: "TAREA 118: OPERARIO13 - TORRE" },
+  { NumeroTarea: "TAREA 119: OPERARIO14 - TORRE" },
+  { NumeroTarea: "TAREA 120: OPERARIO1 - TORRE" },
+  { NumeroTarea: "TAREA 121: OPERARIO2 - TORRE" },
+  { NumeroTarea: "TAREA 122: OPERARIO3 - TORRE" },
+  { NumeroTarea: "TAREA 123: OPERARIO4 - TORRE" },
+  { NumeroTarea: "TAREA 124: OPERARIO5 - TORRE" },
+  { NumeroTarea: "TAREA 125: OPERARIO6 - TORRE" },
+  { NumeroTarea: "TAREA 126: OPERARIO7 - TORRE" },
+  { NumeroTarea: "TAREA 127: OPERARIO8 - TORRE" },
+  { NumeroTarea: "TAREA 128: OPERARIO9 - TORRE" },
+  { NumeroTarea: "TAREA 129: OPERARIO10 - TORRE" },
+  { NumeroTarea: "TAREA 130: OPERARIO11 - TORRE" },
+  { NumeroTarea: "TAREA 131: OPERARIO12 - TORRE" },
+  { NumeroTarea: "TAREA 132: OPERARIO13 - TORRE" },
+  { NumeroTarea: "TAREA 133: OPERARIO14 - TORRE" },
+  { NumeroTarea: "TAREA 134: OPERARIO1 - TORRE" },
+  { NumeroTarea: "TAREA 135: OPERARIO2 - TORRE" },
+  { NumeroTarea: "TAREA 136: OPERARIO3 - TORRE" },
+  { NumeroTarea: "TAREA 137: OPERARIO4 - TORRE" },
+  { NumeroTarea: "TAREA 138: OPERARIO5 - TORRE" },
+  { NumeroTarea: "TAREA 139: OPERARIO6 - TORRE" },
+  { NumeroTarea: "TAREA 140: OPERARIO7 - TORRE" },
+  { NumeroTarea: "TAREA 141: OPERARIO8 - TORRE" },
+  { NumeroTarea: "TAREA 142: OPERARIO9 - TORRE" },
+  { NumeroTarea: "TAREA 143: OPERARIO10 - TORRE" },
+  { NumeroTarea: "TAREA 144: OPERARIO11 - TORRE" },
+  { NumeroTarea: "TAREA 145: OPERARIO12 - TORRE" },
+  { NumeroTarea: "TAREA 146: OPERARIO13 - TORRE" },
+  { NumeroTarea: "TAREA 147: OPERARIO14 - TORRE" },
+  { NumeroTarea: "TAREA 148: OPERARIO1 - TORRE" },
+  { NumeroTarea: "TAREA 149: OPERARIO2 - TORRE" },
+  { NumeroTarea: "TAREA 150: OPERARIO3 - TORRE" },
+  { NumeroTarea: "TAREA 151: OPERARIO4 - TORRE" },
+  { NumeroTarea: "TAREA 152: OPERARIO5 - TORRE" },
+  { NumeroTarea: "TAREA 153: OPERARIO6 - TORRE" },
+  { NumeroTarea: "TAREA 154: OPERARIO7 - TORRE" },
+  { NumeroTarea: "TAREA 155: OPERARIO8 - TORRE" },
+  { NumeroTarea: "TAREA 156: OPERARIO9 - TORRE" },
+  { NumeroTarea: "TAREA 157: OPERARIO10 - TORRE" },
+  { NumeroTarea: "TAREA 158: OPERARIO11 - TORRE" },
+  { NumeroTarea: "TAREA 159: OPERARIO12 - TORRE" },
+  { NumeroTarea: "TAREA 160: OPERARIO13 - TORRE" },
+  { NumeroTarea: "TAREA 161: OPERARIO14 - TORRE" },
 ]

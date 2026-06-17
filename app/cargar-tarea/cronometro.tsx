@@ -59,13 +59,13 @@ export default function Cronometro() {
             onClick={stop}
             className="aspect-square min-h-12 rounded bg-background6"
           >
-            <Pause className="text-white" />
+            <Pause className="size-6 text-white" />
           </Button>
         ) : (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="aspect-square min-h-12 rounded bg-background6">
-                <Play className="text-white" />
+                <Play className="size-6 text-white" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

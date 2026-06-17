@@ -1,6 +1,5 @@
 import {
   Users,
-  BookOpenText,
   Timer,
   PackageSearch,
   DatabaseBackup,
@@ -26,24 +25,18 @@ const opciones = [
   },
   {
     id: 3,
-    nombre: "REGISTROS",
-    icono: <BookOpenText className={estilosIconos} />,
-    enlace: "/registros",
-  },
-  {
-    id: 4,
     nombre: "PRODUCTOS",
     icono: <PackageSearch className={estilosIconos} />,
     enlace: "/productos",
   },
   {
-    id: 5,
+    id: 4,
     nombre: "MONITOREO",
     icono: <CircuitBoard className={estilosIconos} />,
     enlace: "/monitoreo",
   },
   {
-    id: 6,
+    id: 5,
     nombre: "BACKUP",
     icono: <DatabaseBackup className={estilosIconos} />,
     enlace: "/backup",

@@ -56,9 +56,6 @@ export default function Operarios() {
             <Inputs placeholder="LEGAJO" type="text" />
             <Selector placeholder="SECTOR" />
             <Selector placeholder="ROL" />
-            <ButtonGuardar className="w-full bg-bluecremona hover:bg-bluecremona/80"
-              
-            >
               
           </div>
         </div>
