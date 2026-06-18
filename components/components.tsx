@@ -48,12 +48,11 @@ export function EliminarButton({
   onClick,
 }: {
   extraClass?: string
-  onClick?: () => void
+  onClick: (row: Record<string, string>) => void
 }) {
   return (
     <Trash2
       className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
-      onClick={onClick}
     />
   )
 }

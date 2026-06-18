@@ -24,7 +24,6 @@ import {
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -32,7 +31,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { EditarButton, EliminarButton } from "@/components/components"
+import { EditarButton } from "@/components/components"
 
 import { addDays, format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
@@ -98,12 +97,10 @@ export function TablaEdicion({
   columns,
   data,
   onClickEdit,
-  onClickDelete,
 }: {
   columns: string[]
   data: Record<string, string>[]
   onClickEdit: (row: Record<string, string>) => void
-  onClickDelete: (row: Record<string, string>) => void
 }) {
   return (
     <Table>
@@ -123,12 +120,7 @@ export function TablaEdicion({
             ))}
             <TableCell className="flex items-center justify-end gap-2">
               <EditarButton
-                extraClass="opacity-0 group-hover:opacity-100"
                 onClick={() => onClickEdit(row)}
-              />
-              <EliminarButton
-                extraClass="opacity-0 group-hover:opacity-100"
-                onClick={() => onClickDelete(row)}
               />
             </TableCell>
           </TableRow>

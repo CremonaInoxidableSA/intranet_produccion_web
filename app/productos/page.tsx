@@ -44,7 +44,7 @@ export default function Operarios() {
         <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 md:w-1/3">
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
-            placeholder="LISTADO DE LABORES - Mesa50"
+            placeholder="LISTADO DE LABORES - {Producto-seleccionado}"
             extraClass="p-5 border"
             placeholderExtraClass="md:text-xl text-md"
             height="xl:h-[34vh] h-96"
