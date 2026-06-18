@@ -47,21 +47,20 @@ import {
 } from "@/components/ui/popover"
 
 //---------------------------------------DATE PICKER---------------------------------------//
-export function DateRangePicker({ placeholder }: { placeholder: string }) {
+export function DateRangePicker({ placeholder }: { placeholder?: string }) {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(new Date().getFullYear(), 0, 20),
     to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
   })
 
   return (
-    <Field className="w-full">
-      <FieldLabel htmlFor="date-picker-range">{placeholder}</FieldLabel>
+    <Field className="flex h-full w-full">
       <Popover>
-        <PopoverTrigger asChild>
+        <PopoverTrigger className="flex h-full" asChild>
           <Button
             variant="outline"
             id="date-picker-range"
-            className="min-h-10 items-center justify-start px-2.5 font-normal"
+            className="min-h-10 w-full justify-start rounded border-2 border-background6 bg-background3 px-3 py-2 font-normal"
           >
             <CalendarIcon />
             {date?.from ? (

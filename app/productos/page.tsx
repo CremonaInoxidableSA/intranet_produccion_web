@@ -12,12 +12,12 @@ export default function Operarios() {
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
 
   return (
-    <div className="flex h-full w-full flex-col gap-5 p-5">
+    <div className="flex h-full w-full flex-col gap-2 p-5">
       <h1 className="flex w-full justify-center text-xl font-bold">
         PRODUCTOS
       </h1>
-      <div className="items-strech flex h-[76vh] w-full flex-col justify-center gap-5 xl:flex-row">
-        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 md:w-1/3">
+      <div className="items-strech flex w-full flex-col justify-center gap-5 xl:h-[76vh] xl:flex-row">
+        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
             placeholder="LISTADO DE PRODUCTOS"
@@ -41,7 +41,7 @@ export default function Operarios() {
           </div>
         </div>
 
-        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 md:w-1/3">
+        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
             placeholder="LISTADO DE LABORES - {Producto-seleccionado}"
