@@ -48,12 +48,12 @@ export function EliminarButton({
   onClick,
 }: {
   extraClass?: string
-  onClick: (row: Record<string, string>) => void
+  onClick?: () => void
 }) {
   return (
-    <Trash2
-      className={`aspect-square h-full cursor-pointer items-center justify-center text-redcremona ${extraClass}`}
-    />
+    <button type="button" onClick={onClick} className="cursor-pointer">
+      <Trash2 className={`aspect-square text-redcremona ${extraClass}`} />
+    </button>
   )
 }
 
@@ -76,7 +76,7 @@ export function EditarButton({
 export function Selector({ placeholder }: { placeholder: string }) {
   return (
     <Select>
-      <SelectTrigger className="text-sm min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
+      <SelectTrigger className="text-sm min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent position="popper">
