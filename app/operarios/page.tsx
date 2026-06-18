@@ -31,7 +31,7 @@ export default function Operarios() {
       </h1>
       <div className="flex w-full flex-col items-center justify-center gap-5 md:flex-row md:items-start">
         {/* Panel izquierdo */}
-        <div className="w-full rounded-md bg-background2 p-5 md:w-1/4">
+        <div className="w-full rounded bg-background2 p-5 md:w-1/4">
           <div className="flex flex-col gap-2 bg-background2">
             <h1 className="flex w-full items-center text-xl font-bold">
               CARGAR NUEVO OPERARIO
@@ -49,7 +49,7 @@ export default function Operarios() {
         </div>
 
         {/* Panel derecho */}
-        <div className="w-full rounded-md bg-background2 p-5 md:w-2/3 xl:w-1/3">
+        <div className="flex flex-col w-full rounded bg-background2 gap-2 p-5 md:w-2/3 xl:w-1/3">
           <h1 className="flex w-full items-center text-xl font-bold">
             REGISTROS
           </h1>

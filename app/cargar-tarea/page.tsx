@@ -30,7 +30,7 @@ export default function CargarTarea() {
             <Button
               key={id}
               onClick={() => setSeccionActiva(id)}
-              className={`flex flex-1 items-center justify-center rounded-md font-semibold text-white transition-all duration-200 ${
+              className={`flex flex-1 items-center justify-center rounded font-semibold text-white transition-all duration-200 ${
                 isActive
                   ? `${extraClasses} ring-1 ring-offset-1 ring-offset-foreground`
                   : `${extraClasses} opacity-50`
@@ -54,7 +54,7 @@ export default function CargarTarea() {
           <div className="flex flex-1 flex-col md:justify-between gap-5">
             {opcionesNuevaTarea.map((opcion) => (
               <div
-                className="w-full rounded-md bg-background2 p-5"
+                className="w-full rounded bg-background2 p-5"
                 key={opcion.id}
               >
                 {opcion.contenido}
@@ -86,7 +86,7 @@ export default function CargarTarea() {
         title={tareaEditando ?? ""}
         description="Editar los detalles de la tarea seleccionada."
         fields={opcionesNuevaTarea.map((opcion) => (
-          <div className="w-full rounded-md bg-background2 p-4" key={opcion.id}>
+          <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
             {opcion.contenido}
           </div>
         ))}

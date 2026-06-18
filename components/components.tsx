@@ -180,7 +180,7 @@ export function Inputs({
     <Input
       type={type}
       placeholder={placeholder}
-      className="text-sm min-h-10 w-full rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
+      className="text-sm min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
     />
   )
 }
@@ -190,7 +190,7 @@ export function Textarea({ placeholder }: { placeholder: string }) {
   return (
     <textarea
       placeholder={placeholder}
-      className="text-sm min-h-24 w-full resize-none rounded-md border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
+      className="text-sm min-h-24 w-full resize-none rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
     />
   )
 }

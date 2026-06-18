@@ -57,7 +57,7 @@ export default function Registros() {
         {Opciones.map(({ id, className, contenido }) => (
           <div
             key={id}
-            className={`w-full bg-background2 ${className} rounded-md p-5`}
+            className={`w-full bg-background2 ${className} rounded p-5`}
           >
             {contenido}
           </div>

@@ -28,7 +28,7 @@ export default function Home() {
       {opciones.map((opcion) => (
         <div
           key={opcion.id}
-          className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-md bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
+          className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
         >
           <div>{opcion.icono}</div>
           <div className="text-sm font-semibold xl:text-lg">

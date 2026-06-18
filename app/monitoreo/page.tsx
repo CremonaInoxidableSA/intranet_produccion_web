@@ -39,7 +39,7 @@ export default function CargarTarea() {
 
       <div className="flex w-full flex-1 flex-col gap-5">
         {/* Sección FILTROS — siempre visible */}
-        <div className="flex w-full flex-col rounded bg-background2 p-5">
+        <div className="flex w-full flex-col rounded bg-background2 gap-2 p-5">
           <h1 className="text-md font-bold xl:text-lg">FILTRO DE DATOS</h1>
 
           <div className="flex w-full flex-col xl:flex-row items-center justify-between gap-3">
