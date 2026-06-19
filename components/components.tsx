@@ -147,20 +147,20 @@ export function TextScrollArea({
       <ScrollArea className={height}>
         {tags.map((tag) => (
           <React.Fragment key={tag}>
-            <div className="mr-4 flex flex-row items-center justify-between">
+            <div className="mr-4">
               <span
-                onClick={() => onTagClick?.(tag)}
-                className={`flex-1 truncate transition-colors duration-150 ${
-                  onTagClick
-                    ? "cursor-pointer rounded px-1 hover:bg-foreground/10"
-                    : ""
-                }`}
+                className={`flex flex-row items-center rounded px-2 hover:bg-foreground/10`}
               >
-                {tag}
+                <div
+                  onClick={() => onTagClick?.(tag)}
+                  className="flex flex-1 cursor-pointer py-2"
+                >
+                  {tag}
+                </div>
+                <div>{extras && extras(tag)}</div>
               </span>
-              {extras && extras(tag)}
             </div>
-            <Separator className="my-3" />
+            <Separator className="my-2" />
           </React.Fragment>
         ))}
       </ScrollArea>

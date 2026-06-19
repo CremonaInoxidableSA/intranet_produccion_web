@@ -1,5 +1,5 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
-import { Cronometro, DuracionInput } from "./cronometro"
+import { Cronometro, DuracionInput } from "../../components/cronometro"
 
 export const secciones = [
   {

@@ -2,14 +2,19 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { secciones, tareasEnCurso } from "./data"
-import { AlertDialogTemplate, DateRangePicker } from "@/components/componentsClient"
+import { secciones, tareasEnCurso, opcionesTarea } from "./data"
+import {
+  AlertDialogTemplate,
+  DialogTemplate, 
+  DateRangePicker,
+} from "@/components/componentsClient"
 import { TextScrollArea, EliminarButton, Selector } from "@/components/components"
 
 export default function CargarTarea() {
-  const [seccionActiva, setSeccionActiva] = useState<number>(1)
+  const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
-
+  const [seccionActiva, setSeccionActiva] = useState<number>(1)
+  
   const etiquetasTareas = tareasEnCurso.map(
     (t) => `${t.numeroTarea} - ${t.operario} - ${t.torre}`
   )
@@ -39,10 +44,10 @@ export default function CargarTarea() {
 
       <div className="flex w-full flex-1 flex-col gap-5">
         {/* Sección FILTROS — siempre visible */}
-        <div className="flex w-full flex-col rounded bg-background2 gap-2 p-5">
+        <div className="flex w-full flex-col gap-2 rounded bg-background2 p-5">
           <h1 className="text-md font-bold xl:text-lg">FILTRO DE DATOS</h1>
 
-          <div className="flex w-full flex-col xl:flex-row items-center justify-between gap-3">
+          <div className="flex w-full flex-col items-center justify-between gap-3 xl:flex-row">
             <DateRangePicker />
             <Selector placeholder="NUMERO DE OP" />
             <Selector placeholder="NUMERO DE PLANO" />
@@ -64,6 +69,7 @@ export default function CargarTarea() {
               extraClass="flex flex-1 flex-col gap-3 rounded bg-background2 p-5"
               placeholderExtraClass="xl:text-lg text-md"
               height="xl:h-[58vh] h-96"
+              onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
                 <EliminarButton
                   extraClass="size-6"
@@ -85,6 +91,7 @@ export default function CargarTarea() {
               extraClass="flex flex-1 flex-col gap-3 rounded bg-background2 p-5"
               placeholderExtraClass="xl:text-lg text-md"
               height="xl:h-[58vh] h-96"
+              onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
                 <EliminarButton
                   extraClass="size-6"
@@ -95,6 +102,34 @@ export default function CargarTarea() {
           </div>
         </div>
       </div>
+
+      <DialogTemplate
+        title={""}
+        description="Editar los detalles de la tarea seleccionada."
+        fields={opcionesTarea.map((opcion) => (
+          <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
+            {opcion.contenido}
+          </div>
+        ))}
+        dialogFooter={
+          <div className="flex w-full flex-row items-center justify-between">
+            <Button
+              className="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
+              onClick={() => {}}
+            >
+              ELIMINAR
+            </Button>
+            <Button className="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona">
+              GUARDAR
+            </Button>
+          </div>
+        }
+        open={tareaEditando !== null}
+        onOpenChange={(open) => {
+          if (!open) setTareaEditando(null)
+        }}
+      />
+
       <AlertDialogTemplate
         open={filaEliminando !== null}
         onOpenChange={(open) => {

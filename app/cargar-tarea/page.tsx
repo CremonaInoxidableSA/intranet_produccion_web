@@ -77,7 +77,7 @@ export default function CargarTarea() {
             extraClass="bg-background2 p-5 flex-1"
             placeholderExtraClass="text-md"
             onTagClick={(tag) => setTareaEditando(tag)}
-            height="md:h-screen h-96"
+            height="md:h-[89vh] h-96"
           />
         </div>
       </div>
