@@ -1,5 +1,6 @@
-import { Selector, Inputs, Textarea } from "@/components/components"
+import { Inputs } from "@/components/components"
 import { Cronometro, DuracionInput } from "@/components/cronometro"
+
 export const secciones = [
   {
     id: 1,
@@ -76,20 +77,6 @@ export const opcionesTarea = [
     ),
   },
 ]
-
-export function renderField(input: {
-  id: number
-  placerholder: string
-  type: string
-}) {
-  if (input.type === "select")
-    return <Selector key={input.id} placeholder={input.placerholder} />
-  if (input.type === "textarea")
-    return <Textarea key={input.id} placeholder={input.placerholder} />
-  return (
-    <Inputs key={input.id} placeholder={input.placerholder} type={input.type} />
-  )
-}
 
 //---------------------------------------TAREAS EN CURSO---------------------------------------//
 export const tareasEnCurso = [

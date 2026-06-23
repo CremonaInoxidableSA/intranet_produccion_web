@@ -73,15 +73,51 @@ export function EditarButton({
 }
 
 //---------------------------------------SELECTORES---------------------------------------//
-export function Selector({ placeholder }: { placeholder: string }) {
+type SimpleArray = (string | number)[]
+type ObjectArray = Record<string, string | number>[]
+type ArrayData = SimpleArray | ObjectArray
+
+function isObjectArray(data: ArrayData): data is ObjectArray {
+  return data.length > 0 && typeof data[0] === "object"
+}
+
+export function Selector({
+  placeholder,
+  data,
+  keyId = "id",
+  keyLabel = "nombre",
+  onValueChange,
+  extraClass,
+  disabled = false,
+}: {
+  placeholder: string
+  data: ArrayData
+  keyId?: string
+  keyLabel?: string
+  extraClass?: string
+  disabled?: boolean
+  onValueChange?: (value: string) => void
+}) {
   return (
-    <Select>
-      <SelectTrigger className="text-sm min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6">
+    <Select onValueChange={onValueChange} disabled={disabled}>
+      <SelectTrigger
+        className={`min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6 ${extraClass}`}
+      >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent position="popper">
         <SelectGroup>
-          <SelectItem value="opcion1">1192</SelectItem>
+          {isObjectArray(data)
+            ? data.map((opcion) => (
+                <SelectItem key={opcion[keyId]} value={String(opcion[keyId])}>
+                  {opcion[keyLabel]}
+                </SelectItem>
+              ))
+            : data.map((opcion) => (
+                <SelectItem key={opcion} value={String(opcion)}>
+                  {String(opcion)}
+                </SelectItem>
+              ))}
         </SelectGroup>
       </SelectContent>
     </Select>

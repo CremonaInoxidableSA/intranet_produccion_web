@@ -9,11 +9,14 @@ import {
   DateRangePicker,
 } from "@/components/componentsClient"
 import { TextScrollArea, EliminarButton, Selector } from "@/components/components"
+import { useSectores } from "@/context/dataContext"
 
 export default function CargarTarea() {
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
+  const { sectores } = useSectores()
+  
   
   const etiquetasTareas = tareasEnCurso.map(
     (t) => `${t.numeroTarea} - ${t.operario} - ${t.torre}`
@@ -49,10 +52,10 @@ export default function CargarTarea() {
 
           <div className="flex w-full flex-col items-center justify-between gap-3 xl:flex-row">
             <DateRangePicker />
-            <Selector placeholder="NUMERO DE OP" />
-            <Selector placeholder="NUMERO DE PLANO" />
-            <Selector placeholder="ENCARGADO" />
-            <Selector placeholder="SECTOR" />
+            <Selector placeholder="NUMERO DE OP" data={sectores} />
+            <Selector placeholder="NUMERO DE PLANO" data={sectores} />
+            <Selector placeholder="ENCARGADO" data={sectores} />
+            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" setSectorSeleccionado/>
           </div>
         </div>
 

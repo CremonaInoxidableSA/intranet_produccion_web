@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { AlertDialogTemplate } from "@/components/componentsClient"
 import { EliminarButton, TextScrollArea, Inputs, Selector, GuardarButton } from "@/components/components"
+import { useSectores } from "@/context/dataContext"
 
 const Datos = Array.from({ length: 50 }).map(
   (_, i, a) => `Mesa ${a.length - i}`
@@ -10,6 +11,7 @@ const Datos = Array.from({ length: 50 }).map(
 
 export default function Operarios() {
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
+  const { sectores } = useSectores()
 
   return (
     <div className="flex h-full w-full flex-col gap-2 p-5">
@@ -36,7 +38,11 @@ export default function Operarios() {
           </h1>
           <div className="flex h-full w-full flex-col justify-between">
             <Inputs placeholder="NOMBRE" type="text" />
-            <Selector placeholder="SECTORES" />
+            <Selector
+              placeholder="SECTORES"
+              data={sectores}
+              keyId="id_sector"
+            />
             <GuardarButton placeholder="CREAR NUEVO PRODUCTO" />
           </div>
         </div>
@@ -61,7 +67,7 @@ export default function Operarios() {
           <div className="flex h-full w-full flex-col justify-between">
             <Inputs placeholder="NOMBRE LABOR" type="text" />
             <Inputs placeholder="PRODUCTO" type="text" />
-            <Selector placeholder="SECTOR" />
+            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
             <GuardarButton placeholder="CREAR NUEVO LABOR" />
           </div>
         </div>

@@ -176,7 +176,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50 transition leading-none;
+    @apply border-border outline-ring/50 leading-none;
   }
   html {
     @apply h-full font-sans;

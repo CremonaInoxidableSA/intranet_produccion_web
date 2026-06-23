@@ -2,19 +2,30 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { secciones, opcionesNuevaTarea, tareasEnCurso } from "./data"
+import { secciones, getOpcionesNuevaTarea, tareasEnCurso } from "./data"
 import {
   AlertDialogTemplate,
   DialogTemplate,
 } from "@/components/componentsClient"
-import {
-  TextScrollArea,
-} from "@/components/components"
+import { TextScrollArea } from "@/components/components"
+import { useSectores, useProductos } from "@/context/dataContext"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
+  const [sectorSeleccionado, setSectorSeleccionado] = useState<number | null>(
+    null
+  )
+
+  const { sectores } = useSectores()
+  const { productos } = useProductos(sectorSeleccionado)
+  const opciones = getOpcionesNuevaTarea(
+    productos,
+    sectores,
+    sectorSeleccionado,
+    setSectorSeleccionado
+  )
 
   return (
     <div className="flex flex-1 flex-col p-5">
@@ -22,7 +33,6 @@ export default function CargarTarea() {
         CARGAR NUEVA TAREA
       </h1>
 
-      {/* Botones de sección — solo visibles en mobile */}
       <div className="my-5 flex w-full flex-row items-center justify-center gap-5 md:hidden">
         {secciones.map(({ id, nombre, extraClasses }) => {
           const isActive = seccionActiva === id
@@ -43,16 +53,14 @@ export default function CargarTarea() {
       </div>
 
       <div className="flex flex-col md:flex-row md:gap-20">
-        {/* Sección 1 — mobile: solo si activa | desktop: siempre visible */}
         <div
-          className={`w-full md:gap-5 md:flex md:w-1/2 md:flex-col ${seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"}`}
+          className={`w-full md:flex md:w-1/2 md:flex-col md:gap-5 ${seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"}`}
         >
-          {/* Título de columna solo en desktop */}
           <h2 className="hidden w-full justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 1)?.nombre}
           </h2>
-          <div className="flex flex-1 flex-col md:justify-between gap-5">
-            {opcionesNuevaTarea.map((opcion) => (
+          <div className="flex flex-1 flex-col gap-5 md:justify-between">
+            {opciones.map((opcion) => (
               <div
                 className="w-full rounded bg-background2 p-5"
                 key={opcion.id}
@@ -63,11 +71,9 @@ export default function CargarTarea() {
           </div>
         </div>
 
-        {/* Sección 2 — mobile: solo si activa | desktop: siempre visible */}
         <div
           className={`md:flex md:w-1/2 md:flex-col md:gap-5 ${seccionActiva === 2 ? "flex flex-col gap-5" : "hidden"}`}
         >
-          {/* Título de columna solo en desktop */}
           <h2 className="hidden justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 2)?.nombre}
           </h2>
@@ -85,11 +91,15 @@ export default function CargarTarea() {
       <DialogTemplate
         title={tareaEditando ?? ""}
         description="Editar los detalles de la tarea seleccionada."
-        fields={opcionesNuevaTarea.map((opcion) => (
-          <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
-            {opcion.contenido}
-          </div>
-        ))}
+        fields={opciones.map(
+          (
+            opcion
+          ) => (
+            <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
+              {opcion.contenido}
+            </div>
+          )
+        )}
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
             <Button

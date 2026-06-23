@@ -6,8 +6,9 @@ import {
   DialogTemplate,
   AlertDialogTemplate,
 } from "@/components/componentsClient"
-import { Selector, Inputs, EliminarButton } from "@/components/components"
+import { Selector, Inputs } from "@/components/components"
 import { Button } from "@/components/ui/button"
+import { useSectores } from "@/context/dataContext"
 
 const Datos = Array.from({ length: 10 }).map(() => ({
   NOMBRE_APELLIDO: "Ricardo Arjona",
@@ -23,6 +24,7 @@ export default function Operarios() {
     string,
     string
   > | null>(null)
+  const { sectores } = useSectores()
 
   return (
     <div className="flex h-full w-full flex-col gap-5 p-5">
@@ -39,8 +41,12 @@ export default function Operarios() {
             <div className="flex flex-col gap-5">
               <Inputs placeholder="NOMBRE Y APELLIDO" type="text" />
               <Inputs placeholder="LEGAJO" type="text" />
-              <Selector placeholder="SECTOR" />
-              <Selector placeholder="ROL" />
+              <Selector
+                placeholder="SECTOR"
+                data={sectores}
+                keyId="id_sector"
+              />
+              <Selector placeholder="ROL" data={sectores} keyId="id_sector" />
               <Button className="w-full bg-bluecremona hover:bg-bluecremona/80">
                 CARGAR OPERARIO
               </Button>
@@ -49,7 +55,7 @@ export default function Operarios() {
         </div>
 
         {/* Panel derecho */}
-        <div className="flex flex-col w-full rounded bg-background2 gap-2 p-5 md:w-2/3 xl:w-1/3">
+        <div className="flex w-full flex-col gap-2 rounded bg-background2 p-5 md:w-2/3 xl:w-1/3">
           <h1 className="flex w-full items-center text-xl font-bold">
             REGISTROS
           </h1>
@@ -73,8 +79,8 @@ export default function Operarios() {
           <>
             <Inputs placeholder="NOMBRE Y APELLIDO" type="text" />
             <Inputs placeholder="LEGAJO" type="text" />
-            <Selector placeholder="SECTOR" />
-            <Selector placeholder="ROL" />
+            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
+            <Selector placeholder="ROL" data={sectores} keyId="id_sector" />
           </>
         }
         dialogFooter={

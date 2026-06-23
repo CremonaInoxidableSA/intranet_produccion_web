@@ -1,5 +1,6 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
-import { Cronometro, DuracionInput } from "../../components/cronometro"
+import { Cronometro, DuracionInput } from "@/components/cronometro"
+import type { Sector, Producto } from "@/context/dataContext"
 
 export const secciones = [
   {
@@ -28,70 +29,83 @@ export const ordenDeProduccion = [
   },
 ]
 
-export function renderField(input: {
-  id: number
-  placerholder: string
-  type: string
-}) {
-  if (input.type === "select")
-    return <Selector key={input.id} placeholder={input.placerholder} />
-  if (input.type === "textarea")
-    return <Textarea key={input.id} placeholder={input.placerholder} />
-  return (
-    <Inputs key={input.id} placeholder={input.placerholder} type={input.type} />
-  )
+export function getOpcionesNuevaTarea(
+  productos: Producto[],
+  sectores: Sector[],
+  sectorSeleccionado: number | null,
+  setSectorSeleccionado: (id: number | null) => void
+) {
+  return [
+    {
+      id: 1,
+      contenido: (
+        <div className="flex flex-col gap-2 bg-background2">
+          <h1 className="text-md flex w-full items-center font-bold">
+            OPERARIO
+          </h1>
+          <div className="flex flex-col gap-5">
+            <Selector
+              placeholder="SELECCIONE EL OPERARIO"
+              data={sectores}
+              keyId="id_sector"
+            />
+            <Selector
+              placeholder="SELECCIONE EL SECTOR"
+              data={sectores}
+              keyId="id_sector"
+              onValueChange={(value) => setSectorSeleccionado(Number(value))}
+            />
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 2,
+      contenido: (
+        <div className="flex flex-col gap-2 bg-background2">
+          <h1 className="text-md flex w-full items-center font-bold">
+            ORDEN DE PRODUCCION
+          </h1>
+          <div className="flex flex-col gap-5">
+            <Inputs placeholder="NUMERO DE OP" type="number" />
+            <Inputs placeholder="NUMERO DE PLANO" type="number" />
+            <Selector
+              placeholder="PRODUCTO"
+              data={productos}
+              keyId="id_producto"
+              disabled={sectorSeleccionado === null}
+            />
+            <Inputs placeholder="TIPO DE LABOR" type="text" />
+            <Textarea placeholder="DETALLES DE LA TAREA, OBSERVACIONES..." />
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 3,
+      contenido: (
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2 bg-background2">
+            <h1 className="text-md flex w-full items-center font-bold">
+              TIEMPO EXTRA
+            </h1>
+            <p className="text-sm opacity-60">
+              Agregado al tiempo cronometrado, por si el operario realizó alguna
+              parte de la tarea fuera del horario cronometrado
+            </p>
+            <DuracionInput />
+          </div>
+          <div className="flex flex-col gap-2 bg-background2">
+            <h1 className="text-md flex w-full items-center font-bold">
+              CRONOMETRO
+            </h1>
+            <Cronometro />
+          </div>
+        </div>
+      ),
+    },
+  ]
 }
-
-export const opcionesNuevaTarea = [
-  {
-    id: 1,
-    contenido: (
-      <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="text-md flex w-full items-center font-bold">OPERARIO</h1>
-        <div className="flex flex-col gap-5">
-          <Selector placeholder="SELECCIONE EL OPERARIO" />
-          <Selector placeholder="SELECCIONE EL SECTOR" />
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: 2,
-    contenido: (
-      <div className="flex flex-col gap-2 bg-background2">
-        <h1 className="text-md flex w-full items-center font-bold">
-          ORDEN DE PRODUCCION
-        </h1>
-        <div className="flex flex-col gap-5">
-          {ordenDeProduccion.map(renderField)}
-        </div>
-      </div>
-    ),
-  },
-  {
-    id: 3,
-    contenido: (
-      <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-2 bg-background2">
-          <h1 className="text-md flex w-full items-center font-bold">
-            TIEMPO EXTRA
-          </h1>
-          <p className="text-sm opacity-60">
-            Agregado al tiempo cronometrado, por si el operario realizó alguna
-            parte de la tarea fuera del horario cronometrado
-          </p>
-          <DuracionInput />
-        </div>
-        <div className="flex flex-col gap-2 bg-background2">
-          <h1 className="text-md flex w-full items-center font-bold">
-            CRONOMETRO
-          </h1>
-          <Cronometro />
-        </div>
-      </div>
-    ),
-  },
-]
 
 //---------------------------------------TAREAS EN CURSO---------------------------------------//
 export const tareasEnCurso = [
