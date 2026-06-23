@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { PencilLine, Trash2 } from "lucide-react"
+import { Virtuoso } from "react-virtuoso"
 
 //---------------------------------------BOTONES---------------------------------------//
 export function GuardarButton({
@@ -82,7 +83,7 @@ function isObjectArray(data: ArrayData): data is ObjectArray {
   return data.length > 0 && typeof data[0] === "object"
 }
 
-export function Selector({
+export const Selector = React.memo(function Selector({
   placeholder,
   data,
   keyId = "id",
@@ -125,7 +126,7 @@ export function Selector({
       </SelectContent>
     </Select>
   )
-}
+});
 
 //---------------------------------------TABLAS---------------------------------------//
 export function Tabla({
@@ -157,13 +158,12 @@ export function Tabla({
   )
 }
 
-export function TextScrollArea({
+export const TextScrollArea = React.memo(function TextScrollArea({
   tags,
   extraClass,
   placeholder,
   placeholderExtraClass,
   extras,
-  height = "h-96",
   onTagClick,
 }: {
   tags: string[]
@@ -171,41 +171,41 @@ export function TextScrollArea({
   placeholder?: string
   placeholderExtraClass?: string
   extras?: (tag: string) => React.ReactNode
-  height?: string
   onTagClick?: (tag: string) => void
 }) {
   return (
-    <div className={`rounded ${extraClass || ""}`}>
-      {placeholder ? (
+    <div className={`flex flex-col rounded ${extraClass || ""}`}>
+      {placeholder && (
         <h4
-          className={`mb-5 leading-none font-medium ${placeholderExtraClass || ""}`}
+          className={`mb-2 leading-none font-medium ${placeholderExtraClass || ""}`}
         >
           {placeholder}
         </h4>
-      ) : null}
-      <ScrollArea className={height}>
-        {tags.map((tag) => (
-          <React.Fragment key={tag}>
-            <div className="mr-4">
-              <span
-                className={`flex flex-row items-center rounded px-2 hover:bg-foreground/10`}
-              >
+      )}
+      <Virtuoso
+        style={{ flex: 1, minHeight: 0, height: "100%" }}
+        totalCount={tags.length}
+        itemContent={(index) => {
+          const tag = tags[index]
+          return (
+            <div key={tag} className="mr-4">
+              <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
                 <div
                   onClick={() => onTagClick?.(tag)}
                   className="flex flex-1 cursor-pointer py-2"
                 >
                   {tag}
                 </div>
-                <div>{extras && extras(tag)}</div>
+                <div>{extras?.(tag)}</div>
               </span>
+              {index < tags.length - 1 && <Separator className="my-2" />}
             </div>
-            <Separator className="my-2" />
-          </React.Fragment>
-        ))}
-      </ScrollArea>
+          )
+        }}
+      />
     </div>
   )
-}
+})
 
 //---------------------------------------INPUTS---------------------------------------//
 export function Inputs({

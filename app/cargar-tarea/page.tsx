@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { secciones, getOpcionesNuevaTarea, tareasEnCurso } from "./data"
 import {
@@ -29,46 +29,64 @@ export default function CargarTarea() {
 
   const [laborManual, setLaborManual] = useState("")
 
-  const setSectorSeleccionado = (id: number | null) => {
+  const setSectorSeleccionado = useCallback((id: number | null) => {
     setSectorSeleccionadoState(id)
-
     setProductoSeleccionadoState(null)
     setLaborSeleccionada(null)
     setLaborManual("")
-  }
+  }, [])
 
-  const setProductoSeleccionado = (id: number | null) => {
+  const setProductoSeleccionado = useCallback((id: number | null) => {
     setProductoSeleccionadoState(id)
-
     setLaborSeleccionada(null)
     setLaborManual("")
-  }
+  }, [])
   
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
   const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
-  const productoActual = productos.find(
-    (p) => p.id_producto === productoSeleccionado
+  const productoActual = useMemo(
+    () => productos.find((p) => p.id_producto === productoSeleccionado),
+    [productos, productoSeleccionado]
   )
 
-  const esOtros = productoActual?.nombre.trim().toLowerCase() === "otros"
+  const esOtros = useMemo(
+    () => productoActual?.nombre.trim().toLowerCase() === "otros",
+    [productoActual]
+  )
 
-  const mostrarInputLabor = esOtros || labores.length === 0
+  const mostrarInputLabor = useMemo(
+    () => esOtros || labores.length === 0,
+    [esOtros, labores.length]
+  )
 
-  const opciones = getOpcionesNuevaTarea(
-    productos,
-    sectores,
-    labores,
-    sectorSeleccionado,
-    setSectorSeleccionado,
-    productoSeleccionado,
-    setProductoSeleccionado,
-    laborSeleccionada,
-    setLaborSeleccionada,
-    laborManual,
-    setLaborManual,
-    mostrarInputLabor
+  const opciones = useMemo(
+    () =>
+      getOpcionesNuevaTarea(
+        productos,
+        sectores,
+        labores,
+        sectorSeleccionado,
+        setSectorSeleccionado,
+        productoSeleccionado,
+        setProductoSeleccionado,
+        laborSeleccionada,
+        setLaborSeleccionada,
+        laborManual,
+        setLaborManual,
+        mostrarInputLabor
+      ),
+    [
+      productos,
+      sectores,
+      labores,
+      sectorSeleccionado,
+      productoSeleccionado,
+      laborSeleccionada,
+      laborManual,
+      mostrarInputLabor,
+    ]
   )
 
   return (
@@ -103,7 +121,7 @@ export default function CargarTarea() {
           <h2 className="hidden w-full justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 1)?.nombre}
           </h2>
-          <div className="flex flex-1 flex-col gap-5 md:justify-between">
+          <div className="flex min-h-0 flex-1 flex-col gap-5 md:justify-between">
             {opciones.map((opcion) => (
               <div
                 className="w-full rounded bg-background2 p-5"
@@ -124,10 +142,9 @@ export default function CargarTarea() {
           <TextScrollArea
             tags={tareasEnCurso.map((tarea) => tarea.NumeroTarea)}
             placeholder="LISTADO DE TAREAS EN CURSO"
-            extraClass="bg-background2 p-5 flex-1"
+            extraClass="bg-background2 p-5 h-[70vh] md:flex-1 md:min-h-0"
             placeholderExtraClass="text-md"
             onTagClick={(tag) => setTareaEditando(tag)}
-            height="xl:h-[89vh] md:h-[196vh] h-96"
           />
         </div>
       </div>
