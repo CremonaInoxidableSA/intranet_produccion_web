@@ -90,7 +90,7 @@ export function getOpcionesNuevaTarea(
               value={
                 productoSeleccionado !== null
                   ? String(productoSeleccionado)
-                  : undefined
+                  : ""
               }
               onValueChange={(value) => setProductoSeleccionado(Number(value))}
             />
@@ -111,7 +111,7 @@ export function getOpcionesNuevaTarea(
                 value={
                   laborSeleccionada !== null
                     ? String(laborSeleccionada)
-                    : undefined
+                    : ""
                 }
                 onValueChange={(value) => setLaborSeleccionada(Number(value))}
               />
