@@ -24,9 +24,9 @@ export default function CargarTarea() {
   
   return (
     <div className="flex flex-1 flex-col items-center p-5">
-      <h1 className="text-xl font-bold xl:text-2xl">MONITOREO</h1>
+      <h1 className="text-xl font-bold xl:text-2xl mb-5">MONITOREO</h1>
       {/* Botones de sección — solo visibles en mobile */}
-      <div className="my-5 flex w-full flex-row items-center justify-center gap-5 xl:hidden">
+      <div className="flex w-full flex-row items-center justify-center gap-5 xl:hidden">
         {secciones.map(({ id, nombre, extraClasses }) => {
           const isActive = seccionActiva === id
           return (
@@ -52,10 +52,22 @@ export default function CargarTarea() {
 
           <div className="flex w-full flex-col items-center justify-between gap-3 xl:flex-row">
             <DateRangePicker />
-            <Selector placeholder="NUMERO DE OP" data={sectores} />
-            <Selector placeholder="NUMERO DE PLANO" data={sectores} />
-            <Selector placeholder="ENCARGADO" data={sectores} />
-            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" setSectorSeleccionado/>
+            <Selector
+              placeholder="NUMERO DE OP"
+              data={sectores}
+              keyId="id_sector"
+            />
+            <Selector
+              placeholder="NUMERO DE PLANO"
+              data={sectores}
+              keyId="id_sector"
+            />
+            <Selector
+              placeholder="ENCARGADO"
+              data={sectores}
+              keyId="id_sector"
+            />
+            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
           </div>
         </div>
 
@@ -71,7 +83,6 @@ export default function CargarTarea() {
               placeholder="TAREAS INICIADAS"
               extraClass="flex flex-1 flex-col gap-3 rounded bg-background2 p-5"
               placeholderExtraClass="xl:text-lg text-md"
-              height="xl:h-[58vh] h-96"
               onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
                 <EliminarButton
@@ -93,7 +104,6 @@ export default function CargarTarea() {
               placeholder="TAREAS FINALIZADAS"
               extraClass="flex flex-1 flex-col gap-3 rounded bg-background2 p-5"
               placeholderExtraClass="xl:text-lg text-md"
-              height="xl:h-[58vh] h-96"
               onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
                 <EliminarButton

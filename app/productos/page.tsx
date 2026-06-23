@@ -2,30 +2,37 @@
 
 import { useState } from "react"
 import { AlertDialogTemplate } from "@/components/componentsClient"
-import { EliminarButton, TextScrollArea, Inputs, Selector, GuardarButton } from "@/components/components"
+import {
+  EliminarButton,
+  TextScrollArea,
+  Inputs,
+  Selector,
+  GuardarButton,
+} from "@/components/components"
 import { useSectores } from "@/context/dataContext"
 
 const Datos = Array.from({ length: 50 }).map(
   (_, i, a) => `Mesa ${a.length - i}`
 )
 
-export default function Operarios() {
+export default function Productos() {
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
   const { sectores } = useSectores()
 
   return (
-    <div className="flex h-full w-full flex-col gap-2 p-5">
+    <div className="flex h-500 flex-col gap-2 p-5 xl:flex-1 justify-center items-center">
       <h1 className="flex w-full justify-center text-xl font-bold">
         PRODUCTOS
       </h1>
-      <div className="items-strech flex w-full flex-col justify-center gap-5 xl:h-[76vh] xl:flex-row">
-        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
+
+      <div className="w-full xl:w-6/7 flex-1 flex min-h-0 flex-col gap-5 xl:h-[76vh] xl:flex-row">
+        {/* Columna 1 */}
+        <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
             placeholder="LISTADO DE PRODUCTOS"
-            extraClass="p-5 border"
+            extraClass="flex-1 min-h-0 p-5 border"
             placeholderExtraClass="md:text-xl text-md"
-            height="xl:h-[34vh] h-96"
             extras={(dato) => (
               <EliminarButton
                 extraClass="size-6"
@@ -33,10 +40,10 @@ export default function Operarios() {
               />
             )}
           />
-          <h1 className="flex w-full items-center text-xl font-bold">
+          <h1 className="flex w-full shrink-0 items-center text-xl font-bold">
             CARGAR NUEVO PRODUCTO
           </h1>
-          <div className="flex h-full w-full flex-col justify-between">
+          <div className="flex w-full shrink-0 flex-col justify-between gap-5">
             <Inputs placeholder="NOMBRE" type="text" />
             <Selector
               placeholder="SECTORES"
@@ -47,13 +54,13 @@ export default function Operarios() {
           </div>
         </div>
 
-        <div className="self-strech flex flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
+        {/* Columna 2 */}
+        <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
             placeholder="LISTADO DE LABORES - {Producto-seleccionado}"
-            extraClass="p-5 border"
+            extraClass="flex-1 min-h-0 p-5 border" // también flex-1
             placeholderExtraClass="md:text-xl text-md"
-            height="xl:h-[34vh] h-96"
             extras={(dato) => (
               <EliminarButton
                 extraClass="size-6"
@@ -61,10 +68,10 @@ export default function Operarios() {
               />
             )}
           />
-          <h1 className="flex w-full items-center text-xl font-bold">
+          <h1 className="flex w-full shrink-0 items-center text-xl font-bold">
             CARGAR NUEVO LABOR
           </h1>
-          <div className="flex h-full w-full flex-col justify-between">
+          <div className="flex w-full shrink-0 flex-col justify-between gap-5">
             <Inputs placeholder="NOMBRE LABOR" type="text" />
             <Inputs placeholder="PRODUCTO" type="text" />
             <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
@@ -73,7 +80,6 @@ export default function Operarios() {
         </div>
       </div>
 
-      {/* Dialog confirmación eliminación */}
       <AlertDialogTemplate
         open={filaEliminando !== null}
         onOpenChange={(open) => {
