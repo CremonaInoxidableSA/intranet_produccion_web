@@ -8,23 +8,67 @@ import {
   DialogTemplate,
 } from "@/components/componentsClient"
 import { TextScrollArea } from "@/components/components"
-import { useSectores, useProductos } from "@/context/dataContext"
+import { useSectores, useProductos, useLabores } from "@/context/dataContext"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
-  const [sectorSeleccionado, setSectorSeleccionado] = useState<number | null>(
+
+  const [sectorSeleccionado, setSectorSeleccionadoState] = useState<
+    number | null
+  >(null)
+
+  const [productoSeleccionado, setProductoSeleccionadoState] = useState<
+    number | null
+  >(null)
+
+  const [laborSeleccionada, setLaborSeleccionada] = useState<number | null>(
     null
   )
 
+  const [laborManual, setLaborManual] = useState("")
+
+  const setSectorSeleccionado = (id: number | null) => {
+    setSectorSeleccionadoState(id)
+
+    setProductoSeleccionadoState(null)
+    setLaborSeleccionada(null)
+    setLaborManual("")
+  }
+
+  const setProductoSeleccionado = (id: number | null) => {
+    setProductoSeleccionadoState(id)
+
+    setLaborSeleccionada(null)
+    setLaborManual("")
+  }
+  
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
+  const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
+
+  const productoActual = productos.find(
+    (p) => p.id_producto === productoSeleccionado
+  )
+
+  const esOtros = productoActual?.nombre.trim().toLowerCase() === "otros"
+
+  const mostrarInputLabor = esOtros || labores.length === 0
+
   const opciones = getOpcionesNuevaTarea(
     productos,
     sectores,
+    labores,
     sectorSeleccionado,
-    setSectorSeleccionado
+    setSectorSeleccionado,
+    productoSeleccionado,
+    setProductoSeleccionado,
+    laborSeleccionada,
+    setLaborSeleccionada,
+    laborManual,
+    setLaborManual,
+    mostrarInputLabor
   )
 
   return (
@@ -83,7 +127,7 @@ export default function CargarTarea() {
             extraClass="bg-background2 p-5 flex-1"
             placeholderExtraClass="text-md"
             onTagClick={(tag) => setTareaEditando(tag)}
-            height="md:h-[89vh] h-96"
+            height="xl:h-[89vh] md:h-[196vh] h-96"
           />
         </div>
       </div>
@@ -91,15 +135,11 @@ export default function CargarTarea() {
       <DialogTemplate
         title={tareaEditando ?? ""}
         description="Editar los detalles de la tarea seleccionada."
-        fields={opciones.map(
-          (
-            opcion
-          ) => (
-            <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
-              {opcion.contenido}
-            </div>
-          )
-        )}
+        fields={opciones.map((opcion) => (
+          <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
+            {opcion.contenido}
+          </div>
+        ))}
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
             <Button

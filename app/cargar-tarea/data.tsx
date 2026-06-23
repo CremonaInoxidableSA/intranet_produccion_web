@@ -1,6 +1,6 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
 import { Cronometro, DuracionInput } from "@/components/cronometro"
-import type { Sector, Producto } from "@/context/dataContext"
+import type { Sector, Producto, Labor } from "@/context/dataContext"
 
 export const secciones = [
   {
@@ -32,8 +32,16 @@ export const ordenDeProduccion = [
 export function getOpcionesNuevaTarea(
   productos: Producto[],
   sectores: Sector[],
+  labores: Labor[],
   sectorSeleccionado: number | null,
-  setSectorSeleccionado: (id: number | null) => void
+  setSectorSeleccionado: (id: number | null) => void,
+  productoSeleccionado: number | null,
+  setProductoSeleccionado: (id: number | null) => void,
+  laborSeleccionada: number | null,
+  setLaborSeleccionada: (id: number | null) => void,
+  laborManual: string,
+  setLaborManual: (value: string) => void,
+  mostrarInputLabor: boolean
 ) {
   return [
     {
@@ -53,6 +61,11 @@ export function getOpcionesNuevaTarea(
               placeholder="SELECCIONE EL SECTOR"
               data={sectores}
               keyId="id_sector"
+              value={
+                sectorSeleccionado !== null
+                  ? String(sectorSeleccionado)
+                  : undefined
+              }
               onValueChange={(value) => setSectorSeleccionado(Number(value))}
             />
           </div>
@@ -74,8 +87,35 @@ export function getOpcionesNuevaTarea(
               data={productos}
               keyId="id_producto"
               disabled={sectorSeleccionado === null}
+              value={
+                productoSeleccionado !== null
+                  ? String(productoSeleccionado)
+                  : undefined
+              }
+              onValueChange={(value) => setProductoSeleccionado(Number(value))}
             />
-            <Inputs placeholder="TIPO DE LABOR" type="text" />
+            {mostrarInputLabor ? (
+              <Inputs
+                placeholder="TIPO DE LABOR"
+                type="text"
+                value={laborManual}
+                onChange={(e) => setLaborManual(e.target.value)}
+                disabled={productoSeleccionado === null}
+              />
+            ) : (
+              <Selector
+                placeholder="TIPO DE LABOR"
+                data={labores}
+                keyId="id_labor"
+                disabled={productoSeleccionado === null}
+                value={
+                  laborSeleccionada !== null
+                    ? String(laborSeleccionada)
+                    : undefined
+                }
+                onValueChange={(value) => setLaborSeleccionada(Number(value))}
+              />
+            )}
             <Textarea placeholder="DETALLES DE LA TAREA, OBSERVACIONES..." />
           </div>
         </div>

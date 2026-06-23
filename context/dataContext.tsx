@@ -1,3 +1,4 @@
+import { id } from "date-fns/locale"
 import { useEffect, useState } from "react"
 
 export type Sector = {
@@ -67,4 +68,52 @@ export function useProductos(id_sector: number | null) {
   }, [id_sector])
 
   return { productos, loading, error }
+}
+
+export type Labor = {
+  id_labor: number
+  nombre: string
+}
+
+export function useLabores(
+  id_sector: number | null,
+  id_producto: number | null
+) {
+  const [labores, setLabores] = useState<Labor[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (id_sector === null || id_producto === null) {
+      setLabores([])
+      return
+    }
+
+    async function fetchData() {
+      setLoading(true)
+
+      try {
+        const response = await fetch(
+          `/api/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
+        )
+
+        if (!response.ok) {
+          throw new Error("Error al obtener labores")
+        }
+
+        const data: Labor[] = await response.json()
+
+        setLabores(data)
+      } catch {
+        setError("No se pudo cargar la lista de labores")
+        setLabores([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [id_sector, id_producto])
+
+  return { labores, loading, error }
 }

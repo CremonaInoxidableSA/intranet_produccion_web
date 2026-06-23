@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ChangeEvent } from "react"
 
 import {
   Select,
@@ -88,6 +89,7 @@ export function Selector({
   keyLabel = "nombre",
   onValueChange,
   extraClass,
+  value,
   disabled = false,
 }: {
   placeholder: string
@@ -96,10 +98,11 @@ export function Selector({
   keyLabel?: string
   extraClass?: string
   disabled?: boolean
+  value?: string
   onValueChange?: (value: string) => void
 }) {
   return (
-    <Select onValueChange={onValueChange} disabled={disabled}>
+    <Select onValueChange={onValueChange} disabled={disabled} value={value}>
       <SelectTrigger
         className={`min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6 ${extraClass}`}
       >
@@ -208,19 +211,27 @@ export function TextScrollArea({
 export function Inputs({
   placeholder,
   type,
+  disabled = false,
+  value,
+  onChange,
 }: {
   placeholder: string
   type: string
+  disabled?: boolean
+  value?: string
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
     <Input
-      type={type}
       placeholder={placeholder}
-      className="text-sm min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6"
+      type={type}
+      disabled={disabled}
+      value={value}
+      onChange={onChange}
+      className="min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6"
     />
   )
 }
-
 //---------------------------------------TEXTAREA---------------------------------------//
 export function Textarea({ placeholder }: { placeholder: string }) {
   return (
