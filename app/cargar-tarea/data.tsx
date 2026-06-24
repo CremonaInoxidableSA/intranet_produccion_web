@@ -1,5 +1,5 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
-import { Cronometro, DuracionInput } from "@/components/cronometro"
+import { CronometroCreacion, DuracionInput } from "@/components/cronometro"
 import type { Sector, Producto, Labor, Operario } from "@/context/dataGeneralContext"
 
 export const secciones = [
@@ -145,7 +145,7 @@ export function getOpcionesNuevaTarea(
             <h1 className="text-md flex w-full items-center font-bold">
               CRONOMETRO
             </h1>
-            <Cronometro />
+            <CronometroCreacion />
           </div>
         </div>
       ),

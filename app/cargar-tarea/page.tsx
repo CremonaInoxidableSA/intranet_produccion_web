@@ -9,7 +9,7 @@ import {
 } from "@/components/componentsClient"
 import { TextScrollArea } from "@/components/components"
 import { Textarea } from "@/components/components"
-import { Cronometro, DuracionInput } from "@/components/cronometro"
+import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
   useSectores,
   useProductos,
@@ -47,7 +47,6 @@ export default function CargarTarea() {
     tiempoExtraEdit,
     setTiempoExtraEdit,
     dirty,
-    cronometroKey,
     showCloseConfirm,
     setShowCloseConfirm,
     loadingDetalle,
@@ -57,6 +56,9 @@ export default function CargarTarea() {
     handleReiniciarCronometro,
     resetEditor,
     tiempoCronometrado,
+    showReiniciarConfirm,
+    setShowReiniciarConfirm,
+    handlePausarTarea,
   } = useTareaEditor()
 
   const { tareas } = useTareasUsuario()
@@ -110,7 +112,7 @@ export default function CargarTarea() {
         setLaborSeleccionada,
         laborManual,
         setLaborManual,
-        mostrarInputLabor
+        mostrarInputLabor,
       ),
     [
       productos,
@@ -127,7 +129,7 @@ export default function CargarTarea() {
 
   return (
     <div className="flex flex-1 flex-col p-5">
-      <h1 className="flex w-full justify-center text-xl font-bold md:text-2xl">
+      <h1 className="flex w-full justify-center text-xl font-bold xl:text-2xl">
         CARGAR NUEVA TAREA
       </h1>
 
@@ -152,7 +154,7 @@ export default function CargarTarea() {
 
       <div className="flex flex-col gap-5 xl:flex-row">
         <div
-          className={`w-full xl:flex xl:w-1/2 xl:flex-col ${
+          className={`w-full xl:flex xl:w-1/2 xl:flex-col xl:gap-5 ${
             seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"
           }`}
         >
@@ -172,11 +174,11 @@ export default function CargarTarea() {
         </div>
 
         <div
-          className={`md:flex md:w-1/2 md:flex-col md:gap-5 ${
+          className={`xl:flex xl:w-1/2 xl:flex-col xl:gap-5 ${
             seccionActiva === 2 ? "flex flex-col gap-5" : "hidden"
           }`}
         >
-          <h2 className="hidden justify-center text-lg font-semibold md:flex">
+          <h2 className="hidden justify-center text-lg font-semibold xl:flex">
             {secciones.find((s) => s.id === 2)?.nombre}
           </h2>
           <TextScrollArea
@@ -273,23 +275,19 @@ export default function CargarTarea() {
                   onChange={setTiempoExtraEdit}
                 />
               </ItemCard>
-              
+
               <ItemCard
                 variant="outline"
                 size="sm"
                 className="p-3"
                 title="CRONOMETRO"
-                actions={
-                  <Button
-                    onClick={handleReiniciarCronometro}
-                    variant="outline"
-                    size="sm"
-                  >
-                    <TimerReset />
-                  </Button>
-                }
               >
-                <Cronometro value={tiempoCronometrado} readOnly={true} />
+                <CronometroEdicion
+                  value={tiempoCronometrado}
+                  estado={detalle?.estado}
+                  onTogglePausa={handlePausarTarea}
+                  onReiniciar={() => setShowReiniciarConfirm(true)}
+                />
               </ItemCard>
             </div>
           ) : null
@@ -330,7 +328,6 @@ export default function CargarTarea() {
         }}
       />
 
-      {/* Alerta de confirmación al cerrar con cambios */}
       <AlertDialogTemplate
         open={showCloseConfirm}
         onOpenChange={(open) => {
@@ -346,7 +343,6 @@ export default function CargarTarea() {
         confirmText="Cancelar Edición"
       />
 
-      {/* Alerta de confirmación para eliminar */}
       <AlertDialogTemplate
         open={filaEliminando !== null}
         onOpenChange={(open) => {
@@ -357,6 +353,16 @@ export default function CargarTarea() {
         title="¿Eliminar tarea?"
         description={`Esta acción no se puede deshacer. Se eliminará la tarea ${filaEliminando ?? ""}.`}
         onConfirm={handleEliminar}
+      />
+
+      <AlertDialogTemplate
+        open={showReiniciarConfirm}
+        onOpenChange={setShowReiniciarConfirm}
+        title="¿Reiniciar cronómetro?"
+        description="Esta acción reiniciará el tiempo cronometrado a cero. Esta operación no se puede deshacer. ¿Estás seguro de continuar?"
+        onConfirm={handleReiniciarCronometro}
+        cancelText="Cancelar"
+        confirmText="Reiniciar"
       />
     </div>
   )

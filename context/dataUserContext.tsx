@@ -62,30 +62,29 @@ export function useDetalleTarea(id_tarea: number | null) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchDetalle = useCallback(async () => {
     if (id_tarea === null) {
       setDetalle(null)
       return
     }
-
-    async function fetchData() {
-      setLoading(true)
-      try {
-        const response = await fetch(
-          `/api/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
-        )
-        if (!response.ok) throw new Error("Error al obtener detalle")
-        const data: DetalleTarea = await response.json()
-        setDetalle(data)
-      } catch {
-        setError("No se pudo cargar el detalle de la tarea")
-      } finally {
-        setLoading(false)
-      }
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
+      )
+      if (!response.ok) throw new Error("Error al obtener detalle")
+      const data: DetalleTarea = await response.json()
+      setDetalle(data)
+    } catch {
+      setError("No se pudo cargar el detalle de la tarea")
+    } finally {
+      setLoading(false)
     }
-
-    fetchData()
   }, [id_tarea])
 
-  return { detalle, loading, error }
+  useEffect(() => {
+    fetchDetalle()
+  }, [fetchDetalle])
+
+  return { detalle, loading, error, refetch: fetchDetalle }
 }

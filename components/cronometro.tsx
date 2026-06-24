@@ -1,5 +1,3 @@
-"use client"
-
 import { useRef, useState, useEffect } from "react"
 import {
   AlertDialog,
@@ -13,39 +11,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
-import { Pause, Play } from "lucide-react"
+import { Pause, Play, TimerReset } from "lucide-react"
 
-interface CronometroProps {
-  value?: string
-  readOnly?: boolean
-}
-
-export function Cronometro({ value, readOnly = false }: CronometroProps) {
+// ============================================================
+// COMPONENTE PARA CREAR NUEVA TAREA (con cronómetro local)
+// ============================================================
+export function CronometroCreacion() {
   const [time, setTime] = useState<number>(0)
   const [isRunning, setIsRunning] = useState<boolean>(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
-    if (value) {
-      const parts = value.split(":").map(Number)
-      if (parts.length === 3) {
-        const ms = parts[0] * 3600000 + parts[1] * 60000 + parts[2] * 1000
-        setTime(ms)
-      }
-    }
-  }, [value])
-
-  useEffect(() => {
-    if (readOnly && intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
-      setIsRunning(false)
-    }
-  }, [readOnly])
-
   const start = () => {
-    if (readOnly || intervalRef.current) return
+    if (intervalRef.current) return
+
     const startTime = Date.now() - time
+
     intervalRef.current = setInterval(() => {
       setTime(Date.now() - startTime)
     }, 1000)
@@ -64,6 +44,7 @@ export function Cronometro({ value, readOnly = false }: CronometroProps) {
     const hours = Math.floor(ms / 3600000)
     const minutes = Math.floor((ms % 3600000) / 60000)
     const seconds = Math.floor((ms % 60000) / 1000)
+
     return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
       .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
@@ -73,46 +54,118 @@ export function Cronometro({ value, readOnly = false }: CronometroProps) {
     <div className="flex flex-row items-center justify-between gap-4">
       <h1 className="font-mono text-xl">{formatTime(time)}</h1>
 
-      {!readOnly && (
-        <div className="flex gap-2">
-          {isRunning ? (
-            <Button
-              onClick={stop}
-              className="aspect-square min-h-12 rounded bg-background6"
-            >
-              <Pause className="size-6 text-white" />
-            </Button>
-          ) : (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="aspect-square min-h-12 rounded bg-background6">
-                  <Play className="size-6 text-white" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    ¿Está seguro que desea crear la tarea y empezar a
-                    cronometrar? No podrá editar los datos de la tarea una vez
-                    creada, solo agregar tiempo extra al cronómetro.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={start}>
-                    Continuar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
-      )}
+      <div className="flex gap-2">
+        {isRunning ? (
+          <Button
+            onClick={stop}
+            className="aspect-square min-h-12 rounded bg-background6"
+          >
+            <Pause className="size-6 text-white" />
+          </Button>
+        ) : (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="aspect-square min-h-12 rounded bg-background6">
+                <Play className="size-6 text-white" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  ¿Está seguro que desea crear la tarea y empezar a cronometrar?
+                  No podrá editar los datos de la tarea una vez creada, solo
+                  agregar tiempo extra al cronómetro.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={start}>Continuar</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
     </div>
   )
 }
 
+// ============================================================
+// COMPONENTE PARA EDICIÓN DE TAREA (con tiempo desde API y controles de pausa/reanudar)
+// ============================================================
+interface CronometroEdicionProps {
+  value: string
+  estado?: string
+  onTogglePausa?: () => void
+  onReiniciar?: () => void
+}
+
+export function CronometroEdicion({
+  value,
+  estado = "activa",
+  onTogglePausa,
+  onReiniciar,
+}: CronometroEdicionProps) {
+  const parseTime = (timeStr: string): number => {
+    const parts = timeStr.split(":").map(Number)
+    if (parts.length === 3) {
+      return parts[0] * 3600000 + parts[1] * 60000 + parts[2] * 1000
+    }
+    return 0
+  }
+
+  const [displayTime, setDisplayTime] = useState<number>(parseTime(value))
+
+  useEffect(() => {
+    setDisplayTime(parseTime(value))
+  }, [value])
+
+  const formatTime = (ms: number): string => {
+    const hours = Math.floor(ms / 3600000)
+    const minutes = Math.floor((ms % 3600000) / 60000)
+    const seconds = Math.floor((ms % 60000) / 1000)
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+  }
+
+  const isPausada = estado?.toLowerCase() === "pausada"
+
+  return (
+    <div className="flex flex-row items-center justify-between gap-4">
+      <h1 className="font-mono text-xl">{formatTime(displayTime)}</h1>
+
+      <div className="flex gap-2">
+        {onTogglePausa && (
+          <Button
+            onClick={onTogglePausa}
+            className="aspect-square min-h-10 rounded bg-background6"
+          >
+            {isPausada ? (
+              <Play className="size-4 text-white" />
+            ) : (
+              <Pause className="size-4 text-white" />
+            )}
+          </Button>
+        )}
+
+        {onReiniciar && (
+          <Button
+            onClick={onReiniciar}
+            className="aspect-square min-h-10 rounded bg-background6"
+          >
+            <TimerReset className="size-4 text-white" />
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+
+// ============================================================
+// COMPONENTE DE INPUT PARA TIEMPO EXTRA (compartido)
+// ============================================================
 export function DuracionInput({
   value: externalValue,
   onChange: externalOnChange,
