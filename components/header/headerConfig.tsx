@@ -12,7 +12,6 @@ export interface NavItem {
   subItems?: SubItem[]
 }
 
-// Links del lado izquierdo (y en el drawer mobile)
 export const headerNavLeft: NavItem[] = [
   {
     label: "Home",
@@ -28,7 +27,6 @@ export const headerNavLeft: NavItem[] = [
   },
 ]
 
-// Links del lado derecho
 export const headerNavRight: NavItem[] = [
   {
     label: "Intranet",

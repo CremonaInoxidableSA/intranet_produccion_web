@@ -104,7 +104,6 @@ export default function Operarios() {
         title="¿Eliminar operario?"
         description={`Esta acción no se puede deshacer. Se eliminará a ${filaEliminando?.NOMBRE_APELLIDO ?? ""}.`}
         onConfirm={() => {
-          // lógica de eliminación
           setFilaEliminando(null)
         }}
       />

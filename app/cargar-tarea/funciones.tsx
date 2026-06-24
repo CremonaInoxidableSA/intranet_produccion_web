@@ -1,5 +1,4 @@
-// funciones.tsx
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
 import { useTareasUsuario, useDetalleTarea } from "@/context/dataUserContext"
 
@@ -12,10 +11,14 @@ export function useTareaEditor() {
   const [cronometroKey, setCronometroKey] = useState(0)
   const [showCloseConfirm, setShowCloseConfirm] = useState(false)
 
+  const [tiempoCronometrado, setTiempoCronometrado] =
+    useState<string>("00:00:00")
+
   const { refetch, removeTareaLocal } = useTareasUsuario()
   const { detalle, loading: loadingDetalle } = useDetalleTarea(tareaEditando)
 
-  // Sincronizar estados editables con el detalle
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
     if (detalle) {
       setDescripcionEdit(detalle.descripcion || "")
@@ -24,7 +27,6 @@ export function useTareaEditor() {
     }
   }, [detalle])
 
-  // Detectar cambios para habilitar el botón Guardar
   useEffect(() => {
     if (detalle) {
       const descChanged = descripcionEdit !== (detalle.descripcion || "")
@@ -34,7 +36,44 @@ export function useTareaEditor() {
     }
   }, [descripcionEdit, tiempoExtraEdit, detalle])
 
-  // Eliminar tarea
+  const fetchTiempoCronometrado = useCallback(async (id: number) => {
+    try {
+      const res = await fetch(`/api/detalles-tiempoCronometradoSeleccionado?id_tarea=${id}`)
+      if (!res.ok) throw new Error("Error al obtener tiempo")
+      const data = await res.json()
+      if (data.tiempo_cronometrado) {
+        setTiempoCronometrado(data.tiempo_cronometrado)
+      }
+    } catch (error) {
+      console.error("Error fetching tiempo cronometrado:", error)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+
+    if (tareaEditando !== null) {
+      fetchTiempoCronometrado(tareaEditando)
+      intervalRef.current = setInterval(() => {
+        if (tareaEditando !== null) {
+          fetchTiempoCronometrado(tareaEditando)
+        }
+      }, 5000)
+    } else {
+      setTiempoCronometrado("00:00:00")
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
+  }, [tareaEditando, fetchTiempoCronometrado])
+
   const handleEliminar = useCallback(async () => {
     const id = filaEliminando
     if (id === null) return
@@ -54,7 +93,6 @@ export function useTareaEditor() {
     }
   }, [filaEliminando, refetch])
 
-  // Guardar cambios (descripción y tiempo extra)
   const handleGuardar = useCallback(async () => {
     const id = tareaEditando
     if (!id || !detalle) return
@@ -87,7 +125,7 @@ export function useTareaEditor() {
         return
       }
       promises.push(
-        fetch("/api/actualizar-tiempo-extra", {
+        fetch("/api/actualizar-tiempExtra", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, tiempo_extra: tiempoExtraEdit }),
@@ -115,13 +153,12 @@ export function useTareaEditor() {
     }
   }, [tareaEditando, detalle, descripcionEdit, tiempoExtraEdit, refetch])
 
-  // Reiniciar cronómetro
   const handleReiniciarCronometro = useCallback(async () => {
     const id = tareaEditando
     if (!id) return
 
     try {
-      const res = await fetch("/api/reiniciar-tiempo-cronometrado", {
+      const res = await fetch("/api/reiniciarCronometro", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_tarea: id }),
@@ -129,14 +166,15 @@ export function useTareaEditor() {
       const data = await res.json()
       if (res.ok) {
         toast.success("Cronómetro reiniciado")
-        setCronometroKey((prev) => prev + 1) // forzar reinicio visual
+        await fetchTiempoCronometrado(id)
+        setCronometroKey((prev) => prev + 1)
       } else {
         toast.error(data.error || "Error al reiniciar cronómetro")
       }
     } catch {
       toast.error("Error al conectar con el servidor")
     }
-  }, [tareaEditando])
+  }, [tareaEditando, fetchTiempoCronometrado])
 
   const resetEditor = useCallback(() => {
     setTareaEditando(null)
@@ -159,6 +197,7 @@ export function useTareaEditor() {
     setShowCloseConfirm,
     loadingDetalle,
     detalle,
+    tiempoCronometrado,
 
     // Acciones
     handleEliminar,

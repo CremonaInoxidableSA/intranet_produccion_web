@@ -56,6 +56,7 @@ export default function CargarTarea() {
     handleGuardar,
     handleReiniciarCronometro,
     resetEditor,
+    tiempoCronometrado,
   } = useTareaEditor()
 
   const { tareas } = useTareasUsuario()
@@ -211,7 +212,6 @@ export default function CargarTarea() {
                 title="OPERARIO"
                 description={`${detalle.nombre_operario_seleccionado} ${detalle.apellido_operario_seleccionado}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -219,7 +219,6 @@ export default function CargarTarea() {
                 title="SECTOR"
                 description={`${detalle.nombre_sector}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -227,7 +226,6 @@ export default function CargarTarea() {
                 title="NUMERO DE ORDEN DE PRODUCCION"
                 description={`${detalle.numero_op}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -235,7 +233,6 @@ export default function CargarTarea() {
                 title="NUMERO DE PLANO"
                 description={`${detalle.numero_plano}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -243,7 +240,6 @@ export default function CargarTarea() {
                 title="PRODUCTO"
                 description={`${detalle.nombre_producto}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -251,7 +247,6 @@ export default function CargarTarea() {
                 title="LABOR"
                 description={`${detalle.nombre_labor}`}
               />
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -265,7 +260,6 @@ export default function CargarTarea() {
                   />
                 }
               />
-
               {/* Tiempo Extra */}
               <ItemCard
                 variant="outline"
@@ -279,8 +273,7 @@ export default function CargarTarea() {
                   onChange={setTiempoExtraEdit}
                 />
               </ItemCard>
-
-              {/* Cronómetro */}
+              
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -292,11 +285,11 @@ export default function CargarTarea() {
                     variant="outline"
                     size="sm"
                   >
-                    <TimerReset onClick={handleReiniciarCronometro} />
+                    <TimerReset />
                   </Button>
                 }
               >
-                <Cronometro key={cronometroKey} />
+                <Cronometro value={tiempoCronometrado} readOnly={true} />
               </ItemCard>
             </div>
           ) : null

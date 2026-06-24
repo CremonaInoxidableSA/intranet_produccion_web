@@ -265,7 +265,6 @@ export function Textarea({
 }
 
 //---------------------------------------CAMPOS---------------------------------------//
-// components/ItemCard.tsx
 import { ReactNode } from "react";
 import {
   Item,

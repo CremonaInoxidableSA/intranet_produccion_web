@@ -59,7 +59,7 @@ export default function Productos() {
           <TextScrollArea
             tags={Datos.map((dato) => dato)}
             placeholder="LISTADO DE LABORES - {Producto-seleccionado}"
-            extraClass="flex-1 min-h-0 p-5 border" // también flex-1
+            extraClass="flex-1 min-h-0 p-5 border"
             placeholderExtraClass="md:text-xl text-md"
             extras={(dato) => (
               <EliminarButton

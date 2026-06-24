@@ -167,7 +167,6 @@ export function DialogTemplate({
   )
 }
 
-// AlertDialogTemplate.tsx
 export function AlertDialogTemplate({
   open,
   onOpenChange,
