@@ -89,33 +89,39 @@ export function Cronometro() {
   )
 }
 
-export function DuracionInput() {
-  const [duracion, setDuracion] = useState("00:00:00")
+export function DuracionInput({ 
+  value: externalValue, 
+  onChange: externalOnChange 
+}: { 
+  value?: string;
+  onChange?: (value: string) => void;
+}) {
+  const [internalValue, setInternalValue] = useState("00:00:00");
+
+  const value = externalValue !== undefined ? externalValue : internalValue;
+  const setValue = externalOnChange || setInternalValue;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-
-    // Permite escribir números y :
-    if (/^[0-9:]*$/.test(value)) {
-      setDuracion(value)
+    const newValue = e.target.value;
+    if (/^[0-9:]*$/.test(newValue)) {
+      setValue(newValue);
     }
-  }
+  };
 
-  const esValido = /^\d+:[0-5]\d:[0-5]\d$/.test(duracion)
+  const esValido = /^\d+:[0-5]\d:[0-5]\d$/.test(value);
 
   return (
     <div className="flex flex-col gap-2">
       <input
         type="text"
-        value={duracion}
+        value={value}
         onChange={handleChange}
         placeholder="HH:MM:SS"
         className="min-h-10 rounded border-2 border-background6 bg-background3 px-3 py-2 text-xl focus:border-background6"
       />
-
       {!esValido && (
         <span className="text-sm text-red-500">Formato válido: HH:MM:SS</span>
       )}
     </div>
-  )
+  );
 }

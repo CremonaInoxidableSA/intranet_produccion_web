@@ -19,7 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -246,11 +245,21 @@ export function Inputs({
   )
 }
 //---------------------------------------TEXTAREA---------------------------------------//
-export function Textarea({ placeholder }: { placeholder: string }) {
+export function Textarea({ 
+  placeholder, 
+  value = "", 
+  onChange = () => {} 
+}: { 
+  placeholder: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}) {
   return (
     <textarea
       placeholder={placeholder}
+      value={value}
+      onChange={onChange}
       className="text-sm min-h-24 w-full resize-none rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
     />
-  )
+  );
 }

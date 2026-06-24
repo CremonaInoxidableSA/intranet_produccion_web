@@ -1,4 +1,3 @@
-// app/api/actualizar-tarea/route.ts
 import { NextResponse } from "next/server"
 
 const API_BASE_URL =
@@ -7,33 +6,32 @@ const API_BASE_URL =
 export async function PUT(req: Request) {
   try {
     const body = await req.json()
-    const { id_tarea, descripcion, tiempo_extra } = body
-
-    // Convertir tiempo_extra (segundos) a HH:MM:SS
-    const horas = Math.floor(tiempo_extra / 3600)
-    const minutos = Math.floor((tiempo_extra % 3600) / 60)
-    const segundos = tiempo_extra % 60
-    const tiempoExtraStr = `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`
-
-    const response = await fetch(`${API_BASE_URL}/tareas/actualizar`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id_tarea,
-        descripcion,
-        tiempo_extra: tiempoExtraStr,
-      }),
-    })
-
+    const { id_tarea } = body
+    if (!id_tarea) {
+      return NextResponse.json(
+        { error: "Falta parámetro: id_tarea" },
+        { status: 400 }
+      )
+    }
+    const response = await fetch(
+      `${API_BASE_URL}/tareas/reiniciar-tiempo-cronometrado?id_tarea=${id_tarea}`,
+      {
+        method: "PUT",
+        headers: { Accept: "application/json" },
+      }
+    )
+    const data = await response.json()
     if (!response.ok) {
       return NextResponse.json(
-        { error: "Error al actualizar" },
+        { error: data.detail || "Error al reiniciar tiempo cronometrado" },
         { status: response.status }
       )
     }
-    const data = await response.json()
     return NextResponse.json(data)
   } catch {
-    return NextResponse.json({ error: "Error interno" }, { status: 500 })
+    return NextResponse.json(
+      { error: "No se pudo conectar con el servidor" },
+      { status: 500 }
+    )
   }
 }
