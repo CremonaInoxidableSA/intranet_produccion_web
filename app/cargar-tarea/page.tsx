@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo, useEffect } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { secciones, getOpcionesNuevaTarea } from "./data"
 import {
@@ -8,7 +8,7 @@ import {
   DialogTemplate,
 } from "@/components/componentsClient"
 import { TextScrollArea } from "@/components/components"
-import { Textarea } from "@/components/components" // Ahora acepta value/onChange
+import { Textarea } from "@/components/components"
 import { Cronometro, DuracionInput } from "@/components/cronometro"
 import {
   useSectores,
@@ -16,13 +16,13 @@ import {
   useLabores,
   useOperarios,
 } from "@/context/dataGeneralContext"
-import { useTareasUsuario, useDetalleTarea } from "@/context/dataUserContext"
-import { toast } from "sonner"
+import { useTareasUsuario } from "@/context/dataUserContext"
+import { useTareaEditor } from "./funciones"
+import { ItemCard } from "@/components/components"
+import { TimerReset } from "lucide-react"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
-  const [tareaEditando, setTareaEditando] = useState<number | null>(null)
-  const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [sectorSeleccionado, setSectorSeleccionadoState] = useState<
     number | null
   >(null)
@@ -37,12 +37,32 @@ export default function CargarTarea() {
   )
   const [laborManual, setLaborManual] = useState("")
 
-  // Estados para edición en el diálogo
-  const [descripcionEdit, setDescripcionEdit] = useState("")
-  const [tiempoExtraEdit, setTiempoExtraEdit] = useState("")
-  const [dirty, setDirty] = useState(false)
-  const [cronometroKey, setCronometroKey] = useState(0)
-  const [showCloseConfirm, setShowCloseConfirm] = useState(false)
+  const {
+    tareaEditando,
+    setTareaEditando,
+    filaEliminando,
+    setFilaEliminando,
+    descripcionEdit,
+    setDescripcionEdit,
+    tiempoExtraEdit,
+    setTiempoExtraEdit,
+    dirty,
+    cronometroKey,
+    showCloseConfirm,
+    setShowCloseConfirm,
+    loadingDetalle,
+    detalle,
+    handleEliminar,
+    handleGuardar,
+    handleReiniciarCronometro,
+    resetEditor,
+  } = useTareaEditor()
+
+  const { tareas } = useTareasUsuario()
+  const { operarios } = useOperarios()
+  const { sectores } = useSectores()
+  const { productos } = useProductos(sectorSeleccionado)
+  const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
   const setSectorSeleccionado = useCallback((id: number | null) => {
     setSectorSeleccionadoState(id)
@@ -56,13 +76,6 @@ export default function CargarTarea() {
     setLaborSeleccionada(null)
     setLaborManual("")
   }, [])
-
-  const { tareas, refetch } = useTareasUsuario()
-  const { detalle, loading: loadingDetalle } = useDetalleTarea(tareaEditando)
-  const { operarios } = useOperarios()
-  const { sectores } = useSectores()
-  const { productos } = useProductos(sectorSeleccionado)
-  const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
   const productoActual = useMemo(
     () => productos.find((p) => p.id_producto === productoSeleccionado),
@@ -111,128 +124,6 @@ export default function CargarTarea() {
     ]
   )
 
-  // Sincronizar los estados editables con el detalle cargado
-  useEffect(() => {
-    if (detalle) {
-      setDescripcionEdit(detalle.descripcion || "")
-      setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
-      setDirty(false)
-    }
-  }, [detalle])
-
-  // Detectar cambios para habilitar el botón Guardar
-  useEffect(() => {
-    if (detalle) {
-      const descChanged = descripcionEdit !== (detalle.descripcion || "")
-      const tiempoChanged =
-        tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-      setDirty(descChanged || tiempoChanged)
-    }
-  }, [descripcionEdit, tiempoExtraEdit, detalle])
-
-  // Eliminar tarea
-  const handleEliminar = async () => {
-    const id = filaEliminando
-    if (id === null) return
-
-    try {
-      const response = await fetch(`/api/eliminar-tarea?id_tarea=${id}`, {
-        method: "DELETE",
-      })
-      if (!response.ok) throw new Error()
-
-      setFilaEliminando(null)
-      setTareaEditando(null)
-      refetch()
-      toast.success("Tarea eliminada")
-    } catch {
-      toast.error("No se pudo eliminar la tarea")
-    }
-  }
-
-  const handleGuardar = async () => {
-    const id = tareaEditando
-    if (!id || !detalle) return
-
-    const descChanged = descripcionEdit !== (detalle.descripcion || "")
-    const tiempoChanged =
-      tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-
-    if (!descChanged && !tiempoChanged) {
-      toast.info("No hay cambios para guardar")
-      return
-    }
-
-    const promises = []
-
-    if (descChanged) {
-      promises.push(
-        fetch("/api/actualizar-descripcion", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_tarea: id, descripcion: descripcionEdit }),
-        }).then((res) => res.json())
-      )
-    }
-
-    if (tiempoChanged) {
-      const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/
-      if (!timeRegex.test(tiempoExtraEdit)) {
-        toast.error("Formato de tiempo extra inválido. Debe ser HH:MM:SS")
-        return
-      }
-      promises.push(
-        fetch("/api/actualizar-tiempo-extra", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_tarea: id, tiempo_extra: tiempoExtraEdit }),
-        }).then((res) => res.json())
-      )
-    }
-
-    try {
-      const results = await Promise.all(promises)
-      const hasError = results.some((r) => r.success === false || r.error)
-      if (hasError) {
-        results.forEach((r) => {
-          if (r.success === false || r.error) {
-            toast.error(r.error || r.detail || "Error al guardar")
-          }
-        })
-      } else {
-        toast.success("Cambios guardados correctamente")
-        setDirty(false)
-        refetch()
-        setTareaEditando(null)
-      }
-    } catch {
-      toast.error("Error al conectar con el servidor")
-    }
-  }
-
-  // Reiniciar cronómetro
-  const handleReiniciarCronometro = async () => {
-    const id = tareaEditando
-    if (!id) return
-
-    try {
-      const res = await fetch("/api/reiniciar-tiempo-cronometrado", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_tarea: id }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        toast.success("Cronómetro reiniciado")
-        setCronometroKey((prev) => prev + 1) // forzar reinicio visual del Cronometro
-      } else {
-        toast.error(data.error || "Error al reiniciar cronómetro")
-      }
-    } catch {
-      toast.error("Error al conectar con el servidor")
-    }
-  }
-
   return (
     <div className="flex flex-1 flex-col p-5">
       <h1 className="flex w-full justify-center text-xl font-bold md:text-2xl">
@@ -258,9 +149,11 @@ export default function CargarTarea() {
         })}
       </div>
 
-      <div className="flex flex-col xl:flex-row gap-5">
+      <div className="flex flex-col gap-5 xl:flex-row">
         <div
-          className={`w-full xl:flex xl:w-1/2 xl:flex-col ${seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"}`}
+          className={`w-full xl:flex xl:w-1/2 xl:flex-col ${
+            seccionActiva === 1 ? "flex flex-col gap-5" : "hidden"
+          }`}
         >
           <h2 className="hidden w-full justify-center text-lg font-semibold xl:flex">
             {secciones.find((s) => s.id === 1)?.nombre}
@@ -278,7 +171,9 @@ export default function CargarTarea() {
         </div>
 
         <div
-          className={`md:flex md:w-1/2 md:flex-col md:gap-5 ${seccionActiva === 2 ? "flex flex-col gap-5" : "hidden"}`}
+          className={`md:flex md:w-1/2 md:flex-col md:gap-5 ${
+            seccionActiva === 2 ? "flex flex-col gap-5" : "hidden"
+          }`}
         >
           <h2 className="hidden justify-center text-lg font-semibold md:flex">
             {secciones.find((s) => s.id === 2)?.nombre}
@@ -307,88 +202,102 @@ export default function CargarTarea() {
           loadingDetalle ? (
             <p className="text-sm opacity-50">Cargando...</p>
           ) : detalle ? (
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3">
               {/* Operario */}
-              <div className="flex flex-col gap-2 rounded bg-background2 p-5">
-                <h1 className="text-md flex w-full items-center font-bold">
-                  OPERARIO
-                </h1>
-                <div className="flex flex-col gap-5">
-                  <div className="w-full rounded bg-background p-2">
-                    <p>
-                      {detalle.nombre_operario_seleccionado}{" "}
-                      {detalle.apellido_operario_seleccionado}
-                    </p>
-                  </div>
-                  <div className="w-full rounded bg-background p-2">
-                    <p>{detalle.nombre_sector}</p>
-                  </div>
-                </div>
-              </div>
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="OPERARIO"
+                description={`${detalle.nombre_operario_seleccionado} ${detalle.apellido_operario_seleccionado}`}
+              />
 
-              {/* Orden de Producción */}
-              <div className="flex flex-col gap-2 rounded bg-background2 p-5">
-                <h1 className="text-md flex w-full items-center font-bold">
-                  ORDEN DE PRODUCCION
-                </h1>
-                <div className="flex flex-col gap-5">
-                  <div className="flex gap-3">
-                    <div className="flex-1 rounded bg-background p-2">
-                      <p className="text-xs font-semibold">N° OP</p>
-                      <p>{detalle.numero_op}</p>
-                    </div>
-                    <div className="flex-1 rounded bg-background p-2">
-                      <p className="text-xs font-semibold">N° PLANO</p>
-                      <p>{detalle.numero_plano}</p>
-                    </div>
-                  </div>
-                  <div className="rounded bg-background p-2">
-                    <p className="text-xs font-semibold">PRODUCTO</p>
-                    <p>{detalle.nombre_producto}</p>
-                  </div>
-                  <div className="rounded bg-background p-2">
-                    <p className="text-xs font-semibold">LABOR</p>
-                    <p>{detalle.nombre_labor}</p>
-                  </div>
-                  <div className="rounded bg-background p-2">
-                    <p className="text-xs font-semibold">DESCRIPCIÓN</p>
-                    <Textarea
-                      placeholder="DETALLES DE LA TAREA, OBSERVACIONES..."
-                      value={descripcionEdit}
-                      onChange={(e) => setDescripcionEdit(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="SECTOR"
+                description={`${detalle.nombre_sector}`}
+              />
+
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="NUMERO DE ORDEN DE PRODUCCION"
+                description={`${detalle.numero_op}`}
+              />
+
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="NUMERO DE PLANO"
+                description={`${detalle.numero_plano}`}
+              />
+
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="PRODUCTO"
+                description={`${detalle.nombre_producto}`}
+              />
+
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="LABOR"
+                description={`${detalle.nombre_labor}`}
+              />
+
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="DESCRIPCION"
+                description={
+                  <Textarea
+                    placeholder="DETALLES DE LA TAREA, OBSERVACIONES..."
+                    value={descripcionEdit}
+                    onChange={(e) => setDescripcionEdit(e.target.value)}
+                  />
+                }
+              />
 
               {/* Tiempo Extra */}
-              <div className="flex flex-col gap-2 rounded bg-background2 p-5">
-                <h1 className="text-md flex w-full items-center font-bold">
-                  TIEMPO EXTRA
-                </h1>
-                <p className="text-sm opacity-60">
-                  Agregado al tiempo cronometrado
-                </p>
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="TIEMPO EXTRA"
+                description="Agregado al tiempo cronometrado"
+              >
                 <DuracionInput
                   value={tiempoExtraEdit}
                   onChange={setTiempoExtraEdit}
                 />
-              </div>
+              </ItemCard>
 
               {/* Cronómetro */}
-              <div className="flex flex-col gap-2 rounded bg-background2 p-5">
-                <h1 className="text-md flex w-full items-center font-bold">
-                  CRONOMETRO
-                </h1>
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="CRONOMETRO"
+                actions={
+                  <Button
+                    onClick={handleReiniciarCronometro}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <TimerReset onClick={handleReiniciarCronometro} />
+                  </Button>
+                }
+              >
                 <Cronometro key={cronometroKey} />
-                <Button
-                  onClick={handleReiniciarCronometro}
-                  variant="outline"
-                  className="mt-2"
-                >
-                  Reiniciar Cronómetro
-                </Button>
-              </div>
+              </ItemCard>
             </div>
           ) : null
         }
@@ -423,7 +332,7 @@ export default function CargarTarea() {
             return
           }
           if (!open) {
-            setTareaEditando(null)
+            resetEditor()
           }
         }}
       />
@@ -438,8 +347,7 @@ export default function CargarTarea() {
         description="¿Deseas descartar los cambios y salir?"
         onConfirm={() => {
           setShowCloseConfirm(false)
-          setTareaEditando(null)
-          setDirty(false)
+          resetEditor()
         }}
         cancelText="Seguir editando"
         confirmText="Cancelar Edición"

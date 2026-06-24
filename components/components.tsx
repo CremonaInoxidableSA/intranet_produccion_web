@@ -125,7 +125,7 @@ export const Selector = React.memo(function Selector({
       </SelectContent>
     </Select>
   )
-});
+})
 
 //---------------------------------------TABLAS---------------------------------------//
 export function Tabla({
@@ -245,21 +245,90 @@ export function Inputs({
   )
 }
 //---------------------------------------TEXTAREA---------------------------------------//
-export function Textarea({ 
-  placeholder, 
-  value = "", 
-  onChange = () => {} 
-}: { 
-  placeholder: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+export function Textarea({
+  placeholder,
+  value = "",
+  onChange = () => {},
+}: {
+  placeholder: string
+  value?: string
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
 }) {
   return (
     <textarea
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="text-sm min-h-24 w-full resize-none rounded border-2 border-background6 bg-background3 px-3 py-2 focus:border-background6 focus:outline-none"
+      className="min-h-24 w-full resize-none rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6 focus:outline-none"
     />
+  )
+}
+
+//---------------------------------------CAMPOS---------------------------------------//
+// components/ItemCard.tsx
+import { ReactNode } from "react";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
+import { ChevronRightIcon } from "lucide-react";
+
+type ItemCardProps = {
+  title: ReactNode;
+  description?: ReactNode;
+  icon?: ReactNode;
+  actions?: ReactNode;
+  href?: string;
+  variant?: "default" | "outline" | "muted";
+  size?: "default" | "sm" | "xs";
+  className?: string;
+  children?: ReactNode;
+  showChevron?: boolean;
+};
+
+export function ItemCard({
+  title,
+  description,
+  icon,
+  actions,
+  href,
+  variant = "outline",
+  size = "default",
+  className,
+  children,
+  showChevron = true,
+}: ItemCardProps) {
+  const content = (
+    <>
+      {icon && <ItemMedia>{icon}</ItemMedia>}
+      <ItemContent>
+        <ItemTitle>{title}</ItemTitle>
+        {description && <ItemDescription>{description}</ItemDescription>}
+        {children && <div className="mt-2">{children}</div>}
+      </ItemContent>
+      {actions ? (
+        <ItemActions>{actions}</ItemActions>
+      ) : href && showChevron ? (
+        <ItemActions>
+          <ChevronRightIcon className="size-4" />
+        </ItemActions>
+      ) : null}
+    </>
   );
+
+  const itemProps = { variant, size, className };
+
+  if (href) {
+    return (
+      <Item {...itemProps} asChild>
+        <a href={href}>{content}</a>
+      </Item>
+    );
+  }
+
+  return <Item {...itemProps}>{content}</Item>;
 }

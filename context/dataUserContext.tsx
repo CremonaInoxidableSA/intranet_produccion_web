@@ -19,7 +19,8 @@ export function useTareasUsuario() {
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}`
+        `/api/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}&_=${Date.now()}`,
+        { cache: "no-store" }
       )
       if (!response.ok) throw new Error()
       const data = await response.json()
@@ -31,11 +32,15 @@ export function useTareasUsuario() {
     }
   }, [id_current_user])
 
+  const removeTareaLocal = useCallback((id: number) => {
+    setTareas((prev) => prev.filter((t) => t.id_tarea !== id))
+  }, [])
+
   useEffect(() => {
     fetchData()
   }, [fetchData])
 
-  return { tareas, loading, error, refetch: fetchData }
+  return { tareas, loading, error, refetch: fetchData, removeTareaLocal }
 }
 
 export type DetalleTarea = {
