@@ -182,27 +182,40 @@ export const TextScrollArea = React.memo(function TextScrollArea({
           {placeholder}
         </h4>
       )}
-      <Virtuoso
-        style={{ flex: 1, minHeight: 0, height: "100%" }}
-        totalCount={tags.length}
-        itemContent={(index) => {
-          const tag = tags[index]
-          return (
-            <div key={tag} className="mr-4">
-              <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
-                <div
-                  onClick={() => onTagClick?.(tag)}
-                  className="flex flex-1 cursor-pointer py-2"
-                >
-                  {tag}
-                </div>
-                <div>{extras?.(tag)}</div>
-              </span>
-              {index < tags.length - 1 && <Separator className="my-2" />}
-            </div>
-          )
-        }}
-      />
+      {tags.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center opacity-50">
+          <p className="text-sm">No hay datos disponibles</p>
+        </div>
+      ) : (
+        <Virtuoso
+          style={{ flex: 1, minHeight: 0, height: "100%" }}
+          totalCount={tags.length}
+          components={{
+            Footer: () => (
+              <p className="py-4 text-center text-sm opacity-50">
+                No hay más datos disponibles
+              </p>
+            ),
+          }}
+          itemContent={(index) => {
+            const tag = tags[index]
+            return (
+              <div key={tag} className="mr-4">
+                <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
+                  <div
+                    onClick={() => onTagClick?.(tag)}
+                    className="flex flex-1 cursor-pointer py-2"
+                  >
+                    {tag}
+                  </div>
+                  <div>{extras?.(tag)}</div>
+                </span>
+                {index < tags.length - 1 && <Separator className="my-2" />}
+              </div>
+            )
+          }}
+        />
+      )}
     </div>
   )
 })

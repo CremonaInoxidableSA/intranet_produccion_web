@@ -9,7 +9,7 @@ import {
   Selector,
   GuardarButton,
 } from "@/components/components"
-import { useSectores } from "@/context/dataContext"
+import { useSectores } from "@/context/dataGeneralContext"
 
 const Datos = Array.from({ length: 50 }).map(
   (_, i, a) => `Mesa ${a.length - i}`

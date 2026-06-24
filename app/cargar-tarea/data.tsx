@@ -1,6 +1,7 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
 import { Cronometro, DuracionInput } from "@/components/cronometro"
-import type { Sector, Producto, Labor, Operario } from "@/context/dataContext"
+import { useUser } from "@/context/userContext"
+import type { Sector, Producto, Labor, Operario } from "@/context/dataGeneralContext"
 
 export const secciones = [
   {

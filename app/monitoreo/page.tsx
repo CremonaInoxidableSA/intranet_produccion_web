@@ -9,7 +9,7 @@ import {
   DateRangePicker,
 } from "@/components/componentsClient"
 import { TextScrollArea, EliminarButton, Selector } from "@/components/components"
-import { useSectores } from "@/context/dataContext"
+import { useSectores } from "@/context/dataGeneralContext"
 
 export default function CargarTarea() {
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)

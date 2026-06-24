@@ -8,7 +8,7 @@ import {
 } from "@/components/componentsClient"
 import { Selector, Inputs } from "@/components/components"
 import { Button } from "@/components/ui/button"
-import { useSectores } from "@/context/dataContext"
+import { useSectores } from "@/context/dataGeneralContext"
 
 const Datos = Array.from({ length: 10 }).map(() => ({
   NOMBRE_APELLIDO: "Ricardo Arjona",

@@ -2,7 +2,7 @@ import { Selector } from "@/components/components"
 import { DateRangePicker } from "@/components/componentsClient"
 import { Button } from "@/components/ui/button"
 import { Tabla } from "@/components/components"
-import { useSectores } from "@/context/dataContext"
+import { useSectores } from "@/context/dataGeneralContext"
 
 const Datos = Array.from({ length: 10 }).map(() => ({
   OP: "851-5871AQB",

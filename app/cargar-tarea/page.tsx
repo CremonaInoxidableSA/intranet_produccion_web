@@ -8,7 +8,8 @@ import {
   DialogTemplate,
 } from "@/components/componentsClient"
 import { TextScrollArea } from "@/components/components"
-import { useSectores, useProductos, useLabores, useOperarios } from "@/context/dataContext"
+import { useSectores, useProductos, useLabores, useOperarios } from "@/context/dataGeneralContext"
+import { useTareasUsuario } from "@/context/dataUserContext"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -34,6 +35,7 @@ export default function CargarTarea() {
     setLaborManual("")
   }, [])
   
+  const { tareas } = useTareasUsuario()
   const { operarios } = useOperarios()
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
@@ -138,7 +140,10 @@ export default function CargarTarea() {
             {secciones.find((s) => s.id === 2)?.nombre}
           </h2>
           <TextScrollArea
-            tags={tareasEnCurso.map((tarea) => tarea.NumeroTarea)}
+            tags={tareas.map(
+              (tarea) =>
+                `TAREA ${tarea.id_tarea}: ${tarea.nombre_operario_seleccionado} ${tarea.apellido_operario_seleccionado} - ${tarea.nombre_producto}`
+            )}
             placeholder="LISTADO DE TAREAS EN CURSO"
             extraClass="bg-background2 p-5 h-[70vh] md:flex-1 md:min-h-0"
             placeholderExtraClass="text-md"
