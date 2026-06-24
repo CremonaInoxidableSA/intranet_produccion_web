@@ -139,7 +139,7 @@ export function useOperarios() {
         const data = await response.json()
         const operariosFormateados = data.map((o: any) => ({
           ...o,
-          nombre_completo: `${o.apellido} - ${o.nombre}`,
+          nombre_completo: `${o.apellido} ${o.nombre}`,
         }))
         setOperarios(operariosFormateados)
       } catch (err) {

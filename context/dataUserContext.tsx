@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useUser } from "@/context/userContext"
 
 export type TareaUsuario = {
@@ -15,24 +15,72 @@ export function useTareasUsuario() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}`
+      )
+      if (!response.ok) throw new Error()
+      const data = await response.json()
+      setTareas(data.tareas)
+    } catch {
+      setError("No se pudo cargar las tareas")
+    } finally {
+      setLoading(false)
+    }
+  }, [id_current_user])
+
   useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { tareas, loading, error, refetch: fetchData }
+}
+
+export type DetalleTarea = {
+  id_tarea: number
+  nombre_operario_seleccionado: string
+  apellido_operario_seleccionado: string
+  nombre_sector: string
+  numero_op: number
+  numero_plano: number
+  nombre_producto: string
+  nombre_labor: string
+  descripcion: string
+  tiempo_extra: string
+  estado: string
+}
+
+export function useDetalleTarea(id_tarea: number | null) {
+  const [detalle, setDetalle] = useState<DetalleTarea | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (id_tarea === null) {
+      setDetalle(null)
+      return
+    }
+
     async function fetchData() {
+      setLoading(true)
       try {
         const response = await fetch(
-          `/api/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}`
+          `/api/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
         )
-        if (!response.ok) throw new Error("Error al obtener tareas")
-        const data = await response.json()
-        setTareas(data.tareas)
+        if (!response.ok) throw new Error("Error al obtener detalle")
+        const data: DetalleTarea = await response.json()
+        setDetalle(data)
       } catch {
-        setError("No se pudo cargar las tareas")
+        setError("No se pudo cargar el detalle de la tarea")
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [id_current_user])
+  }, [id_tarea])
 
-  return { tareas, loading, error }
+  return { detalle, loading, error }
 }
