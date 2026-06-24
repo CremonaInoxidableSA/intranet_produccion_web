@@ -1,4 +1,3 @@
-import { id } from "date-fns/locale"
 import { useEffect, useState } from "react"
 
 export type Sector = {
@@ -116,4 +115,42 @@ export function useLabores(
   }, [id_sector, id_producto])
 
   return { labores, loading, error }
+}
+
+export type Operario = {
+  id_operario: number
+  nombre: string
+  apellido: string
+  nombre_completo: string
+}
+
+export function useOperarios() {
+  const [operarios, setOperarios] = useState<Operario[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("/api/lista-operarios")
+
+        if (!response.ok) throw new Error("Error al obtener sectores")
+
+        const data = await response.json()
+        const operariosFormateados = data.map((o: any) => ({
+          ...o,
+          nombre_completo: `${o.apellido} - ${o.nombre}`,
+        }))
+        setOperarios(operariosFormateados)
+      } catch (err) {
+        setError("No se pudo cargar la lista de sectores")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  return { operarios, loading, error }
 }

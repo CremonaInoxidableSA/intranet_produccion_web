@@ -8,24 +8,16 @@ import {
   DialogTemplate,
 } from "@/components/componentsClient"
 import { TextScrollArea } from "@/components/components"
-import { useSectores, useProductos, useLabores } from "@/context/dataContext"
+import { useSectores, useProductos, useLabores, useOperarios } from "@/context/dataContext"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
-
-  const [sectorSeleccionado, setSectorSeleccionadoState] = useState<
-    number | null
-  >(null)
-
-  const [productoSeleccionado, setProductoSeleccionadoState] = useState<
-    number | null
-  >(null)
-
-  const [laborSeleccionada, setLaborSeleccionada] = useState<number | null>(
-    null
-  )
+  const [sectorSeleccionado, setSectorSeleccionadoState] = useState<number | null>(null)
+  const [productoSeleccionado, setProductoSeleccionadoState] = useState<number | null>(null)
+  const [operarioSeleccionado, setOperarioSeleccionado] = useState<number | null>(null)
+  const [laborSeleccionada, setLaborSeleccionada] = useState<number | null>(null)
 
   const [laborManual, setLaborManual] = useState("")
 
@@ -42,10 +34,11 @@ export default function CargarTarea() {
     setLaborManual("")
   }, [])
   
+  const { operarios } = useOperarios()
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
   const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
-
+  
   const productoActual = useMemo(
     () => productos.find((p) => p.id_producto === productoSeleccionado),
     [productos, productoSeleccionado]
@@ -67,15 +60,19 @@ export default function CargarTarea() {
         productos,
         sectores,
         labores,
+        operarios,
         sectorSeleccionado,
         setSectorSeleccionado,
         productoSeleccionado,
         setProductoSeleccionado,
+        operarioSeleccionado,
+        setOperarioSeleccionado,
         laborSeleccionada,
         setLaborSeleccionada,
         laborManual,
         setLaborManual,
-        mostrarInputLabor
+        mostrarInputLabor,
+
       ),
     [
       productos,
@@ -83,6 +80,7 @@ export default function CargarTarea() {
       labores,
       sectorSeleccionado,
       productoSeleccionado,
+      operarioSeleccionado,
       laborSeleccionada,
       laborManual,
       mostrarInputLabor,

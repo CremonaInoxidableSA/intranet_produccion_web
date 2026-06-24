@@ -1,6 +1,6 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
 import { Cronometro, DuracionInput } from "@/components/cronometro"
-import type { Sector, Producto, Labor } from "@/context/dataContext"
+import type { Sector, Producto, Labor, Operario } from "@/context/dataContext"
 
 export const secciones = [
   {
@@ -33,15 +33,18 @@ export function getOpcionesNuevaTarea(
   productos: Producto[],
   sectores: Sector[],
   labores: Labor[],
+  operarios: Operario[],
   sectorSeleccionado: number | null,
   setSectorSeleccionado: (id: number | null) => void,
   productoSeleccionado: number | null,
   setProductoSeleccionado: (id: number | null) => void,
+  operarioSeleccionado: number | null,
+  setOperarioSeleccionado: (id: number | null) => void,
   laborSeleccionada: number | null,
   setLaborSeleccionada: (id: number | null) => void,
   laborManual: string,
   setLaborManual: (value: string) => void,
-  mostrarInputLabor: boolean
+  mostrarInputLabor: boolean,
 ) {
   return [
     {
@@ -54,17 +57,22 @@ export function getOpcionesNuevaTarea(
           <div className="flex flex-col gap-5">
             <Selector
               placeholder="SELECCIONE EL OPERARIO"
-              data={sectores}
-              keyId="id_sector"
+              data={operarios}
+              keyId="id_operario"
+              keyLabel="nombre_completo"
+              value={
+                operarioSeleccionado !== null
+                  ? String(operarioSeleccionado)
+                  : ""
+              }
+              onValueChange={(value) => setOperarioSeleccionado(Number(value))}
             />
             <Selector
               placeholder="SELECCIONE EL SECTOR"
               data={sectores}
               keyId="id_sector"
               value={
-                sectorSeleccionado !== null
-                  ? String(sectorSeleccionado)
-                  : undefined
+                sectorSeleccionado !== null ? String(sectorSeleccionado) : ""
               }
               onValueChange={(value) => setSectorSeleccionado(Number(value))}
             />
@@ -109,9 +117,7 @@ export function getOpcionesNuevaTarea(
                 keyId="id_labor"
                 disabled={productoSeleccionado === null}
                 value={
-                  laborSeleccionada !== null
-                    ? String(laborSeleccionada)
-                    : ""
+                  laborSeleccionada !== null ? String(laborSeleccionada) : ""
                 }
                 onValueChange={(value) => setLaborSeleccionada(Number(value))}
               />

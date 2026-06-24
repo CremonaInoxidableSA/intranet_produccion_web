@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 
 const API_BASE_URL =
-  process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
+  process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
 
 export async function GET() {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/sectores/lista-sectores`,
+      `${API_BASE_URL}/obtener_usuarios_produccion`,
       {
         headers: {
           Accept: "application/json",
