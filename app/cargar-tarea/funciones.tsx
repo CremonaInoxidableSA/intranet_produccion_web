@@ -77,10 +77,13 @@ export function useTareaEditor({
       intervalRef.current = null
     }
 
-    const isActive = detalle?.estado?.toLowerCase() === "activa"
+    if (tareaEditando === null || !detalle) return
 
-    if (tareaEditando !== null && isActive) {
-      fetchTiempoCronometrado(tareaEditando)
+    const isActive = detalle.estado?.toLowerCase() === "activa"
+
+    fetchTiempoCronometrado(tareaEditando)
+
+    if (isActive) {
       intervalRef.current = setInterval(() => {
         if (
           tareaEditando !== null &&
@@ -94,7 +97,6 @@ export function useTareaEditor({
           }
         }
       }, 5000)
-    } else {
     }
 
     return () => {
@@ -172,7 +174,6 @@ export function useTareaEditor({
 
       setDirty(false)
       refetch()
-      setTareaEditando(null)
     } catch (error) {
       console.error("Error en handleGuardar:", error)
     }

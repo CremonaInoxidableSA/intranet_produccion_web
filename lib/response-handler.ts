@@ -82,7 +82,7 @@ export function getSuccessMessage(data: unknown): string {
  */
 export async function handleApiResponse<T = any>(
   response: Response,
-  successMessage?: string
+  successMessage?: string | ((data: T) => string)
 ): Promise<T> {
   // Intentar parsear JSON, pero si falla, usar texto
   let data: any
@@ -105,7 +105,10 @@ export async function handleApiResponse<T = any>(
   }
 
   // Respuesta exitosa
-  const msg = successMessage || getSuccessMessage(data)
+  const msg =
+    typeof successMessage === "function"
+      ? successMessage(data)
+      : successMessage || getSuccessMessage(data)
   if (msg) {
     toast.success(msg)
   }

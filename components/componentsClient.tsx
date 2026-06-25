@@ -138,7 +138,7 @@ export function DialogTemplate({
   dialogFooter,
 }: {
   title: string
-  description?: string
+  description?: string | React.ReactNode
   fields: React.ReactNode
   open: boolean
   dialogFooter: React.ReactNode
@@ -180,7 +180,7 @@ export function AlertDialogTemplate({
   open: boolean
   onOpenChange: (open: boolean) => void
   title: string
-  description: string
+  description: string | React.ReactNode
   onConfirm: () => void
   cancelText?: string
   confirmText?: string

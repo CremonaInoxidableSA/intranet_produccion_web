@@ -75,6 +75,48 @@ export default function CargarTarea() {
   const { productos } = useProductos(sectorSeleccionado)
   const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
+  const [operarioOcupadoInfo, setOperarioOcupadoInfo] = useState<{
+    detail: string
+    nombre_labor: string
+    nombre_creador: string
+    apellido_creador: string
+    id_tarea: number
+    id_operario: number
+  } | null>(null)
+
+  const handleSeleccionarOperario = useCallback(async (id: number | null) => {
+    if (id === null) {
+      setOperarioSeleccionado(null)
+      return
+    }
+    try {
+      const res = await fetch(
+        `/api/comprobacion-operarioOcupado?id_operario=${id}`
+      )
+      const data = await res.json()
+      if (data.success === false) {
+        setOperarioOcupadoInfo({ ...data, id_operario: id })
+      } else {
+        setOperarioSeleccionado(id)
+      }
+    } catch {
+      setOperarioSeleccionado(id)
+    }
+  }, [])
+
+  const handlePausarTareaPrevia = useCallback(async () => {
+    if (!operarioOcupadoInfo) return
+    try {
+      const res = await fetch(
+        `/api/actualizar-pausarCronometro?id_tarea=${operarioOcupadoInfo.id_tarea}`,
+        { method: "POST", headers: { "Content-Type": "application/json" } }
+      )
+      await handleApiResponse(res)
+      setOperarioSeleccionado(operarioOcupadoInfo.id_operario)
+      setOperarioOcupadoInfo(null)
+    } catch {}
+  }, [operarioOcupadoInfo])
+
   const setSectorSeleccionado = useCallback((id: number | null) => {
     setSectorSeleccionadoState(id)
     setProductoSeleccionadoState(null)
@@ -173,13 +215,15 @@ export default function CargarTarea() {
         body: JSON.stringify(body),
       })
 
-      await handleApiResponse(res)
+      await handleApiResponse(res, (data) =>
+        data?.id_tarea
+          ? `Tarea ${data.id_tarea} creada correctamente`
+          : "Tarea creada correctamente"
+      )
 
       resetFormulario()
       await refetch()
-    } catch (error) {
-      console.error("Error en handleCrearTarea:", error)
-    }
+    } catch {}
   }, [
     formularioCompleto,
     id_current_user,
@@ -210,7 +254,7 @@ export default function CargarTarea() {
         productoSeleccionado,
         setProductoSeleccionado,
         operarioSeleccionado,
-        setOperarioSeleccionado,
+        handleSeleccionarOperario,
         laborSeleccionada,
         setLaborSeleccionada,
         laborManual,
@@ -235,6 +279,7 @@ export default function CargarTarea() {
       sectorSeleccionado,
       productoSeleccionado,
       operarioSeleccionado,
+      handleSeleccionarOperario,
       laborSeleccionada,
       laborManual,
       mostrarInputLabor,
@@ -417,15 +462,16 @@ export default function CargarTarea() {
             />
             <div className="flex w-full flex-row items-center justify-end gap-5">
               <Boton
-                extraClass="border-bluecremona bg-bluecremona/40 hover:bg-bluecremona/80"
-                placeholder="FINALIZAR"
-                onClick={handleFinalizar}
-              />
-              <Boton
                 extraClass="border-greencremona bg-greencremona/40 hover:bg-greencremona/80"
                 placeholder="GUARDAR"
                 onClick={handleGuardar}
                 disabled={!dirty}
+              />
+              <Boton
+                extraClass="border-bluecremona bg-bluecremona/40 hover:bg-bluecremona/80"
+                placeholder="FINALIZAR"
+                onClick={handleFinalizar}
+                disabled={dirty}
               />
             </div>
           </div>
@@ -475,6 +521,44 @@ export default function CargarTarea() {
         onConfirm={handleReiniciarCronometro}
         cancelText="Cancelar"
         confirmText="Reiniciar"
+      />
+
+      <AlertDialogTemplate
+        open={operarioOcupadoInfo !== null}
+        onOpenChange={(open) => {
+          if (!open) setOperarioOcupadoInfo(null)
+        }}
+        title={operarioOcupadoInfo?.detail ?? ""}
+        description={
+          operarioOcupadoInfo ? (
+            <span className="flex flex-col gap-1 text-sm">
+              <span className="block">
+                <span className="font-semibold">Operario:</span>{" "}
+                {operarios.find(
+                  (o) => o.id_operario === operarioOcupadoInfo.id_operario
+                )?.nombre_completo ?? `ID ${operarioOcupadoInfo.id_operario}`}
+              </span>
+              <span className="block">
+                <span className="font-semibold">Labor:</span>{" "}
+                {operarioOcupadoInfo.nombre_labor}
+              </span>
+              <span className="block">
+                <span className="font-semibold">Creado por:</span>{" "}
+                {operarioOcupadoInfo.nombre_creador}{" "}
+                {operarioOcupadoInfo.apellido_creador}
+              </span>
+              <span className="block">
+                <span className="font-semibold">ID Tarea:</span>{" "}
+                {operarioOcupadoInfo.id_tarea}
+              </span>
+            </span>
+          ) : (
+            ""
+          )
+        }
+        onConfirm={handlePausarTareaPrevia}
+        cancelText="Seleccionar otro operario"
+        confirmText="Pausar tarea previa"
       />
     </div>
   )
