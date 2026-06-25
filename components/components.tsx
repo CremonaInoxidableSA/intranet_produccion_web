@@ -234,7 +234,7 @@ export function Inputs({
   placeholder: string
   type: string
   disabled?: boolean
-  value?: string
+  value?: string | number
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }) {
   return (

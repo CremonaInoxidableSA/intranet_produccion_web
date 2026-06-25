@@ -36,8 +36,8 @@ export default function CargarTarea() {
     null
   )
   const [laborManual, setLaborManual] = useState("")
-  const [numeroOp, setNumeroOp] = useState("")
-  const [numeroPlano, setNumeroPlano] = useState("")
+  const [numeroOp, setNumeroOp] = useState<number | null>(null)
+  const [numeroPlano, setNumeroPlano] = useState<number | null>(null)
   const [descripcion, setDescripcion] = useState("")
   const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
 
@@ -68,7 +68,8 @@ export default function CargarTarea() {
     handleFinalizar,
   } = useTareaEditor({ refetch, removeTareaLocal })
 
-  const { id_current_user } = useUser()
+  const { id_current_user, nombre_usuario_logeado, apellido_usuario_logeado } =
+    useUser()
   const { operarios } = useOperarios()
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
@@ -113,8 +114,8 @@ export default function CargarTarea() {
       operarioSeleccionado !== null &&
       sectorSeleccionado !== null &&
       productoSeleccionado !== null &&
-      numeroOp.trim() !== "" &&
-      numeroPlano.trim() !== "" &&
+      numeroOp !== null &&
+      numeroPlano !== null &&
       (mostrarInputLabor
         ? laborManual.trim() !== ""
         : laborSeleccionada !== null),
@@ -136,8 +137,8 @@ export default function CargarTarea() {
     setOperarioSeleccionado(null)
     setLaborSeleccionada(null)
     setLaborManual("")
-    setNumeroOp("")
-    setNumeroPlano("")
+    setNumeroOp(null)
+    setNumeroPlano(null)
     setDescripcion("")
     setTiempoExtra("00:00:00")
   }, [])
@@ -145,12 +146,20 @@ export default function CargarTarea() {
   const handleCrearTarea = useCallback(async () => {
     if (!formularioCompleto || !id_current_user) return
 
+    const operarioActual = operarios.find(
+      (o) => o.id_operario === operarioSeleccionado
+    )
+
     const body = {
       id_usuario_logeado: id_current_user,
+      nombre_usuario_logeado,
+      apellido_usuario_logeado,
       id_operario_seleccionado: operarioSeleccionado,
+      nombre_operario_seleccionado: operarioActual?.nombre ?? "",
+      apellido_operario_seleccionado: operarioActual?.apellido ?? "",
       id_sector: sectorSeleccionado,
-      numero_op: numeroOp.trim(),
-      numero_plano: numeroPlano.trim(),
+      numero_op: numeroOp,
+      numero_plano: numeroPlano,
       id_producto: productoSeleccionado,
       nombre_labor: laborNombre,
       descripcion: descripcion.trim(),
@@ -167,12 +176,16 @@ export default function CargarTarea() {
       await handleApiResponse(res)
 
       resetFormulario()
+      await refetch()
     } catch (error) {
       console.error("Error en handleCrearTarea:", error)
     }
   }, [
     formularioCompleto,
     id_current_user,
+    nombre_usuario_logeado,
+    apellido_usuario_logeado,
+    operarios,
     operarioSeleccionado,
     sectorSeleccionado,
     numeroOp,
@@ -182,6 +195,7 @@ export default function CargarTarea() {
     descripcion,
     tiempoExtra,
     resetFormulario,
+    refetch,
   ])
 
   const opciones = useMemo(
@@ -397,7 +411,7 @@ export default function CargarTarea() {
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
             <Boton
-              extraClass="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
+              extraClass="border-red-600 bg-red-600/50 hover:bg-red-600"
               onClick={() => setFilaEliminando(tareaEditando)}
               placeholder="ELIMINAR"
             />

@@ -33,7 +33,7 @@ export default function CargarTarea() {
             <Button
               key={id}
               onClick={() => setSeccionActiva(id)}
-              className={`flex flex-1 items-center justify-center rounded font-semibold text-white transition-all duration-200 ${
+              className={`flex flex-1 items-center justify-center rounded font-semibold transition-all duration-200 ${
                 isActive
                   ? `${extraClasses} ring-1 ring-offset-1 ring-offset-foreground`
                   : `${extraClasses} opacity-50`

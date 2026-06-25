@@ -38,10 +38,10 @@ export function getOpcionesNuevaTarea(
   laborManual: string,
   setLaborManual: (value: string) => void,
   mostrarInputLabor: boolean,
-  numeroOp: string,
-  setNumeroOp: (v: string) => void,
-  numeroPlano: string,
-  setNumeroPlano: (v: string) => void,
+  numeroOp: number | null,
+  setNumeroOp: (v: number | null) => void,
+  numeroPlano: number | null,
+  setNumeroPlano: (v: number | null) => void,
   descripcion: string,
   setDescripcion: (v: string) => void,
   tiempoExtra: string,
@@ -94,14 +94,14 @@ export function getOpcionesNuevaTarea(
             <Inputs
               placeholder="NUMERO DE OP"
               type="number"
-              value={numeroOp}
-              onChange={(e) => setNumeroOp(e.target.value)}
+              value={numeroOp !== null ? String(numeroOp) : ""}
+              onChange={(e) => setNumeroOp(Number(e.target.value))}
             />
             <Inputs
               placeholder="NUMERO DE PLANO"
               type="number"
-              value={numeroPlano}
-              onChange={(e) => setNumeroPlano(e.target.value)}
+              value={numeroPlano !== null ? String(numeroPlano) : ""}
+              onChange={(e) => setNumeroPlano(Number(e.target.value))}
             />
             <Selector
               placeholder="PRODUCTO"
