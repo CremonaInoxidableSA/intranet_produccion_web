@@ -79,7 +79,7 @@ const UserIcon = () => {
               <CambioPass />
             )}
             <Button
-              className="mt-2 w-full cursor-pointer bg-redcremona hover:bg-redcremona"
+              className="mt-2 w-full bg-redcremona hover:bg-redcremona"
               onClick={closeSession}
               disabled={loggingOut}
             >

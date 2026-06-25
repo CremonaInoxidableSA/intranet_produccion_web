@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
 import { useTareasUsuario, useDetalleTarea } from "@/context/dataUserContext"
+import { handleApiResponse } from "@/lib/response-handler"
 
 export function useTareaEditor() {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
@@ -103,19 +104,19 @@ export function useTareaEditor() {
     if (id === null) return
 
     try {
-      const response = await fetch(`/api/eliminar-tarea?id_tarea=${id}`, {
+      const res = await fetch(`/api/eliminar-tarea?id_tarea=${id}`, {
         method: "DELETE",
       })
-      if (!response.ok) throw new Error()
+
+      await handleApiResponse(res)
+
       removeTareaLocal(id)
       setFilaEliminando(null)
       setTareaEditando(null)
       await refetch()
-      toast.success("Tarea eliminada")
     } catch {
-      toast.error("No se pudo eliminar la tarea")
     }
-  }, [filaEliminando, refetch])
+  }, [filaEliminando, refetch, removeTareaLocal])
 
   const handleGuardar = useCallback(async () => {
     const id = tareaEditando
@@ -158,22 +159,17 @@ export function useTareaEditor() {
     }
 
     try {
-      const results = await Promise.all(promises)
-      const hasError = results.some((r) => r.success === false || r.error)
-      if (hasError) {
-        results.forEach((r) => {
-          if (r.success === false || r.error) {
-            toast.error(r.error || r.detail || "Error al guardar")
-          }
-        })
-      } else {
-        toast.success("Cambios guardados correctamente")
-        setDirty(false)
-        refetch()
-        setTareaEditando(null)
+      const responses = await Promise.all(promises)
+
+      for (const res of responses) {
+        await handleApiResponse(res)
       }
-    } catch {
-      toast.error("Error al conectar con el servidor")
+
+      setDirty(false)
+      refetch()
+      setTareaEditando(null)
+    } catch (error) {
+      console.error("Error en handleGuardar:", error)
     }
   }, [tareaEditando, detalle, descripcionEdit, tiempoExtraEdit, refetch])
 
@@ -187,17 +183,13 @@ export function useTareaEditor() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_tarea: id }),
       })
-      const data = await res.json()
-      if (res.ok) {
-        toast.success(data.mensaje || "Cronómetro reiniciado")
-        await fetchTiempoCronometrado(id)
-        setCronometroKey((prev) => prev + 1)
-        setShowReiniciarConfirm(false)
-      } else {
-        toast.error(data.error || "Error al reiniciar cronómetro")
-      }
+
+      await handleApiResponse(res)
+
+      await fetchTiempoCronometrado(id)
+      setCronometroKey((prev) => prev + 1)
+      setShowReiniciarConfirm(false)
     } catch {
-      toast.error("Error al conectar con el servidor")
     }
   }, [tareaEditando, fetchTiempoCronometrado])
 
@@ -221,28 +213,36 @@ export function useTareaEditor() {
         headers: { "Content-Type": "application/json" },
       })
 
-      const data = await res.json()
+      await handleApiResponse(res)
 
-      if (res.ok) {
-        toast.success(
-          data.mensaje || (esPausada ? "Tarea reanudada" : "Tarea pausada")
-        )
+      await refetchDetalle()
 
-        await refetchDetalle()
-
-        if (!esPausada) {
-        } else {
-          setTimeout(() => {
-            fetchTiempoCronometrado(id)
-          }, 500)
-        }
+      if (!esPausada) {
       } else {
-        toast.error(data.mensaje || data.error || "Error al cambiar estado")
+        setTimeout(() => {
+          fetchTiempoCronometrado(id)
+        }, 500)
       }
-    } catch (error) {
-      toast.error("Error de conexión al cambiar estado")
+    } catch {
     }
   }, [tareaEditando, detalle?.estado, refetchDetalle, fetchTiempoCronometrado])
+
+
+  const handleFinalizar = useCallback(async () => {
+    const id = tareaEditando
+    if (!id) return
+
+    try {
+      const res = await fetch(`/api/actualizar-finalizarTarea?id_tarea=${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+
+      await handleApiResponse(res)
+      await refetch()
+    } catch {
+    }
+  }, [tareaEditando, refetch])
 
   return {
     tareaEditando,
@@ -267,5 +267,6 @@ export function useTareaEditor() {
     handleReiniciarCronometro,
     resetEditor,
     handlePausarTarea,
+    handleFinalizar,
   }
 }

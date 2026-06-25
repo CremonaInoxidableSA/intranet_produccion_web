@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/productos/lista-productos?id_sector=${id_sector}`,
+      `${API_BASE_URL}/productos/lista-productos-sector?id_sector=${id_sector}`,
       { headers: { Accept: "application/json" } }
     )
 

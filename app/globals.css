@@ -187,9 +187,12 @@
     @apply h-full bg-background text-foreground;
     letter-spacing: 0.5px;
   }
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
   }
   html {
     @apply font-sans;

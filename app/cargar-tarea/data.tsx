@@ -1,6 +1,11 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
 import { CronometroCreacion, DuracionInput } from "@/components/cronometro"
-import type { Sector, Producto, Labor, Operario } from "@/context/dataGeneralContext"
+import type {
+  Sector,
+  Producto,
+  Labor,
+  Operario,
+} from "@/context/dataGeneralContext"
 
 export const secciones = [
   {
@@ -14,18 +19,6 @@ export const secciones = [
     nombre: "TAREAS EN CURSO",
     extraClasses:
       "bg-greencremona/60 border-greencremona border-2 hover:bg-greencremona/80",
-  },
-]
-
-export const ordenDeProduccion = [
-  { id: 1, placerholder: "NUMERO DE OP", type: "number" },
-  { id: 2, placerholder: "NUMERO DE PLANO", type: "number" },
-  { id: 3, placerholder: "PRODUCTO", type: "select" },
-  { id: 4, placerholder: "TIPO DE LABOR", type: "text" },
-  {
-    id: 5,
-    placerholder: "DETALLES DE LA TAREA, OBSERVACIONES...",
-    type: "textarea",
   },
 ]
 
@@ -45,6 +38,16 @@ export function getOpcionesNuevaTarea(
   laborManual: string,
   setLaborManual: (value: string) => void,
   mostrarInputLabor: boolean,
+  numeroOp: string,
+  setNumeroOp: (v: string) => void,
+  numeroPlano: string,
+  setNumeroPlano: (v: string) => void,
+  descripcion: string,
+  setDescripcion: (v: string) => void,
+  tiempoExtra: string,
+  setTiempoExtra: (v: string) => void,
+  formularioCompleto: boolean,
+  onCrearTarea: () => Promise<void>
 ) {
   return [
     {
@@ -88,8 +91,18 @@ export function getOpcionesNuevaTarea(
             ORDEN DE PRODUCCION
           </h1>
           <div className="flex flex-col gap-5">
-            <Inputs placeholder="NUMERO DE OP" type="number" />
-            <Inputs placeholder="NUMERO DE PLANO" type="number" />
+            <Inputs
+              placeholder="NUMERO DE OP"
+              type="number"
+              value={numeroOp}
+              onChange={(e) => setNumeroOp(e.target.value)}
+            />
+            <Inputs
+              placeholder="NUMERO DE PLANO"
+              type="number"
+              value={numeroPlano}
+              onChange={(e) => setNumeroPlano(e.target.value)}
+            />
             <Selector
               placeholder="PRODUCTO"
               data={productos}
@@ -122,7 +135,11 @@ export function getOpcionesNuevaTarea(
                 onValueChange={(value) => setLaborSeleccionada(Number(value))}
               />
             )}
-            <Textarea placeholder="DETALLES DE LA TAREA, OBSERVACIONES..." />
+            <Textarea
+              placeholder="DETALLES DE LA TAREA, OBSERVACIONES..."
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
           </div>
         </div>
       ),
@@ -139,17 +156,19 @@ export function getOpcionesNuevaTarea(
               Agregado al tiempo cronometrado, por si el operario realizó alguna
               parte de la tarea fuera del horario cronometrado
             </p>
-            <DuracionInput />
+            <DuracionInput value={tiempoExtra} onChange={setTiempoExtra} />
           </div>
           <div className="flex flex-col gap-2 bg-background2">
             <h1 className="text-md flex w-full items-center font-bold">
               CRONOMETRO
             </h1>
-            <CronometroCreacion />
+            <CronometroCreacion
+              disabled={!formularioCompleto}
+              onConfirmar={onCrearTarea}
+            />
           </div>
         </div>
       ),
     },
   ]
 }
-

@@ -5,26 +5,30 @@ import { Button } from "@/components/ui/button"
 import { secciones, tareasEnCurso, opcionesTarea } from "./data"
 import {
   AlertDialogTemplate,
-  DialogTemplate, 
+  DialogTemplate,
   DateRangePicker,
 } from "@/components/componentsClient"
-import { TextScrollArea, EliminarButton, Selector } from "@/components/components"
+import {
+  TextScrollArea,
+  BotonIcono,
+  Selector,
+} from "@/components/components"
 import { useSectores } from "@/context/dataGeneralContext"
+import { Trash2 } from "lucide-react";
 
 export default function CargarTarea() {
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<string | null>(null)
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const { sectores } = useSectores()
-  
-  
+
   const etiquetasTareas = tareasEnCurso.map(
     (t) => `${t.numeroTarea} - ${t.operario} - ${t.torre}`
   )
-  
+
   return (
     <div className="flex flex-1 flex-col items-center p-5">
-      <h1 className="text-xl font-bold xl:text-2xl mb-5">MONITOREO</h1>
+      <h1 className="mb-5 text-xl font-bold xl:text-2xl">MONITOREO</h1>
       {/* Botones de sección — solo visibles en mobile */}
       <div className="flex w-full flex-row items-center justify-center gap-5 xl:hidden">
         {secciones.map(({ id, nombre, extraClasses }) => {
@@ -85,7 +89,8 @@ export default function CargarTarea() {
               placeholderExtraClass="xl:text-lg text-md"
               onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
-                <EliminarButton
+                <BotonIcono
+                  icono={Trash2}
                   extraClass="size-6"
                   onClick={() => setFilaEliminando(dato)}
                 />
@@ -106,7 +111,8 @@ export default function CargarTarea() {
               placeholderExtraClass="xl:text-lg text-md"
               onTagClick={(tag) => setTareaEditando(tag)}
               extras={(dato) => (
-                <EliminarButton
+                <BotonIcono
+                  icono={Trash2}
                   extraClass="size-6"
                   onClick={() => setFilaEliminando(dato)}
                 />

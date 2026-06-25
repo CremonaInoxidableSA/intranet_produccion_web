@@ -49,7 +49,7 @@ export function useProductos(id_sector: number | null) {
       setLoading(true)
       try {
         const response = await fetch(
-          `/api/lista-productos?id_sector=${id_sector}`
+          `/api/lista-productosSector?id_sector=${id_sector}`
         )
 
         if (!response.ok) throw new Error("Error al obtener productos")

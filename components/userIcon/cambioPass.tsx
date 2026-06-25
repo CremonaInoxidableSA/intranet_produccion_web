@@ -83,8 +83,6 @@ const CambioPass = () => {
       } else {
         const message =
           data.detail ??
-          data.error ??
-          data.message ??
           "Error al cambiar la contraseña."
         toast.error(message, {
           position: "top-center",
@@ -102,7 +100,7 @@ const CambioPass = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="border-botonblueborder bg-botonblue hover:bg-botonbluehover mt-2 w-full cursor-pointer border">
+        <Button className="border-botonblueborder bg-botonblue hover:bg-botonbluehover mt-2 w-full border">
           <p className="text-botonblueborder font-medium">Cambiar Contraseña</p>
         </Button>
       </DialogTrigger>

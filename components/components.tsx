@@ -22,54 +22,58 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { PencilLine, Trash2 } from "lucide-react"
+import { LucideIcon } from "lucide-react"
 import { Virtuoso } from "react-virtuoso"
 
 //---------------------------------------BOTONES---------------------------------------//
-export function GuardarButton({
+export function Boton({
   extraClass,
   placeholder,
   onClick,
+  disabled = false,
 }: {
-  extraClass?: string
+  extraClass: string
   placeholder?: string
+  disabled?: boolean
   onClick?: () => void
 }) {
   return (
     <Button
-      className={`w-full rounded border-2 border-greencremona bg-greencremona/50 py-2 text-white hover:bg-greencremona/90 ${extraClass}`}
+      className={`rounded border-2 ${extraClass} ${
+        disabled ? "cursor-not-allowed! opacity-50" : "cursor-pointer"
+      }`}
+      onClick={onClick}
+      disabled={disabled}
     >
       {placeholder}
     </Button>
   )
 }
 
-export function EliminarButton({
-  extraClass,
+export function BotonIcono({
+  icono: Icono,
+  buttonClass,
+  iconClass,
   onClick,
+  disabled=false
 }: {
-  extraClass?: string
+  icono: LucideIcon
+  buttonClass?: string
+  iconClass?: string
   onClick?: () => void
+  disabled?: boolean,
 }) {
   return (
-    <button type="button" onClick={onClick} className="cursor-pointer">
-      <Trash2 className={`aspect-square text-redcremona ${extraClass}`} />
-    </button>
-  )
-}
-
-export function EditarButton({
-  extraClass,
-  onClick,
-}: {
-  extraClass?: string
-  onClick?: () => void
-}) {
-  return (
-    <PencilLine
-      className={`aspect-square h-full cursor-pointer items-center justify-center text-bluecremona ${extraClass}`}
+    <button
+      type="button"
       onClick={onClick}
-    />
+      className={`${buttonClass} ${
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      }`}
+      disabled={disabled}
+    >
+      <Icono className={iconClass} />
+    </button>
   )
 }
 
@@ -265,7 +269,7 @@ export function Textarea({
 }
 
 //---------------------------------------CAMPOS---------------------------------------//
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 import {
   Item,
   ItemActions,
@@ -273,21 +277,21 @@ import {
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from "@/components/ui/item";
-import { ChevronRightIcon } from "lucide-react";
+} from "@/components/ui/item"
+import { ChevronRightIcon } from "lucide-react"
 
 type ItemCardProps = {
-  title: ReactNode;
-  description?: ReactNode;
-  icon?: ReactNode;
-  actions?: ReactNode;
-  href?: string;
-  variant?: "default" | "outline" | "muted";
-  size?: "default" | "sm" | "xs";
-  className?: string;
-  children?: ReactNode;
-  showChevron?: boolean;
-};
+  title: ReactNode
+  description?: ReactNode
+  icon?: ReactNode
+  actions?: ReactNode
+  href?: string
+  variant?: "default" | "outline" | "muted"
+  size?: "default" | "sm" | "xs"
+  className?: string
+  children?: ReactNode
+  showChevron?: boolean
+}
 
 export function ItemCard({
   title,
@@ -317,17 +321,17 @@ export function ItemCard({
         </ItemActions>
       ) : null}
     </>
-  );
+  )
 
-  const itemProps = { variant, size, className };
+  const itemProps = { variant, size, className }
 
   if (href) {
     return (
       <Item {...itemProps} asChild>
         <a href={href}>{content}</a>
       </Item>
-    );
+    )
   }
 
-  return <Item {...itemProps}>{content}</Item>;
+  return <Item {...itemProps}>{content}</Item>
 }

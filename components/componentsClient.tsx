@@ -31,7 +31,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { EditarButton } from "@/components/components"
+import { PencilLine } from "lucide-react"
+import { BotonIcono } from "@/components/components"
 
 import { addDays, format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
@@ -39,7 +40,7 @@ import { type DateRange } from "react-day-picker"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field } from "@/components/ui/field"
 import {
   Popover,
   PopoverContent,
@@ -118,9 +119,7 @@ export function TablaEdicion({
               <TableCell key={colIndex}>{row[column]}</TableCell>
             ))}
             <TableCell className="flex items-center justify-end gap-2">
-              <EditarButton
-                onClick={() => onClickEdit(row)}
-              />
+              <BotonIcono icono={PencilLine} onClick={() => onClickEdit(row)} />
             </TableCell>
           </TableRow>
         ))}
@@ -136,7 +135,7 @@ export function DialogTemplate({
   fields,
   open,
   onOpenChange,
-  dialogFooter
+  dialogFooter,
 }: {
   title: string
   description?: string
@@ -155,12 +154,10 @@ export function DialogTemplate({
               <DialogDescription>{description}</DialogDescription>
             )}
           </DialogHeader>
-          <div className="flex w-full max-h-[60vh] flex-col gap-4 overflow-y-auto pr-1">
+          <div className="flex max-h-[60vh] w-full flex-col gap-4 overflow-y-auto pr-1">
             {fields}
           </div>
-          <DialogFooter>
-            {dialogFooter}
-          </DialogFooter>
+          <DialogFooter>{dialogFooter}</DialogFooter>
         </DialogContent>
       </form>
     </Dialog>
@@ -173,16 +170,16 @@ export function AlertDialogTemplate({
   title,
   description,
   onConfirm,
-  cancelText,
+  cancelText = "Cancelar",
   confirmText = "Confirmar",
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  cancelText?: string;
-  confirmText?: string;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description: string
+  onConfirm: () => void
+  cancelText?: string
+  confirmText?: string
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -193,9 +190,11 @@ export function AlertDialogTemplate({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>{confirmText}</AlertDialogAction>
+          <AlertDialogAction onClick={onConfirm}>
+            {confirmText}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
+  )
 }

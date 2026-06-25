@@ -33,7 +33,7 @@ function DrawerNavItem({
         {hasSubItems && (
           <button
             onClick={() => setOpen((prev) => !prev)}
-            className="cursor-pointer p-1 opacity-70 hover:opacity-100"
+            className="p-1 opacity-70 hover:opacity-100"
             aria-label={`${open ? "Colapsar" : "Expandir"} ${item.label}`}
           >
             {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}

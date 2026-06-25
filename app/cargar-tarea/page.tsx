@@ -7,8 +7,7 @@ import {
   AlertDialogTemplate,
   DialogTemplate,
 } from "@/components/componentsClient"
-import { TextScrollArea } from "@/components/components"
-import { Textarea } from "@/components/components"
+import { Textarea, TextScrollArea, Boton } from "@/components/components"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
   useSectores,
@@ -17,9 +16,10 @@ import {
   useOperarios,
 } from "@/context/dataGeneralContext"
 import { useTareasUsuario } from "@/context/dataUserContext"
+import { useUser } from "@/context/userContext"
 import { useTareaEditor } from "./funciones"
 import { ItemCard } from "@/components/components"
-import { TimerReset } from "lucide-react"
+import { handleApiResponse } from "@/lib/response-handler"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -36,6 +36,10 @@ export default function CargarTarea() {
     null
   )
   const [laborManual, setLaborManual] = useState("")
+  const [numeroOp, setNumeroOp] = useState("")
+  const [numeroPlano, setNumeroPlano] = useState("")
+  const [descripcion, setDescripcion] = useState("")
+  const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
 
   const {
     tareaEditando,
@@ -59,9 +63,11 @@ export default function CargarTarea() {
     showReiniciarConfirm,
     setShowReiniciarConfirm,
     handlePausarTarea,
+    handleFinalizar,
   } = useTareaEditor()
 
   const { tareas } = useTareasUsuario()
+  const { id_current_user } = useUser()
   const { operarios } = useOperarios()
   const { sectores } = useSectores()
   const { productos } = useProductos(sectorSeleccionado)
@@ -95,6 +101,88 @@ export default function CargarTarea() {
     [esOtros, labores.length]
   )
 
+  const laborNombre = useMemo(() => {
+    if (mostrarInputLabor) return laborManual.trim()
+    const labor = labores.find((l) => l.id_labor === laborSeleccionada)
+    return labor?.nombre ?? ""
+  }, [mostrarInputLabor, laborManual, labores, laborSeleccionada])
+
+  const formularioCompleto = useMemo(
+    () =>
+      operarioSeleccionado !== null &&
+      sectorSeleccionado !== null &&
+      productoSeleccionado !== null &&
+      numeroOp.trim() !== "" &&
+      numeroPlano.trim() !== "" &&
+      (mostrarInputLabor
+        ? laborManual.trim() !== ""
+        : laborSeleccionada !== null),
+    [
+      operarioSeleccionado,
+      sectorSeleccionado,
+      productoSeleccionado,
+      numeroOp,
+      numeroPlano,
+      mostrarInputLabor,
+      laborManual,
+      laborSeleccionada,
+    ]
+  )
+
+  const resetFormulario = useCallback(() => {
+    setSectorSeleccionadoState(null)
+    setProductoSeleccionadoState(null)
+    setOperarioSeleccionado(null)
+    setLaborSeleccionada(null)
+    setLaborManual("")
+    setNumeroOp("")
+    setNumeroPlano("")
+    setDescripcion("")
+    setTiempoExtra("00:00:00")
+  }, [])
+
+  const handleCrearTarea = useCallback(async () => {
+    if (!formularioCompleto || !id_current_user) return
+
+    const body = {
+      id_usuario_logeado: id_current_user,
+      id_operario_seleccionado: operarioSeleccionado,
+      id_sector: sectorSeleccionado,
+      numero_op: numeroOp.trim(),
+      numero_plano: numeroPlano.trim(),
+      id_producto: productoSeleccionado,
+      nombre_labor: laborNombre,
+      descripcion: descripcion.trim(),
+      tiempo_extra: tiempoExtra,
+    }
+
+    try {
+      const res = await fetch("/api/crear-tarea", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      })
+
+      await handleApiResponse(res)
+
+      resetFormulario()
+    } catch (error) {
+      console.error("Error en handleCrearTarea:", error)
+    }
+  }, [
+    formularioCompleto,
+    id_current_user,
+    operarioSeleccionado,
+    sectorSeleccionado,
+    numeroOp,
+    numeroPlano,
+    productoSeleccionado,
+    laborNombre,
+    descripcion,
+    tiempoExtra,
+    resetFormulario,
+  ])
+
   const opciones = useMemo(
     () =>
       getOpcionesNuevaTarea(
@@ -113,17 +201,34 @@ export default function CargarTarea() {
         laborManual,
         setLaborManual,
         mostrarInputLabor,
+        numeroOp,
+        setNumeroOp,
+        numeroPlano,
+        setNumeroPlano,
+        descripcion,
+        setDescripcion,
+        tiempoExtra,
+        setTiempoExtra,
+        formularioCompleto,
+        handleCrearTarea
       ),
     [
       productos,
       sectores,
       labores,
+      operarios,
       sectorSeleccionado,
       productoSeleccionado,
       operarioSeleccionado,
       laborSeleccionada,
       laborManual,
       mostrarInputLabor,
+      numeroOp,
+      numeroPlano,
+      descripcion,
+      tiempoExtra,
+      formularioCompleto,
+      handleCrearTarea,
     ]
   )
 
@@ -161,7 +266,7 @@ export default function CargarTarea() {
           <h2 className="hidden w-full justify-center text-lg font-semibold xl:flex">
             {secciones.find((s) => s.id === 1)?.nombre}
           </h2>
-          <div className="flex min-h-0 flex-1 flex-col gap-5 xl:justify-between">
+          <form className="flex min-h-0 flex-1 flex-col gap-5 xl:justify-between">
             {opciones.map((opcion) => (
               <div
                 className="w-full rounded bg-background2 p-5"
@@ -170,7 +275,7 @@ export default function CargarTarea() {
                 {opcion.contenido}
               </div>
             ))}
-          </div>
+          </form>
         </div>
 
         <div
@@ -197,16 +302,14 @@ export default function CargarTarea() {
         </div>
       </div>
 
-      {/* Diálogo de edición */}
       <DialogTemplate
         title={tareaEditando ? `TAREA ${tareaEditando}` : ""}
         description="Editar los detalles de la tarea seleccionada."
         fields={
           loadingDetalle ? (
-            <p className="text-sm opacity-50">Cargando...</p>
+            <p className="h-500 text-sm opacity-50">Cargando...</p>
           ) : detalle ? (
             <div className="flex flex-col gap-3">
-              {/* Operario */}
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -262,7 +365,6 @@ export default function CargarTarea() {
                   />
                 }
               />
-              {/* Tiempo Extra */}
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -275,7 +377,6 @@ export default function CargarTarea() {
                   onChange={setTiempoExtraEdit}
                 />
               </ItemCard>
-
               <ItemCard
                 variant="outline"
                 size="sm"
@@ -294,25 +395,23 @@ export default function CargarTarea() {
         }
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
-            <Button
-              className="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
-              onClick={() => {
-                setFilaEliminando(tareaEditando)
-              }}
-            >
-              ELIMINAR
-            </Button>
+            <Boton
+              extraClass="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
+              onClick={() => setFilaEliminando(tareaEditando)}
+              placeholder="ELIMINAR"
+            />
             <div className="flex w-full flex-row items-center justify-end gap-5">
-              <Button className="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona">
-                FINALIZAR
-              </Button>
-              <Button
-                className="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona"
+              <Boton
+                extraClass="border-bluecremona bg-bluecremona/40 hover:bg-bluecremona/80"
+                placeholder="FINALIZAR"
+                onClick={handleFinalizar}
+              />
+              <Boton
+                extraClass="border-greencremona bg-greencremona/40 hover:bg-greencremona/80"
+                placeholder="GUARDAR"
                 onClick={handleGuardar}
                 disabled={!dirty}
-              >
-                GUARDAR
-              </Button>
+              />
             </div>
           </div>
         }
@@ -346,9 +445,7 @@ export default function CargarTarea() {
       <AlertDialogTemplate
         open={filaEliminando !== null}
         onOpenChange={(open) => {
-          if (!open) {
-            setFilaEliminando(null)
-          }
+          if (!open) setFilaEliminando(null)
         }}
         title="¿Eliminar tarea?"
         description={`Esta acción no se puede deshacer. Se eliminará la tarea ${filaEliminando ?? ""}.`}

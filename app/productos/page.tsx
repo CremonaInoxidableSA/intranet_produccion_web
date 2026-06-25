@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { AlertDialogTemplate } from "@/components/componentsClient"
 import {
-  EliminarButton,
+  BotonIcono,
   TextScrollArea,
   Inputs,
   Selector,
-  GuardarButton,
+  Boton,
 } from "@/components/components"
 import { useSectores } from "@/context/dataGeneralContext"
+import { Trash2 } from "lucide-react"
 
 const Datos = Array.from({ length: 50 }).map(
   (_, i, a) => `Mesa ${a.length - i}`
@@ -20,12 +21,12 @@ export default function Productos() {
   const { sectores } = useSectores()
 
   return (
-    <div className="flex h-500 flex-col gap-2 p-5 xl:flex-1 justify-center items-center">
+    <div className="flex h-500 flex-col items-center justify-center gap-2 p-5 xl:flex-1">
       <h1 className="flex w-full justify-center text-xl font-bold">
         PRODUCTOS
       </h1>
 
-      <div className="w-full xl:w-6/7 flex-1 flex min-h-0 flex-col gap-5 xl:h-[76vh] xl:flex-row">
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-5 xl:h-[76vh] xl:w-6/7 xl:flex-row">
         {/* Columna 1 */}
         <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
@@ -34,7 +35,8 @@ export default function Productos() {
             extraClass="flex-1 min-h-0 p-5 border"
             placeholderExtraClass="md:text-xl text-md"
             extras={(dato) => (
-              <EliminarButton
+              <BotonIcono
+                icono={Trash2}
                 extraClass="size-6"
                 onClick={() => setFilaEliminando(dato)}
               />
@@ -50,7 +52,7 @@ export default function Productos() {
               data={sectores}
               keyId="id_sector"
             />
-            <GuardarButton placeholder="CREAR NUEVO PRODUCTO" />
+            <Boton placeholder="CREAR NUEVO PRODUCTO" />
           </div>
         </div>
 
@@ -62,7 +64,8 @@ export default function Productos() {
             extraClass="flex-1 min-h-0 p-5 border"
             placeholderExtraClass="md:text-xl text-md"
             extras={(dato) => (
-              <EliminarButton
+              <BotonIcono
+                icono={Trash2}
                 extraClass="size-6"
                 onClick={() => setFilaEliminando(dato)}
               />
@@ -75,7 +78,7 @@ export default function Productos() {
             <Inputs placeholder="NOMBRE LABOR" type="text" />
             <Inputs placeholder="PRODUCTO" type="text" />
             <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
-            <GuardarButton placeholder="CREAR NUEVO LABOR" />
+            <Boton placeholder="CREAR NUEVO LABOR" />
           </div>
         </div>
       </div>
