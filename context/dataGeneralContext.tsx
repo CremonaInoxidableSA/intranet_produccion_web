@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 
 export type Sector = {
@@ -14,18 +16,15 @@ export function useSectores() {
     async function fetchData() {
       try {
         const response = await fetch("/api/lista-sectores")
-
         if (!response.ok) throw new Error("Error al obtener sectores")
-
         const data: Sector[] = await response.json()
         setSectores(data)
-      } catch (err) {
+      } catch {
         setError("No se pudo cargar la lista de sectores")
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 
@@ -44,25 +43,21 @@ export function useProductos(id_sector: number | null) {
 
   useEffect(() => {
     if (id_sector === null) return
-
     async function fetchData() {
       setLoading(true)
       try {
         const response = await fetch(
           `/api/lista-productosSector?id_sector=${id_sector}`
         )
-
         if (!response.ok) throw new Error("Error al obtener productos")
-
         const data: Producto[] = await response.json()
         setProductos(data)
-      } catch (err) {
+      } catch {
         setError("No se pudo cargar la lista de productos")
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [id_sector])
 
@@ -87,21 +82,14 @@ export function useLabores(
       setLabores([])
       return
     }
-
     async function fetchData() {
       setLoading(true)
-
       try {
         const response = await fetch(
           `/api/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
         )
-
-        if (!response.ok) {
-          throw new Error("Error al obtener labores")
-        }
-
+        if (!response.ok) throw new Error("Error al obtener labores")
         const data: Labor[] = await response.json()
-
         setLabores(data)
       } catch {
         setError("No se pudo cargar la lista de labores")
@@ -110,7 +98,6 @@ export function useLabores(
         setLoading(false)
       }
     }
-
     fetchData()
   }, [id_sector, id_producto])
 
@@ -133,22 +120,21 @@ export function useOperarios() {
     async function fetchData() {
       try {
         const response = await fetch("/api/lista-operarios")
-
-        if (!response.ok) throw new Error("Error al obtener sectores")
-
+        if (!response.ok) throw new Error("Error al obtener operarios")
         const data = await response.json()
-        const operariosFormateados = data.map((o: any) => ({
-          ...o,
-          nombre_completo: `${o.apellido} ${o.nombre}`,
-        }))
+        const operariosFormateados = data.map(
+          (o: { id_operario: number; nombre: string; apellido: string }) => ({
+            ...o,
+            nombre_completo: `${o.apellido} ${o.nombre}`,
+          })
+        )
         setOperarios(operariosFormateados)
-      } catch (err) {
-        setError("No se pudo cargar la lista de sectores")
+      } catch {
+        setError("No se pudo cargar la lista de operarios")
       } finally {
         setLoading(false)
       }
     }
-
     fetchData()
   }, [])
 

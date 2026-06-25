@@ -114,8 +114,7 @@ export function useTareaEditor() {
       setFilaEliminando(null)
       setTareaEditando(null)
       await refetch()
-    } catch {
-    }
+    } catch {}
   }, [filaEliminando, refetch, removeTareaLocal])
 
   const handleGuardar = useCallback(async () => {
@@ -189,8 +188,7 @@ export function useTareaEditor() {
       await fetchTiempoCronometrado(id)
       setCronometroKey((prev) => prev + 1)
       setShowReiniciarConfirm(false)
-    } catch {
-    }
+    } catch {}
   }, [tareaEditando, fetchTiempoCronometrado])
 
   const resetEditor = useCallback(() => {
@@ -223,10 +221,8 @@ export function useTareaEditor() {
           fetchTiempoCronometrado(id)
         }, 500)
       }
-    } catch {
-    }
+    } catch {}
   }, [tareaEditando, detalle?.estado, refetchDetalle, fetchTiempoCronometrado])
-
 
   const handleFinalizar = useCallback(async () => {
     const id = tareaEditando
@@ -240,8 +236,7 @@ export function useTareaEditor() {
 
       await handleApiResponse(res)
       await refetch()
-    } catch {
-    }
+    } catch {}
   }, [tareaEditando, refetch])
 
   return {

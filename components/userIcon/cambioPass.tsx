@@ -81,9 +81,7 @@ const CambioPass = () => {
         setOpen(false)
         setForm({ current_password: "", new_password: "" })
       } else {
-        const message =
-          data.detail ??
-          "Error al cambiar la contraseña."
+        const message = data.detail ?? "Error al cambiar la contraseña."
         toast.error(message, {
           position: "top-center",
         })

@@ -8,13 +8,9 @@ import {
   DialogTemplate,
   DateRangePicker,
 } from "@/components/componentsClient"
-import {
-  TextScrollArea,
-  BotonIcono,
-  Selector,
-} from "@/components/components"
+import { TextScrollArea, BotonIcono, Selector } from "@/components/components"
 import { useSectores } from "@/context/dataGeneralContext"
-import { Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react"
 
 export default function CargarTarea() {
   const [tareaEditando, setTareaEditando] = useState<string | null>(null)

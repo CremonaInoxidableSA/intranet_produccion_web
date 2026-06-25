@@ -97,7 +97,7 @@ export default function HeaderPrincipal() {
         </p>
 
         {/* Desktop: links + logo */}
-        <div className="hidden w-[30%] justify-end items-center gap-5 xl:flex">
+        <div className="hidden w-[30%] items-center justify-end gap-5 xl:flex">
           {headerNavRight.map((item, index) => (
             <Link
               key={index}

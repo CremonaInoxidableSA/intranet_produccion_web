@@ -32,7 +32,7 @@ export function Boton({
   onClick,
   disabled = false,
 }: {
-  extraClass: string
+  extraClass?: string
   placeholder?: string
   disabled?: boolean
   onClick?: () => void
@@ -55,13 +55,13 @@ export function BotonIcono({
   buttonClass,
   iconClass,
   onClick,
-  disabled=false
+  disabled = false,
 }: {
   icono: LucideIcon
   buttonClass?: string
   iconClass?: string
   onClick?: () => void
-  disabled?: boolean,
+  disabled?: boolean
 }) {
   return (
     <button

@@ -45,7 +45,7 @@ const opciones = [
 
 export default function Home() {
   return (
-    <div className="grid grid-cols-2 xl:flex xl:flex-1 xl:flex-wrap w-full h-full content-start justify-center gap-5 p-5 md:px-50 md:py-20">
+    <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
       {opciones.map((opcion) => (
         <Link
           key={opcion.id}

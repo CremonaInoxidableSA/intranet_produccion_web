@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 
-const API_BASE_URL =
-  process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
+const API_BASE_URL = process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
 
 export async function GET() {
   try {

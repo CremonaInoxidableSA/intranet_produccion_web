@@ -5,14 +5,11 @@ const API_BASE_URL =
 
 export async function GET() {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/sectores/lista-sectores`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    )
+    const response = await fetch(`${API_BASE_URL}/sectores/lista-sectores`, {
+      headers: {
+        Accept: "application/json",
+      },
+    })
 
     if (!response.ok) {
       return NextResponse.json(
