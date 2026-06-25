@@ -7,6 +7,7 @@ export type TareaUsuario = {
   apellido_operario_seleccionado: string
   nombre_producto: string
   nombre_labor: string
+  estado: string
 }
 
 export function useTareasUsuario() {

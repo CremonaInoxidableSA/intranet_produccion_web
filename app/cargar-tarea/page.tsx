@@ -114,8 +114,9 @@ export default function CargarTarea() {
       await handleApiResponse(res)
       setOperarioSeleccionado(operarioOcupadoInfo.id_operario)
       setOperarioOcupadoInfo(null)
+      await refetch()
     } catch {}
-  }, [operarioOcupadoInfo])
+  }, [operarioOcupadoInfo, refetch])
 
   const setSectorSeleccionado = useCallback((id: number | null) => {
     setSectorSeleccionadoState(id)
@@ -354,6 +355,22 @@ export default function CargarTarea() {
             placeholder="LISTADO DE TAREAS EN CURSO"
             extraClass="bg-background2 p-5 h-[70vh] xl:flex-1 xl:min-h-0"
             placeholderExtraClass="text-md"
+            extras={(tag) => {
+              const id = Number(tag.split(" ")[1].replace(":", ""))
+              const estado = tareas.find((t) => t.id_tarea === id)?.estado ?? ""
+              const isPausada = estado.toLowerCase() === "pausada"
+              return (
+                <span
+                  className={`rounded px-2 py-0.5 text-xs font-semibold ${
+                    isPausada
+                      ? "bg-yellow-500/20 text-yellow-500"
+                      : "bg-greencremona/20 text-greencremona"
+                  }`}
+                >
+                  {estado.toUpperCase()}
+                </span>
+              )
+            }}
             onTagClick={(tag) => {
               const id = Number(tag.split(" ")[1].replace(":", ""))
               setTareaEditando(id)
