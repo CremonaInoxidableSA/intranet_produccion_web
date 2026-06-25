@@ -1,9 +1,17 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
-import { useTareasUsuario, useDetalleTarea } from "@/context/dataUserContext"
+import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 
-export function useTareaEditor() {
+interface UseTareaEditorProps {
+  refetch: () => Promise<void>
+  removeTareaLocal: (id: number) => void
+}
+
+export function useTareaEditor({
+  refetch,
+  removeTareaLocal,
+}: UseTareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [descripcionEdit, setDescripcionEdit] = useState("")
@@ -15,8 +23,6 @@ export function useTareaEditor() {
 
   const [tiempoCronometrado, setTiempoCronometrado] =
     useState<string>("00:00:00")
-
-  const { refetch, removeTareaLocal } = useTareasUsuario()
   const {
     detalle,
     loading: loadingDetalle,
@@ -235,9 +241,11 @@ export function useTareaEditor() {
       })
 
       await handleApiResponse(res)
+      removeTareaLocal(id)
+      setTareaEditando(null)
       await refetch()
     } catch {}
-  }, [tareaEditando, refetch])
+  }, [tareaEditando, refetch, removeTareaLocal])
 
   return {
     tareaEditando,

@@ -41,6 +41,8 @@ export default function CargarTarea() {
   const [descripcion, setDescripcion] = useState("")
   const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
 
+  const { tareas, refetch, removeTareaLocal } = useTareasUsuario()
+
   const {
     tareaEditando,
     setTareaEditando,
@@ -64,9 +66,8 @@ export default function CargarTarea() {
     setShowReiniciarConfirm,
     handlePausarTarea,
     handleFinalizar,
-  } = useTareaEditor()
+  } = useTareaEditor({ refetch, removeTareaLocal })
 
-  const { tareas } = useTareasUsuario()
   const { id_current_user } = useUser()
   const { operarios } = useOperarios()
   const { sectores } = useSectores()
