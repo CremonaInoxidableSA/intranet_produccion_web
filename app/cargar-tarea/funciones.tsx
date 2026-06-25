@@ -144,7 +144,7 @@ export function useTareaEditor({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, descripcion: descripcionEdit }),
-        }).then((res) => res.json())
+        })
       )
     }
 
@@ -159,7 +159,7 @@ export function useTareaEditor({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, tiempo_extra: tiempoExtraEdit }),
-        }).then((res) => res.json())
+        })
       )
     }
 

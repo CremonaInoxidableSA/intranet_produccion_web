@@ -304,7 +304,7 @@ export default function CargarTarea() {
           <TextScrollArea
             tags={tareas.map(
               (tarea) =>
-                `TAREA ${tarea.id_tarea}: ${tarea.nombre_operario_seleccionado} ${tarea.apellido_operario_seleccionado} - ${tarea.nombre_producto}`
+                `TAREA ${tarea.id_tarea}: ${tarea.apellido_operario_seleccionado} ${tarea.nombre_operario_seleccionado} - ${tarea.nombre_producto}`
             )}
             placeholder="LISTADO DE TAREAS EN CURSO"
             extraClass="bg-background2 p-5 h-[70vh] xl:flex-1 xl:min-h-0"
@@ -330,7 +330,7 @@ export default function CargarTarea() {
                 size="sm"
                 className="p-3"
                 title="OPERARIO"
-                description={`${detalle.nombre_operario_seleccionado} ${detalle.apellido_operario_seleccionado}`}
+                description={`${detalle.apellido_operario_seleccionado} ${detalle.nombre_operario_seleccionado}`}
               />
               <ItemCard
                 variant="outline"

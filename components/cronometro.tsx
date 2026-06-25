@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -88,6 +88,10 @@ export function CronometroEdicion({
   }
 
   const [displayTime, setDisplayTime] = useState<number>(parseTime(value))
+
+  useEffect(() => {
+    setDisplayTime(parseTime(value))
+  }, [value])
 
   const formatTime = (ms: number): string => {
     const hours = Math.floor(ms / 3600000)
