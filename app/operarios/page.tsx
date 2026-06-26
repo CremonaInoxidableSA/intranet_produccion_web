@@ -1,16 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import {
   TablaEdicion,
   DialogTemplate,
   AlertDialogTemplate,
 } from "@/components/componentsClient"
-import { Selector, Inputs, Boton } from "@/components/components"
+import {
+  Selector,
+  Inputs,
+  Boton,
+  TextScrollArea,
+} from "@/components/components"
 import { Button } from "@/components/ui/button"
 import { useSectores } from "@/context/dataGeneralContext"
-import { roles, datosUsuarios } from "./data"
+import { roles } from "./data"
 import { useUsuarioForm } from "./funciones"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function Usuarios() {
   const [filaEditando, setFilaEditando] = useState<Record<
@@ -34,7 +40,21 @@ export default function Usuarios() {
     setRolId,
     formularioCompleto,
     handleCargarUsuario,
+    loading,
+    usuarios,
+    loadingUsuarios,
   } = useUsuarioForm()
+
+  const tagRolMap = useMemo(
+    () =>
+      new Map(
+        usuarios.map((u) => [
+          `${u.apellido} ${u.nombre} - ${u.legajo}`,
+          u.rol_display,
+        ])
+      ),
+    [usuarios]
+  )
 
   return (
     <div className="flex h-full w-full flex-col gap-5 p-5">
@@ -54,18 +74,21 @@ export default function Usuarios() {
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
+                disabled={loading}
               />
               <Inputs
                 placeholder="APELLIDO"
                 type="text"
                 value={apellido}
                 onChange={(e) => setApellido(e.target.value)}
+                disabled={loading}
               />
               <Inputs
                 placeholder="LEGAJO"
                 type="number"
                 value={legajo}
                 onChange={(e) => setLegajo(e.target.value)}
+                disabled={loading}
               />
               <Selector
                 placeholder="ROL"
@@ -74,29 +97,44 @@ export default function Usuarios() {
                 keyLabel="nombre_rol"
                 value={rolId}
                 onValueChange={setRolId}
+                disabled={loading}
               />
               <Button
                 className="w-full bg-bluecremona hover:bg-bluecremona/80"
-                disabled={!formularioCompleto}
+                disabled={!formularioCompleto || loading}
                 onClick={handleCargarUsuario}
               >
-                CARGAR USUARIO
+                {loading ? <Spinner /> : "CARGAR USUARIO"}
               </Button>
             </div>
           </div>
         </div>
 
         {/* Panel derecho */}
-        <div className="flex w-full flex-col gap-2 rounded bg-background2 p-5 md:w-2/3 xl:w-1/3">
-          <h1 className="flex w-full items-center text-xl font-bold">
-            REGISTROS
-          </h1>
-          <TablaEdicion
-            columns={["NOMBRE_APELLIDO", "LEGAJO"]}
-            data={datosUsuarios}
-            onClickEdit={(row) => setFilaEditando(row)}
-          />
-        </div>
+        <TextScrollArea
+          tags={
+            loadingUsuarios
+              ? ["Cargando..."]
+              : usuarios.map((u) => `${u.apellido} ${u.nombre} - ${u.legajo}`)
+          }
+          extras={(tag) => {
+            const rol_display = tagRolMap.get(tag) ?? ""
+            return (
+              <span
+                className={`rounded px-2 py-0.5 text-xs font-semibold ${
+                  rol_display === "ENCARGADO"
+                    ? "bg-redcremona/20 text-redcremona"
+                    : "bg-greencremona/20 text-greencremona"
+                }`}
+              >
+                {rol_display}
+              </span>
+            )
+          }}
+          placeholder={"LISTADO DE USUARIOS"}
+          extraClass="bg-background2 p-5 h-[70vh] w-full xl:flex-1 xl:min-h-0"
+          placeholderExtraClass="text-md font-bold"
+        />
       </div>
 
       {/* Dialog edición */}

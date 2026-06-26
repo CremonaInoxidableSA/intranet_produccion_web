@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react"
 import { useUser } from "@/context/userContext"
+import { useOperarios } from "@/context/dataGeneralContext"
 import { roles } from "./data"
 import { handleApiResponse } from "@/lib/response-handler"
 
@@ -8,8 +9,25 @@ export function useUsuarioForm() {
   const [apellido, setApellido] = useState("")
   const [legajo, setLegajo] = useState("")
   const [rolId, setRolId] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const { id_current_user } = useUser()
+  const {
+    operarios,
+    loading: loadingUsuarios,
+    refetch: refetchUsuarios,
+  } = useOperarios()
+
+  const usuarios = useMemo(
+    () =>
+      [...operarios].sort((a, b) =>
+        `${a.apellido} ${a.nombre}`.localeCompare(
+          `${b.apellido} ${b.nombre}`,
+          "es"
+        )
+      ),
+    [operarios]
+  )
 
   const formularioCompleto = useMemo(
     () =>
@@ -32,6 +50,7 @@ export function useUsuarioForm() {
     const rolSeleccionado = roles.find((r) => r.id_rol === rolId)
     if (!rolSeleccionado) return
 
+    setLoading(true)
     try {
       const res = await fetch("/api/crear/crear-usuario", {
         method: "POST",
@@ -46,7 +65,11 @@ export function useUsuarioForm() {
       })
       await handleApiResponse(res)
       resetFormulario()
-    } catch {}
+      await refetchUsuarios()
+    } catch {
+    } finally {
+      setLoading(false)
+    }
   }, [
     formularioCompleto,
     id_current_user,
@@ -55,6 +78,7 @@ export function useUsuarioForm() {
     legajo,
     rolId,
     resetFormulario,
+    refetchUsuarios,
   ])
 
   return {
@@ -68,5 +92,8 @@ export function useUsuarioForm() {
     setRolId,
     formularioCompleto,
     handleCargarUsuario,
+    loading,
+    usuarios,
+    loadingUsuarios,
   }
 }
