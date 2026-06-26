@@ -37,7 +37,7 @@ export default function Productos() {
             extras={(dato) => (
               <BotonIcono
                 icono={Trash2}
-                extraClass="size-6"
+                iconClass="size-6 text-red-500"
                 onClick={() => setFilaEliminando(dato)}
               />
             )}
@@ -66,7 +66,7 @@ export default function Productos() {
             extras={(dato) => (
               <BotonIcono
                 icono={Trash2}
-                extraClass="size-6"
+                iconClass="size-6 text-red-500"
                 onClick={() => setFilaEliminando(dato)}
               />
             )}

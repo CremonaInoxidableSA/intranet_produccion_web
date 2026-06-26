@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
 export async function GET() {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/obtener_usuarios_produccion`,
+      `${API_BASE_URL}/obtener-usuarios-produccion`,
       {
         headers: {
           Accept: "application/json",

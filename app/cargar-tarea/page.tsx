@@ -108,7 +108,7 @@ export default function CargarTarea() {
     if (!operarioOcupadoInfo) return
     try {
       const res = await fetch(
-        `/api/actualizar-pausarCronometro?id_tarea=${operarioOcupadoInfo.id_tarea}`,
+        `/api/actualizar/actualizar-pausarCronometro?id_tarea=${operarioOcupadoInfo.id_tarea}`,
         { method: "POST", headers: { "Content-Type": "application/json" } }
       )
       await handleApiResponse(res)
@@ -210,7 +210,7 @@ export default function CargarTarea() {
     }
 
     try {
-      const res = await fetch("/api/crear-tarea", {
+      const res = await fetch("/api/crear/crear-tarea", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

@@ -87,7 +87,7 @@ export default function CargarTarea() {
               extras={(dato) => (
                 <BotonIcono
                   icono={Trash2}
-                  extraClass="size-6"
+                  iconClass="size-6"
                   onClick={() => setFilaEliminando(dato)}
                 />
               )}
@@ -109,7 +109,7 @@ export default function CargarTarea() {
               extras={(dato) => (
                 <BotonIcono
                   icono={Trash2}
-                  extraClass="size-6"
+                  iconClass="size-6"
                   onClick={() => setFilaEliminando(dato)}
                 />
               )}

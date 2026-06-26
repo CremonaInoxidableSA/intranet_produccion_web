@@ -20,7 +20,7 @@ export function useTareasUsuario() {
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}&_=${Date.now()}`,
+        `/api/listas/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}&_=${Date.now()}`,
         { cache: "no-store" }
       )
       if (!response.ok) throw new Error()
@@ -71,7 +71,7 @@ export function useDetalleTarea(id_tarea: number | null) {
     setLoading(true)
     try {
       const response = await fetch(
-        `/api/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
+        `/api/detalles/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")
       const data: DetalleTarea = await response.json()

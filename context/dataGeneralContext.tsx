@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 
+//------------------------------------CARGAR NUEVA TAREA------------------------------------//
+
 export type Sector = {
   id_sector: number
   nombre: string
@@ -15,7 +17,7 @@ export function useSectores() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/lista-sectores")
+        const response = await fetch("/api/listas/lista-sectores")
         if (!response.ok) throw new Error("Error al obtener sectores")
         const data: Sector[] = await response.json()
         setSectores(data)
@@ -47,7 +49,7 @@ export function useProductos(id_sector: number | null) {
       setLoading(true)
       try {
         const response = await fetch(
-          `/api/lista-productosSector?id_sector=${id_sector}`
+          `/api/listas/lista-productosSector?id_sector=${id_sector}`
         )
         if (!response.ok) throw new Error("Error al obtener productos")
         const data: Producto[] = await response.json()
@@ -86,7 +88,7 @@ export function useLabores(
       setLoading(true)
       try {
         const response = await fetch(
-          `/api/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
+          `/api/listas/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
         )
         if (!response.ok) throw new Error("Error al obtener labores")
         const data: Labor[] = await response.json()
@@ -119,7 +121,7 @@ export function useOperarios() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/lista-operarios")
+        const response = await fetch("/api/listas/lista-operarios")
         if (!response.ok) throw new Error("Error al obtener operarios")
         const data = await response.json()
         const operariosFormateados = data.map(
