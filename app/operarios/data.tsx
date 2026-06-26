@@ -8,4 +8,5 @@ export type UsuarioEditando = {
   nombre: string
   apellido: string
   rol_nombre: string
+  legajo: number
 }

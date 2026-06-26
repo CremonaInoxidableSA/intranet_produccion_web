@@ -150,6 +150,7 @@ export default function Usuarios() {
               nombre: operario.nombre,
               apellido: operario.apellido,
               rol_nombre: operario.rol_nombre,
+              legajo: operario.legajo,
             })
           }}
           placeholder="LISTADO DE USUARIOS"
@@ -164,7 +165,7 @@ export default function Usuarios() {
         onOpenChange={(open) => {
           if (!open) cerrarEdicion()
         }}
-        title={`Editar: ${usuarioEditando ? `${usuarioEditando.apellido} ${usuarioEditando.nombre}` : ""}`}
+        title={`Editar usuario: ${usuarioEditando ? `${usuarioEditando.apellido} ${usuarioEditando.nombre} - ${usuarioEditando.legajo}` : ""}`}
         description="Modificá los datos del operario."
         fields={
           <div className="flex flex-col gap-3">
@@ -216,6 +217,14 @@ export default function Usuarios() {
                   disabled={loadingEdit}
                 />
               }
+            />
+
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
+              title="LEGAJO DEL USUARIO"
+              description={usuarioEditando ? usuarioEditando.legajo : ""}
             />
           </div>
         }
