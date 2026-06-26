@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react"
 import { useUser } from "@/context/userContext"
 import { useOperarios } from "@/context/dataGeneralContext"
-import { roles } from "./data"
+import { roles, type UsuarioEditando } from "./data"
 import { handleApiResponse } from "@/lib/response-handler"
 
 export function useUsuarioForm() {
@@ -95,5 +95,97 @@ export function useUsuarioForm() {
     loading,
     usuarios,
     loadingUsuarios,
+    refetchUsuarios,
+  }
+}
+
+export function useUsuarioEditor({
+  refetchUsuarios,
+}: {
+  refetchUsuarios: () => Promise<void>
+}) {
+  const { id_current_user } = useUser()
+
+  const [usuarioEditando, setUsuarioEditando] =
+    useState<UsuarioEditando | null>(null)
+  const [nombreEdit, setNombreEdit] = useState("")
+  const [apellidoEdit, setApellidoEdit] = useState("")
+  const [rolIdEdit, setRolIdEdit] = useState("")
+  const [loadingEdit, setLoadingEdit] = useState(false)
+
+  const abrirEdicion = useCallback((usuario: UsuarioEditando) => {
+    setUsuarioEditando(usuario)
+    setNombreEdit(usuario.nombre)
+    setApellidoEdit(usuario.apellido)
+    const rolActual = roles.find((r) => r.rol === usuario.rol_nombre)
+    setRolIdEdit(rolActual?.id_rol ?? "")
+  }, [])
+
+  const cerrarEdicion = useCallback(() => {
+    setUsuarioEditando(null)
+    setNombreEdit("")
+    setApellidoEdit("")
+    setRolIdEdit("")
+  }, [])
+
+  const formularioEditCompleto = useMemo(
+    () =>
+      nombreEdit.trim() !== "" &&
+      apellidoEdit.trim() !== "" &&
+      rolIdEdit !== "",
+    [nombreEdit, apellidoEdit, rolIdEdit]
+  )
+
+  const handleGuardarEdicion = useCallback(async () => {
+    if (!usuarioEditando || !formularioEditCompleto) return
+
+    const rolNuevo = roles.find((r) => r.id_rol === rolIdEdit)
+    if (!rolNuevo) return
+
+    setLoadingEdit(true)
+    try {
+      const res = await fetch("/api/actualizar/actualizar-usuarioProduccion", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_user_id: id_current_user,
+          id_operario: usuarioEditando.id_operario,
+          nombre: nombreEdit.trim(),
+          apellido: apellidoEdit.trim(),
+          viejo_rol_nombre: usuarioEditando.rol_nombre,
+          rol_nombre: rolNuevo.rol,
+        }),
+      })
+      await handleApiResponse(res)
+      cerrarEdicion()
+      await refetchUsuarios()
+    } catch {
+    } finally {
+      setLoadingEdit(false)
+    }
+  }, [
+    usuarioEditando,
+    formularioEditCompleto,
+    rolIdEdit,
+    id_current_user,
+    nombreEdit,
+    apellidoEdit,
+    cerrarEdicion,
+    refetchUsuarios,
+  ])
+
+  return {
+    usuarioEditando,
+    abrirEdicion,
+    cerrarEdicion,
+    nombreEdit,
+    setNombreEdit,
+    apellidoEdit,
+    setApellidoEdit,
+    rolIdEdit,
+    setRolIdEdit,
+    formularioEditCompleto,
+    handleGuardarEdicion,
+    loadingEdit,
   }
 }

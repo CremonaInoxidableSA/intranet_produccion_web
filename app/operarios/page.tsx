@@ -1,34 +1,20 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import {
-  TablaEdicion,
-  DialogTemplate,
-  AlertDialogTemplate,
-} from "@/components/componentsClient"
+import { useMemo } from "react"
+import { DialogTemplate } from "@/components/componentsClient"
 import {
   Selector,
   Inputs,
   Boton,
   TextScrollArea,
+  ItemCard,
 } from "@/components/components"
 import { Button } from "@/components/ui/button"
-import { useSectores } from "@/context/dataGeneralContext"
-import { roles } from "./data"
-import { useUsuarioForm } from "./funciones"
 import { Spinner } from "@/components/ui/spinner"
+import { roles } from "./data"
+import { useUsuarioForm, useUsuarioEditor } from "./funciones"
 
 export default function Usuarios() {
-  const [filaEditando, setFilaEditando] = useState<Record<
-    string,
-    string
-  > | null>(null)
-  const [filaEliminando, setFilaEliminando] = useState<Record<
-    string,
-    string
-  > | null>(null)
-
-  const { sectores } = useSectores()
   const {
     nombre,
     setNombre,
@@ -43,7 +29,31 @@ export default function Usuarios() {
     loading,
     usuarios,
     loadingUsuarios,
+    refetchUsuarios,
   } = useUsuarioForm()
+
+  const {
+    usuarioEditando,
+    abrirEdicion,
+    cerrarEdicion,
+    nombreEdit,
+    setNombreEdit,
+    apellidoEdit,
+    setApellidoEdit,
+    rolIdEdit,
+    setRolIdEdit,
+    formularioEditCompleto,
+    handleGuardarEdicion,
+    loadingEdit,
+  } = useUsuarioEditor({ refetchUsuarios })
+
+  const tagOperarioMap = useMemo(
+    () =>
+      new Map(
+        usuarios.map((u) => [`${u.apellido} ${u.nombre} - ${u.legajo}`, u])
+      ),
+    [usuarios]
+  )
 
   const tagRolMap = useMemo(
     () =>
@@ -61,8 +71,9 @@ export default function Usuarios() {
       <h1 className="flex w-full justify-center text-xl font-bold">
         LISTADO DE USUARIOS
       </h1>
+
       <div className="flex w-full flex-col items-center justify-center gap-5 md:flex-row md:items-start">
-        {/* Panel izquierdo */}
+        {/* Panel izquierdo - Cargar usuario */}
         <div className="w-full rounded bg-background2 p-5 md:w-1/4">
           <div className="flex flex-col gap-2 bg-background2">
             <h1 className="flex w-full items-center text-xl font-bold">
@@ -110,7 +121,7 @@ export default function Usuarios() {
           </div>
         </div>
 
-        {/* Panel derecho */}
+        {/* Panel derecho - Listado */}
         <TextScrollArea
           tags={
             loadingUsuarios
@@ -131,7 +142,17 @@ export default function Usuarios() {
               </span>
             )
           }}
-          placeholder={"LISTADO DE USUARIOS"}
+          onTagClick={(tag) => {
+            const operario = tagOperarioMap.get(tag)
+            if (!operario) return
+            abrirEdicion({
+              id_operario: operario.id_operario,
+              nombre: operario.nombre,
+              apellido: operario.apellido,
+              rol_nombre: operario.rol_nombre,
+            })
+          }}
+          placeholder="LISTADO DE USUARIOS"
           extraClass="bg-background2 p-5 h-[70vh] w-full xl:flex-1 xl:min-h-0"
           placeholderExtraClass="text-md font-bold"
         />
@@ -139,54 +160,73 @@ export default function Usuarios() {
 
       {/* Dialog edición */}
       <DialogTemplate
-        open={filaEditando !== null}
+        open={usuarioEditando !== null}
         onOpenChange={(open) => {
-          if (!open) setFilaEditando(null)
+          if (!open) cerrarEdicion()
         }}
-        title={`Editar: ${filaEditando?.NOMBRE_APELLIDO ?? ""}`}
+        title={`Editar: ${usuarioEditando ? `${usuarioEditando.apellido} ${usuarioEditando.nombre}` : ""}`}
         description="Modificá los datos del operario."
         fields={
-          <>
-            <Inputs placeholder="NOMBRE Y APELLIDO" type="text" />
-            <Inputs placeholder="LEGAJO" type="text" />
-            <Selector placeholder="SECTOR" data={sectores} keyId="id_sector" />
-            <Selector
-              placeholder="ROL"
-              data={roles}
-              keyId="id_rol"
-              keyLabel="nombre_rol"
+          <div className="flex flex-col gap-3">
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
+              title="NOMBRE DEL USUARIO"
+              description={
+                <Inputs
+                  placeholder="NOMBRE"
+                  type="text"
+                  value={nombreEdit}
+                  onChange={(e) => setNombreEdit(e.target.value)}
+                  disabled={loadingEdit}
+                />
+              }
             />
-          </>
-        }
-        dialogFooter={
-          <div className="flex w-full flex-row items-center justify-between gap-5">
-            <Boton
-              placeholder="ELIMINAR"
-              extraClass="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
-              onClick={() => {
-                setFilaEditando(null)
-                setFilaEliminando(filaEditando)
-              }}
+
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
+              title="APELLIDO DEL USUARIO"
+              description={
+                <Inputs
+                  placeholder="APELLIDO"
+                  type="text"
+                  value={apellidoEdit}
+                  onChange={(e) => setApellidoEdit(e.target.value)}
+                  disabled={loadingEdit}
+                />
+              }
             />
-            <Boton
-              placeholder="GUARDAR"
-              extraClass="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona"
+
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
+              title="ROL DEL USUARIO"
+              description={
+                <Selector
+                  placeholder="ROL"
+                  data={roles}
+                  keyId="id_rol"
+                  keyLabel="nombre_rol"
+                  value={rolIdEdit}
+                  onValueChange={setRolIdEdit}
+                  disabled={loadingEdit}
+                />
+              }
             />
           </div>
         }
-      />
-
-      {/* Dialog confirmación eliminación */}
-      <AlertDialogTemplate
-        open={filaEliminando !== null}
-        onOpenChange={(open) => {
-          if (!open) setFilaEliminando(null)
-        }}
-        title="¿Eliminar operario?"
-        description={`Esta acción no se puede deshacer. Se eliminará a ${filaEliminando?.NOMBRE_APELLIDO ?? ""}.`}
-        onConfirm={() => {
-          setFilaEliminando(null)
-        }}
+        dialogFooter={
+          <Boton
+            placeholder={loadingEdit ? "GUARDANDO..." : "GUARDAR"}
+            extraClass="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona"
+            disabled={!formularioEditCompleto || loadingEdit}
+            onClick={handleGuardarEdicion}
+          />
+        }
       />
     </div>
   )

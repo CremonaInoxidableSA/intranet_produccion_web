@@ -1,0 +1,33 @@
+import { NextResponse } from "next/server"
+
+const API_BASE_URL = process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json()
+
+    const response = await fetch(`${API_BASE_URL}/editar-usuario-produccion`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: "Error al consultar la API" },
+        { status: response.status }
+      )
+    }
+
+    const data = await response.json()
+    return NextResponse.json(data)
+  } catch (error) {
+    return NextResponse.json(
+      { error: "No se pudo conectar con el servidor" },
+      { status: 500 }
+    )
+  }
+}

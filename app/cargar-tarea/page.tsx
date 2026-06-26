@@ -7,7 +7,12 @@ import {
   AlertDialogTemplate,
   DialogTemplate,
 } from "@/components/componentsClient"
-import { Textarea, TextScrollArea, Boton } from "@/components/components"
+import {
+  Textarea,
+  TextScrollArea,
+  Boton,
+  ItemCard,
+} from "@/components/components"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
   useSectores,
@@ -18,7 +23,6 @@ import {
 import { useTareasUsuario } from "@/context/dataUserContext"
 import { useUser } from "@/context/userContext"
 import { useTareaEditor } from "./funciones"
-import { ItemCard } from "@/components/components"
 import { handleApiResponse } from "@/lib/response-handler"
 
 export default function CargarTarea() {
