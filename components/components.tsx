@@ -242,6 +242,7 @@ export function Tabla({
 export const TextScrollArea = React.memo(function TextScrollArea({
   tags,
   subtitles,
+  selectedIndex,
   extraClass,
   placeholder,
   placeholderExtraClass,
@@ -250,6 +251,7 @@ export const TextScrollArea = React.memo(function TextScrollArea({
 }: {
   tags: string[]
   subtitles?: string[]
+  selectedIndex?: number
   extraClass?: string
   placeholder?: string
   placeholderExtraClass?: string
@@ -283,15 +285,20 @@ export const TextScrollArea = React.memo(function TextScrollArea({
           itemContent={(index) => {
             const tag = tags[index]
             const subtitle = subtitles?.[index]
+            const isSelected = selectedIndex === index
             return (
               <div key={tag} className="mr-4">
-                <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
+                <span
+                  className={`flex flex-row items-center rounded px-2 hover:bg-foreground/10 ${isSelected ? "bg-foreground/10" : ""}`}
+                >
                   <div
                     onClick={() => onTagClick?.(tag, index)}
                     className="flex flex-1 cursor-pointer py-2"
                   >
                     <div className="flex flex-col">
-                      <span>{tag}</span>
+                      <span className={isSelected ? "font-semibold" : ""}>
+                        {tag}
+                      </span>
                       {subtitle && (
                         <span className="text-xs opacity-50">{subtitle}</span>
                       )}

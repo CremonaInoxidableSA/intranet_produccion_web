@@ -191,3 +191,43 @@ export function useOperarios() {
 
   return { operarios, loading, error, refetch: fetchData }
 }
+
+//------------------------------------LABORES POR PRODUCTO------------------------------------//
+
+export type LaborProducto = {
+  id_labor: number
+  nombre: string
+  sector: string
+}
+
+export function useLaborresProducto(id_producto: number | null) {
+  const [labores, setLabores] = useState<LaborProducto[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchData = useCallback(async () => {
+    if (id_producto === null) {
+      setLabores([])
+      return
+    }
+    setLoading(true)
+    try {
+      const response = await fetch(
+        `/api/listas/lista-labores-producto?id_producto=${id_producto}`
+      )
+      if (!response.ok) throw new Error("Error al obtener labores")
+      const data: LaborProducto[] = await response.json()
+      setLabores(data)
+    } catch {
+      setError("No se pudo cargar la lista de labores")
+    } finally {
+      setLoading(false)
+    }
+  }, [id_producto])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { labores, loading, error, refetch: fetchData }
+}
