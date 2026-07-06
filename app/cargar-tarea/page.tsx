@@ -41,7 +41,7 @@ export default function CargarTarea() {
   )
   const [laborManual, setLaborManual] = useState("")
   const [numeroOp, setNumeroOp] = useState<number | null>(null)
-  const [numeroPlano, setNumeroPlano] = useState<number | null>(null)
+  const [numeroPlano, setNumeroPlano] = useState<string | null>(null)
   const [descripcion, setDescripcion] = useState("")
   const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
 
@@ -162,7 +162,7 @@ export default function CargarTarea() {
       sectorSeleccionado !== null &&
       productoSeleccionado !== null &&
       numeroOp !== null &&
-      numeroPlano !== null &&
+      numeroPlano !== "" &&
       (mostrarInputLabor
         ? laborManual.trim() !== ""
         : laborSeleccionada !== null),
@@ -185,7 +185,7 @@ export default function CargarTarea() {
     setLaborSeleccionada(null)
     setLaborManual("")
     setNumeroOp(null)
-    setNumeroPlano(null)
+    setNumeroPlano("")
     setDescripcion("")
     setTiempoExtra("00:00:00")
   }, [])

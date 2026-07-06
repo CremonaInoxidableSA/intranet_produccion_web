@@ -50,7 +50,7 @@ export type DetalleTarea = {
   apellido_operario_seleccionado: string
   nombre_sector: string
   numero_op: number
-  numero_plano: number
+  numero_plano: string
   nombre_producto: string
   nombre_labor: string
   descripcion: string

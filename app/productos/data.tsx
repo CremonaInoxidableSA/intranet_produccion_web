@@ -25,8 +25,8 @@ export function getOpcionesNuevaTarea(
   mostrarInputLabor: boolean,
   numeroOp: number | null,
   setNumeroOp: (v: number | null) => void,
-  numeroPlano: number | null,
-  setNumeroPlano: (v: number | null) => void,
+  numeroPlano: string | null,
+  setNumeroPlano: (v: string | null) => void,
   descripcion: string,
   setDescripcion: (v: string) => void,
   tiempoExtra: string,
@@ -84,9 +84,9 @@ export function getOpcionesNuevaTarea(
             />
             <Inputs
               placeholder="NUMERO DE PLANO"
-              type="number"
+              type="text"
               value={numeroPlano !== null ? String(numeroPlano) : ""}
-              onChange={(e) => setNumeroPlano(Number(e.target.value))}
+              onChange={(e) => setNumeroPlano(e.target.value)}
             />
             <Selector
               placeholder="PRODUCTO"
