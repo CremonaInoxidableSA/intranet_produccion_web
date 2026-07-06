@@ -16,7 +16,7 @@ import {
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
   useSectores,
-  useProductos,
+  useProductosSector,
   useLabores,
   useOperarios,
 } from "@/context/dataGeneralContext"
@@ -76,7 +76,7 @@ export default function CargarTarea() {
     useUser()
   const { operarios } = useOperarios()
   const { sectores } = useSectores()
-  const { productos } = useProductos(sectorSeleccionado)
+  const { productos } = useProductosSector(sectorSeleccionado)
   const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
   const [operarioOcupadoInfo, setOperarioOcupadoInfo] = useState<{

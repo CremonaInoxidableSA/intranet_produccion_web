@@ -22,7 +22,12 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { LucideIcon } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { LucideIcon, Check, ChevronDown } from "lucide-react"
 import { Virtuoso } from "react-virtuoso"
 
 //---------------------------------------BOTONES---------------------------------------//
@@ -131,6 +136,79 @@ export const Selector = React.memo(function Selector({
   )
 })
 
+export const SelectorMultiple = React.memo(function SelectorMultiple({
+  placeholder,
+  data,
+  keyId = "id",
+  keyLabel = "nombre",
+  values,
+  onValuesChange,
+  extraClass,
+  disabled = false,
+}: {
+  placeholder: string
+  data: ObjectArray
+  keyId?: string
+  keyLabel?: string
+  extraClass?: string
+  disabled?: boolean
+  values: string[]
+  onValuesChange: (values: string[]) => void
+}) {
+  const toggle = (id: string) => {
+    onValuesChange(
+      values.includes(id) ? values.filter((v) => v !== id) : [...values, id]
+    )
+  }
+
+  const label =
+    values.length === 0
+      ? placeholder
+      : data
+          .filter((o) => values.includes(String(o[keyId])))
+          .map((o) => o[keyLabel])
+          .join(", ")
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild disabled={disabled}>
+        <button
+          type="button"
+          className={`flex min-h-10 w-full items-center justify-between rounded border-2 border-background6 bg-background3 px-3 py-2 text-left text-sm disabled:cursor-not-allowed disabled:opacity-50 ${extraClass ?? ""}`}
+        >
+          <span
+            className={`truncate ${values.length === 0 ? "opacity-50" : ""}`}
+          >
+            {label}
+          </span>
+          <ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-(--radix-popover-trigger-width) p-1"
+        align="start"
+      >
+        {data.map((opcion) => {
+          const id = String(opcion[keyId])
+          const selected = values.includes(id)
+          return (
+            <div
+              key={id}
+              onClick={() => toggle(id)}
+              className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm hover:bg-foreground/10"
+            >
+              <div className="flex size-4 shrink-0 items-center justify-center rounded border border-foreground/30">
+                {selected && <Check className="size-3" />}
+              </div>
+              <span>{opcion[keyLabel]}</span>
+            </div>
+          )
+        })}
+      </PopoverContent>
+    </Popover>
+  )
+})
+
 //---------------------------------------TABLAS---------------------------------------//
 export function Tabla({
   columns,
@@ -163,6 +241,7 @@ export function Tabla({
 
 export const TextScrollArea = React.memo(function TextScrollArea({
   tags,
+  subtitles,
   extraClass,
   placeholder,
   placeholderExtraClass,
@@ -170,11 +249,12 @@ export const TextScrollArea = React.memo(function TextScrollArea({
   onTagClick,
 }: {
   tags: string[]
+  subtitles?: string[]
   extraClass?: string
   placeholder?: string
   placeholderExtraClass?: string
-  extras?: (tag: string) => React.ReactNode
-  onTagClick?: (tag: string) => void
+  extras?: (tag: string, index: number) => React.ReactNode
+  onTagClick?: (tag: string, index: number) => void
 }) {
   return (
     <div className={`flex flex-col rounded ${extraClass || ""}`}>
@@ -202,16 +282,22 @@ export const TextScrollArea = React.memo(function TextScrollArea({
           }}
           itemContent={(index) => {
             const tag = tags[index]
+            const subtitle = subtitles?.[index]
             return (
               <div key={tag} className="mr-4">
                 <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
                   <div
-                    onClick={() => onTagClick?.(tag)}
+                    onClick={() => onTagClick?.(tag, index)}
                     className="flex flex-1 cursor-pointer py-2"
                   >
-                    {tag}
+                    <div className="flex flex-col">
+                      <span>{tag}</span>
+                      {subtitle && (
+                        <span className="text-xs opacity-50">{subtitle}</span>
+                      )}
+                    </div>
                   </div>
-                  <div>{extras?.(tag)}</div>
+                  <div>{extras?.(tag, index)}</div>
                 </span>
                 {index < tags.length - 1 && <Separator className="my-2" />}
               </div>

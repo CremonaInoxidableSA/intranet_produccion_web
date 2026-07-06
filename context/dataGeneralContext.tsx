@@ -33,13 +33,13 @@ export function useSectores() {
   return { sectores, loading, error }
 }
 
-export type Producto = {
+export type ProductoSector = {
   id_producto: number
   nombre: string
 }
 
-export function useProductos(id_sector: number | null) {
-  const [productos, setProductos] = useState<Producto[]>([])
+export function useProductosSector(id_sector: number | null) {
+  const [productos, setProductos] = useState<ProductoSector[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -52,7 +52,7 @@ export function useProductos(id_sector: number | null) {
           `/api/listas/lista-productosSector?id_sector=${id_sector}`
         )
         if (!response.ok) throw new Error("Error al obtener productos")
-        const data: Producto[] = await response.json()
+        const data: ProductoSector[] = await response.json()
         setProductos(data)
       } catch {
         setError("No se pudo cargar la lista de productos")
@@ -64,6 +64,38 @@ export function useProductos(id_sector: number | null) {
   }, [id_sector])
 
   return { productos, loading, error }
+}
+
+export type Producto = {
+  id_producto: number
+  nombre: string
+  sectores: string[]
+}
+
+export function useProductos() {
+  const [productos, setProductos] = useState<Producto[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/listas/lista-productos")
+      if (!response.ok) throw new Error("Error al obtener productos")
+      const data: Producto[] = await response.json()
+      setProductos(data)
+    } catch {
+      setError("No se pudo cargar la lista de productos")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  return { productos, loading, error, refetch: fetchData }
 }
 
 export type Labor = {

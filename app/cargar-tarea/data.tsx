@@ -2,7 +2,7 @@ import { Selector, Inputs, Textarea } from "@/components/components"
 import { CronometroCreacion, DuracionInput } from "@/components/cronometro"
 import type {
   Sector,
-  Producto,
+  ProductoSector,
   Labor,
   Operario,
 } from "@/context/dataGeneralContext"
@@ -23,7 +23,7 @@ export const secciones = [
 ]
 
 export function getOpcionesNuevaTarea(
-  productos: Producto[],
+  productos: ProductoSector[],
   sectores: Sector[],
   labores: Labor[],
   operarios: Operario[],
