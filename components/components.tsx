@@ -152,9 +152,19 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
   keyLabel?: string
   extraClass?: string
   disabled?: boolean
-  values: (string | number)[] // lectura: acepta ambos
-  onValuesChange: (values: string[]) => void // escritura: siempre string[]
+  values: (string | number)[]
+  onValuesChange: (values: string[]) => void
 }) {
+  if (data.length === 0) {
+    return (
+      <div
+        className={`flex min-h-10 w-full items-center rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm opacity-70 ${extraClass ?? ""}`}
+      >
+        Filtros no disponibles
+      </div>
+    )
+  }
+
   const toggle = (id: string) => {
     const stringValues = values.map(String)
     onValuesChange(

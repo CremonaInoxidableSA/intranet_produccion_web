@@ -132,12 +132,22 @@ export function useMonitoreoEnCurso() {
 }
 
 export function useMonitoreoFinalizadas() {
-  const { filtros, loading: loadingFiltros } = useFiltrosFinalizadas()
-
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: startOfWeek(new Date(), { weekStartsOn: 0 }),
     to: endOfWeek(new Date(), { weekStartsOn: 0 }),
   })
+
+  const fechaInicioStr = dateRange?.from
+    ? format(dateRange.from, "yyyy-MM-dd")
+    : undefined
+  const fechaFinStr = dateRange?.to
+    ? format(dateRange.to, "yyyy-MM-dd")
+    : undefined
+
+  const { filtros, loading: loadingFiltros } = useFiltrosFinalizadas(
+    fechaInicioStr,
+    fechaFinStr
+  )
 
   const [opSel, setOpSel] = useState<(number | string)[]>([])
   const [planoSel, setPlanoSel] = useState<string[]>([])
@@ -202,18 +212,13 @@ export function useMonitoreoFinalizadas() {
 
   const descargarExcel = useCallback(() => {
     if (!dateRange?.from || !dateRange?.to) return
-    const payload = buildPayloadBase(opSel, planoSel, operarioSel, sectorSel)
     const params = new URLSearchParams({
       fecha_inicio: format(dateRange.from, "yyyy-MM-dd"),
       fecha_fin: format(dateRange.to, "yyyy-MM-dd"),
-      numeros_op: payload.numeros_op.join(","),
-      numeros_plano: payload.numeros_plano.join(","),
-      operarios: payload.operarios.join(","),
-      sectores: payload.sectores.join(","),
     })
-    const url = `/api/tareas/tareas-finalizadas-general/excel?${params}`
+    const url = `/api/reportes/descargarReporteFecha?${params}`
     window.open(url, "_blank")
-  }, [dateRange, opSel, planoSel, operarioSel, sectorSel])
+  }, [dateRange])
 
   return {
     filtros,

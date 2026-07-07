@@ -270,24 +270,35 @@ export function useFiltrosEnCurso() {
   return { filtros, loading }
 }
 
-export function useFiltrosFinalizadas() {
+export function useFiltrosFinalizadas(
+  fecha_inicio?: string,
+  fecha_fin?: string
+) {
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!fecha_inicio || !fecha_fin) return
+
     async function fetchData() {
+      setLoading(true)
       try {
-        const res = await fetch("/api/filtros/tareasFinalizadas")
+        const params = new URLSearchParams({
+          fecha_inicio: fecha_inicio!,
+          fecha_fin: fecha_fin!,
+        })
+        const res = await fetch(`/api/filtros/tareasFinalizadas?${params}`)
         if (!res.ok) throw new Error()
         const data: FiltrosMonitoreo = await res.json()
         setFiltros(data)
       } catch {
+        setFiltros(FILTROS_EMPTY)
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [])
+  }, [fecha_inicio, fecha_fin])
 
   return { filtros, loading }
 }

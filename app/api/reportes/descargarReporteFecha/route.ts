@@ -10,8 +10,7 @@ export async function GET(req: Request) {
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/reportes/descargar-reporte-fecha?fecha_inicio_filtrado=${fecha_inicio}&fecha_fin_filtrado=${fecha_fin}`,
-      { headers: { Accept: "application/json" } }
+      `${API_BASE_URL}/reportes/descargar-reporte-fecha?fecha_inicio_filtrado=${fecha_inicio}&fecha_fin_filtrado=${fecha_fin}`
     )
 
     if (!response.ok) {
@@ -21,8 +20,21 @@ export async function GET(req: Request) {
       )
     }
 
-    const data = await response.json()
-    return NextResponse.json(data)
+    const fileBuffer = await response.arrayBuffer()
+    const contentType =
+      response.headers.get("content-type") ??
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    const contentDisposition =
+      response.headers.get("content-disposition") ??
+      `attachment; filename="reporte_${fecha_inicio}_${fecha_fin}.xlsx"`
+
+    return new NextResponse(fileBuffer, {
+      status: 200,
+      headers: {
+        "Content-Type": contentType,
+        "Content-Disposition": contentDisposition,
+      },
+    })
   } catch {
     return NextResponse.json(
       { error: "No se pudo conectar con el servidor" },

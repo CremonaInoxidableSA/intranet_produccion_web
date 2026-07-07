@@ -82,7 +82,7 @@ export default function Monitoreo() {
   )
 
   return (
-    <div className="flex flex-1 h-full flex-col items-center gap-5 p-5">
+    <div className="flex h-full flex-1 flex-col items-center gap-5 p-5">
       <h1 className="text-xl font-bold xl:text-2xl">MONITOREO</h1>
 
       {/* Botones de sección — solo visibles en mobile */}
@@ -110,7 +110,7 @@ export default function Monitoreo() {
         <div
           className={`${
             seccionActiva === 1 ? "flex" : "hidden"
-          } flex-col gap-5 xl:flex flex-1`}
+          } flex-1 flex-col gap-5 xl:flex`}
         >
           <div className="flex flex-col gap-3 rounded bg-background2 p-5">
             <h1 className="text-md font-bold xl:text-lg">
@@ -180,7 +180,7 @@ export default function Monitoreo() {
         <div
           className={`${
             seccionActiva === 2 ? "flex" : "hidden"
-          } flex-col gap-5 xl:flex flex-1`}
+          } flex-1 flex-col gap-5 xl:flex`}
         >
           <div className="flex flex-col gap-3 rounded bg-background2 p-5">
             <h1 className="text-md font-bold xl:text-lg">
@@ -494,7 +494,7 @@ export default function Monitoreo() {
               onClick={() => {
                 if (detalleF && tareaFinalizadaEditando) {
                   const link = document.createElement("a")
-                  link.href = `/api/tareas/tarea-finalizada-excel?id_tarea=${tareaFinalizadaEditando}`
+                  link.href = `/api/reportes/descargarReporteTarea?id_tarea=${tareaFinalizadaEditando}`
                   link.download = `tarea_${tareaFinalizadaEditando}.xlsx`
                   document.body.appendChild(link)
                   link.click()
