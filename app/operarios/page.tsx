@@ -14,7 +14,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { roles } from "./data"
 import { useUsuarioForm, useUsuarioEditor } from "./funciones"
 
-export default function Usuarios() {
+export default function Operarios() {
   const {
     nombre,
     setNombre,
