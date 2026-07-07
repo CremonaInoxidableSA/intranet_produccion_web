@@ -34,7 +34,7 @@ import {
 import { PencilLine } from "lucide-react"
 import { BotonIcono } from "@/components/components"
 
-import { addDays, format } from "date-fns"
+import { addDays, format, subMonths, startOfMonth, endOfMonth } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 
@@ -48,11 +48,24 @@ import {
 } from "@/components/ui/popover"
 
 //---------------------------------------DATE PICKER---------------------------------------//
-export function DateRangePicker({ placeholder }: { placeholder?: string }) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(new Date().getFullYear(), 0, 20),
-    to: addDays(new Date(new Date().getFullYear(), 0, 20), 20),
-  })
+export function DateRangePicker({
+  placeholder,
+  value,
+  onValueChange,
+}: {
+  placeholder?: string
+  value?: DateRange
+  onValueChange?: (date: DateRange | undefined) => void
+}) {
+  const [internalDate, setInternalDate] = React.useState<DateRange | undefined>(
+    {
+      from: startOfMonth(subMonths(new Date(), 1)),
+      to: endOfMonth(subMonths(new Date(), 1)),
+    }
+  )
+
+  const date = value ?? internalDate
+  const setDate = onValueChange ?? setInternalDate
 
   return (
     <Field className="flex h-full w-full">

@@ -25,7 +25,7 @@ export function useTareasUsuario() {
       )
       if (!response.ok) throw new Error()
       const data = await response.json()
-      setTareas(data.tareas)
+      setTareas(data.tareas ?? [])
     } catch {
       setError("No se pudo cargar las tareas")
     } finally {

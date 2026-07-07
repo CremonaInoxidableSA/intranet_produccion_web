@@ -231,3 +231,63 @@ export function useLaborresProducto(id_producto: number | null) {
 
   return { labores, loading, error, refetch: fetchData }
 }
+
+//------------------------------------FILTROS MONITOREO------------------------------------//
+
+export type FiltrosMonitoreo = {
+  numeros_op: number[]
+  numeros_plano: string[]
+  operarios: string[]
+  sectores: string[]
+}
+
+const FILTROS_EMPTY: FiltrosMonitoreo = {
+  numeros_op: [],
+  numeros_plano: [],
+  operarios: [],
+  sectores: [],
+}
+
+export function useFiltrosEnCurso() {
+  const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/filtros/tareasEnCurso")
+        if (!res.ok) throw new Error()
+        const data: FiltrosMonitoreo = await res.json()
+        setFiltros(data)
+      } catch {
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  return { filtros, loading }
+}
+
+export function useFiltrosFinalizadas() {
+  const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("/api/filtros/tareasFinalizadas")
+        if (!res.ok) throw new Error()
+        const data: FiltrosMonitoreo = await res.json()
+        setFiltros(data)
+      } catch {
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  return { filtros, loading }
+}
