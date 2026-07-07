@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { secciones, opcionesTarea } from "./data"
+import { secciones } from "./data"
 import {
   AlertDialogTemplate,
   DialogTemplate,
@@ -13,18 +13,55 @@ import {
   BotonIcono,
   SelectorMultiple,
   Boton,
+  Textarea,
+  ItemCard,
 } from "@/components/components"
 import {
   useMonitoreoEnCurso,
   useMonitoreoFinalizadas,
   toOptions,
+  useTareaEditor,
 } from "./funciones"
+import {
+  useTareasUsuario,
+  useDetalleTareaFinalizada,
+} from "@/context/dataUserContext"
+import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import { Trash2 } from "lucide-react"
 
 export default function Monitoreo() {
-  const [tareaEditando, setTareaEditando] = useState<number | null>(null)
-  const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
+  const { tareas, refetch, removeTareaLocal } = useTareasUsuario()
+  const {
+    tareaEditando,
+    setTareaEditando,
+    filaEliminando,
+    setFilaEliminando,
+    descripcionEdit,
+    setDescripcionEdit,
+    tiempoExtraEdit,
+    setTiempoExtraEdit,
+    dirty,
+    showCloseConfirm,
+    setShowCloseConfirm,
+    loadingDetalle,
+    detalle,
+    handleEliminar,
+    handleGuardar,
+    handleReiniciarCronometro,
+    resetEditor,
+    tiempoCronometrado,
+    showReiniciarConfirm,
+    setShowReiniciarConfirm,
+    handlePausarTarea,
+    handleFinalizar,
+  } = useTareaEditor({ refetch, removeTareaLocal })
+
+  const [tareaFinalizadaEditando, setTareaFinalizadaEditando] = useState<
+    number | null
+  >(null)
+  const { detalle: detalleF, loading: loadingDetalleF } =
+    useDetalleTareaFinalizada(tareaFinalizadaEditando)
 
   const curso = useMonitoreoEnCurso()
   const finalizadas = useMonitoreoFinalizadas()
@@ -201,7 +238,7 @@ export default function Monitoreo() {
             extraClass="flex flex-1 flex-col gap-3 rounded bg-background2 p-5"
             placeholderExtraClass="xl:text-lg text-md"
             onTagClick={(_, index) =>
-              setTareaEditando(finalizadas.tareas[index].id_tarea)
+              setTareaFinalizadaEditando(finalizadas.tareas[index].id_tarea)
             }
             extras={(_, index) => (
               <BotonIcono
@@ -217,30 +254,247 @@ export default function Monitoreo() {
       </div>
 
       <DialogTemplate
-        title={""}
+        title={tareaEditando ? `TAREA ${tareaEditando}` : ""}
         description="Editar los detalles de la tarea seleccionada."
-        fields={opcionesTarea.map((opcion) => (
-          <div className="w-full rounded bg-background2 p-4" key={opcion.id}>
-            {opcion.contenido}
-          </div>
-        ))}
+        fields={
+          loadingDetalle ? (
+            <p className="h-500 text-sm opacity-50">Cargando...</p>
+          ) : detalle ? (
+            <div className="flex flex-col gap-3">
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="OPERARIO"
+                description={`${detalle.apellido_operario_seleccionado} ${detalle.nombre_operario_seleccionado}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="SECTOR"
+                description={`${detalle.nombre_sector}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="NUMERO DE ORDEN DE PRODUCCION"
+                description={`${detalle.numero_op}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="NUMERO DE PLANO"
+                description={`${detalle.numero_plano}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="PRODUCTO"
+                description={`${detalle.nombre_producto}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="LABOR"
+                description={`${detalle.nombre_labor}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="DESCRIPCION"
+                description={
+                  <Textarea
+                    placeholder="DETALLES DE LA TAREA, OBSERVACIONES..."
+                    value={descripcionEdit}
+                    onChange={(e) => setDescripcionEdit(e.target.value)}
+                  />
+                }
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="TIEMPO EXTRA"
+                description="Agregado al tiempo cronometrado"
+              >
+                <DuracionInput
+                  value={tiempoExtraEdit}
+                  onChange={setTiempoExtraEdit}
+                />
+              </ItemCard>
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="CRONOMETRO"
+              >
+                <CronometroEdicion
+                  value={tiempoCronometrado}
+                  estado={detalle?.estado}
+                  onTogglePausa={handlePausarTarea}
+                  onReiniciar={() => setShowReiniciarConfirm(true)}
+                />
+              </ItemCard>
+            </div>
+          ) : null
+        }
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
-            <Button
-              className="border-red-600 bg-red-600/50 text-white hover:bg-red-600"
-              onClick={() => {}}
-            >
-              ELIMINAR
-            </Button>
-            <Button className="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona">
-              GUARDAR
-            </Button>
+            <Boton
+              extraClass="border-red-600 bg-red-600/50 hover:bg-red-600"
+              onClick={() => setFilaEliminando(tareaEditando)}
+              placeholder="ELIMINAR"
+            />
+            <div className="flex w-full flex-row items-center justify-end gap-5">
+              <Boton
+                extraClass="border-greencremona bg-greencremona/40 hover:bg-greencremona/80"
+                placeholder="GUARDAR"
+                onClick={handleGuardar}
+                disabled={!dirty}
+              />
+              <Boton
+                extraClass="border-bluecremona bg-bluecremona/40 hover:bg-bluecremona/80"
+                placeholder="FINALIZAR"
+                onClick={handleFinalizar}
+                disabled={dirty}
+              />
+            </div>
           </div>
         }
         open={tareaEditando !== null}
         onOpenChange={(open) => {
-          if (!open) setTareaEditando(null)
+          if (!open && dirty) {
+            setShowCloseConfirm(true)
+            return
+          }
+          if (!open) {
+            resetEditor()
+          }
         }}
+      />
+
+      <DialogTemplate
+        title={
+          tareaFinalizadaEditando ? `TAREA ${tareaFinalizadaEditando}` : ""
+        }
+        description="Detalles de la tarea finalizada."
+        fields={
+          loadingDetalleF ? (
+            <p className="text-sm opacity-50">Cargando...</p>
+          ) : detalleF ? (
+            <div className="flex flex-col gap-3">
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="OPERARIO"
+                description={`${detalleF.apellido_operario_seleccionado} ${detalleF.nombre_operario_seleccionado}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="SECTOR"
+                description={`${detalleF.nombre_sector}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="N° ORDEN DE PRODUCCION"
+                description={`${detalleF.numero_op}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="N° PLANO"
+                description={`${detalleF.numero_plano}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="PRODUCTO"
+                description={`${detalleF.nombre_producto}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="LABOR"
+                description={`${detalleF.nombre_labor}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="DESCRIPCION"
+                description={`${detalleF.descripcion || "—"}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="TIEMPO EXTRA"
+                description={`${detalleF.tiempo_extra}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="TIEMPO CRONOMETRADO"
+                description={`${detalleF.tiempo_cronometrado ?? "—"}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="TIEMPO TOTAL"
+                description={`${detalleF.tiempo_total ?? "—"}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="FECHA INICIO"
+                description={`${detalleF.fecha_inicio}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="FECHA FIN"
+                description={`${detalleF.fecha_fin}`}
+              />
+            </div>
+          ) : null
+        }
+        open={tareaFinalizadaEditando !== null}
+        onOpenChange={(open) => {
+          if (!open) setTareaFinalizadaEditando(null)
+        }}
+      />
+
+      <AlertDialogTemplate
+        open={showCloseConfirm}
+        onOpenChange={(open) => {
+          if (!open) setShowCloseConfirm(false)
+        }}
+        title="Tienes cambios sin guardar"
+        description="¿Deseas descartar los cambios y salir?"
+        onConfirm={() => {
+          setShowCloseConfirm(false)
+          resetEditor()
+        }}
+        cancelText="Seguir editando"
+        confirmText="Cancelar Edición"
       />
 
       <AlertDialogTemplate
@@ -250,7 +504,17 @@ export default function Monitoreo() {
         }}
         title="¿Eliminar tarea?"
         description={`Esta acción no se puede deshacer. Se eliminará la tarea ${filaEliminando ?? ""}.`}
-        onConfirm={() => setFilaEliminando(null)}
+        onConfirm={handleEliminar}
+      />
+
+      <AlertDialogTemplate
+        open={showReiniciarConfirm}
+        onOpenChange={setShowReiniciarConfirm}
+        title="¿Reiniciar cronómetro?"
+        description="Esta acción reiniciará el tiempo cronometrado a cero. Esta operación no se puede deshacer. ¿Estás seguro de continuar?"
+        onConfirm={handleReiniciarCronometro}
+        cancelText="Cancelar"
+        confirmText="Reiniciar"
       />
     </div>
   )

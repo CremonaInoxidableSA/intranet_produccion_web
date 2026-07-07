@@ -154,7 +154,7 @@ export function DialogTemplate({
   description?: string | React.ReactNode
   fields: React.ReactNode
   open: boolean
-  dialogFooter: React.ReactNode
+  dialogFooter?: React.ReactNode
   onOpenChange: (open: boolean) => void
 }) {
   return (
@@ -174,7 +174,7 @@ export function DialogTemplate({
           <div className="flex max-h-[60vh] w-full flex-col gap-4 overflow-y-auto pr-1">
             {fields}
           </div>
-          <DialogFooter>{dialogFooter}</DialogFooter>
+          {dialogFooter && <DialogFooter>{dialogFooter}</DialogFooter>}
         </DialogContent>
       </form>
     </Dialog>
