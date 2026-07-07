@@ -27,7 +27,7 @@ import {
   useDetalleTareaFinalizada,
 } from "@/context/dataUserContext"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
-import { Trash2 } from "lucide-react"
+import { Trash2, Download } from "lucide-react"
 
 export default function Monitoreo() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -82,7 +82,7 @@ export default function Monitoreo() {
   )
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-5 p-5">
+    <div className="flex flex-1 h-full flex-col items-center gap-5 p-5">
       <h1 className="text-xl font-bold xl:text-2xl">MONITOREO</h1>
 
       {/* Botones de sección — solo visibles en mobile */}
@@ -110,7 +110,7 @@ export default function Monitoreo() {
         <div
           className={`${
             seccionActiva === 1 ? "flex" : "hidden"
-          } flex-col gap-5 xl:flex xl:flex-1`}
+          } flex-col gap-5 xl:flex flex-1`}
         >
           <div className="flex flex-col gap-3 rounded bg-background2 p-5">
             <h1 className="text-md font-bold xl:text-lg">
@@ -169,7 +169,7 @@ export default function Monitoreo() {
             extras={(_, index) => (
               <BotonIcono
                 icono={Trash2}
-                iconClass="size-6"
+                iconClass="size-6 text-red-600"
                 onClick={() => setFilaEliminando(curso.tareas[index].id_tarea)}
               />
             )}
@@ -180,7 +180,7 @@ export default function Monitoreo() {
         <div
           className={`${
             seccionActiva === 2 ? "flex" : "hidden"
-          } flex-col gap-5 xl:flex xl:flex-1`}
+          } flex-col gap-5 xl:flex flex-1`}
         >
           <div className="flex flex-col gap-3 rounded bg-background2 p-5">
             <h1 className="text-md font-bold xl:text-lg">
@@ -224,11 +224,23 @@ export default function Monitoreo() {
                 onValuesChange={finalizadas.setSectorSel}
               />
             </div>
-            <Boton
-              placeholder="APLICAR FILTROS"
-              onClick={finalizadas.aplicarFiltros}
-              disabled={finalizadas.loading}
-            />
+            <div className="flex gap-3">
+              <Boton
+                placeholder="APLICAR FILTROS"
+                onClick={finalizadas.aplicarFiltros}
+                disabled={finalizadas.loading}
+                extraClass="flex-1"
+              />
+              <Button
+                onClick={finalizadas.descargarExcel}
+                disabled={finalizadas.tareas.length === 0}
+                className="flex items-center gap-2"
+                variant="outline"
+              >
+                <Download className="size-4" />
+                EXCEL
+              </Button>
+            </div>
           </div>
 
           <TextScrollArea
@@ -243,7 +255,7 @@ export default function Monitoreo() {
             extras={(_, index) => (
               <BotonIcono
                 icono={Trash2}
-                iconClass="size-6"
+                iconClass="size-6 text-red-600"
                 onClick={() =>
                   setFilaEliminando(finalizadas.tareas[index].id_tarea)
                 }
@@ -475,6 +487,26 @@ export default function Monitoreo() {
               />
             </div>
           ) : null
+        }
+        dialogFooter={
+          <div className="flex w-full justify-end">
+            <Button
+              onClick={() => {
+                if (detalleF && tareaFinalizadaEditando) {
+                  const link = document.createElement("a")
+                  link.href = `/api/tareas/tarea-finalizada-excel?id_tarea=${tareaFinalizadaEditando}`
+                  link.download = `tarea_${tareaFinalizadaEditando}.xlsx`
+                  document.body.appendChild(link)
+                  link.click()
+                  document.body.removeChild(link)
+                }
+              }}
+              className="flex items-center gap-2"
+            >
+              <Download className="size-4" />
+              DESCARGAR EXCEL
+            </Button>
+          </div>
         }
         open={tareaFinalizadaEditando !== null}
         onOpenChange={(open) => {

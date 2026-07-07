@@ -1,16 +1,24 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import { format, subMonths, startOfMonth, endOfMonth } from "date-fns"
+import {
+  format,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+} from "date-fns"
+
 import { type DateRange } from "react-day-picker"
 import {
   useFiltrosEnCurso,
   useFiltrosFinalizadas,
-  type FiltrosMonitoreo,
 } from "@/context/dataGeneralContext"
 import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
+
 
 export type TareaActiva = {
   id_tarea: number
@@ -35,14 +43,12 @@ interface UseTareaEditorProps {
   removeTareaLocal: (id: number) => void
 }
 
-// ---- Helpers ----
-
 export function toOptions(items: (string | number)[]) {
   return items.map((item) => ({ id: String(item), nombre: String(item) }))
 }
 
 function buildPayloadBase(
-  ops: string[],
+  ops: (number | string)[],
   planos: string[],
   operarios: string[],
   sectores: string[]
@@ -55,21 +61,10 @@ function buildPayloadBase(
   }
 }
 
-function initSelections(filtros: FiltrosMonitoreo) {
-  return {
-    ops: filtros.numeros_op.map(String),
-    planos: filtros.numeros_plano.map(String),
-    operarios: filtros.operarios.map(String),
-    sectores: filtros.sectores.map(String),
-  }
-}
-
-// ---- Hook: Tareas en Curso ----
-
 export function useMonitoreoEnCurso() {
   const { filtros, loading: loadingFiltros } = useFiltrosEnCurso()
 
-  const [opSel, setOpSel] = useState<string[]>([])
+  const [opSel, setOpSel] = useState<(number | string)[]>([]) // antes: number[]|string[]
   const [planoSel, setPlanoSel] = useState<string[]>([])
   const [operarioSel, setOperarioSel] = useState<string[]>([])
   const [sectorSel, setSectorSel] = useState<string[]>([])
@@ -80,10 +75,10 @@ export function useMonitoreoEnCurso() {
 
   const fetchTareas = useCallback(
     async (
-      ops: string[],
-      planos: string[],
-      operarios: string[],
-      sectores: string[]
+    ops: (number | string)[],
+    planos: string[],
+    operarios: string[],
+    sectores: string[]
     ) => {
       setLoading(true)
       try {
@@ -110,17 +105,11 @@ export function useMonitoreoEnCurso() {
     []
   )
 
-  // Initialise selections and auto-fetch when filter options arrive
   useEffect(() => {
     if (loadingFiltros || initialized) return
-    const { ops, planos, operarios, sectores } = initSelections(filtros)
-    setOpSel(ops)
-    setPlanoSel(planos)
-    setOperarioSel(operarios)
-    setSectorSel(sectores)
     setInitialized(true)
-    fetchTareas(ops, planos, operarios, sectores)
-  }, [filtros, loadingFiltros, initialized, fetchTareas])
+    fetchTareas([], [], [], [])
+  }, [loadingFiltros, initialized, fetchTareas])
 
   const aplicarFiltros = useCallback(() => {
     fetchTareas(opSel, planoSel, operarioSel, sectorSel)
@@ -142,17 +131,15 @@ export function useMonitoreoEnCurso() {
   }
 }
 
-// ---- Hook: Tareas Finalizadas ----
-
 export function useMonitoreoFinalizadas() {
   const { filtros, loading: loadingFiltros } = useFiltrosFinalizadas()
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: startOfMonth(subMonths(new Date(), 1)),
-    to: endOfMonth(subMonths(new Date(), 1)),
+    from: startOfWeek(new Date(), { weekStartsOn: 0 }),
+    to: endOfWeek(new Date(), { weekStartsOn: 0 }),
   })
 
-  const [opSel, setOpSel] = useState<string[]>([])
+  const [opSel, setOpSel] = useState<(number | string)[]>([])
   const [planoSel, setPlanoSel] = useState<string[]>([])
   const [operarioSel, setOperarioSel] = useState<string[]>([])
   const [sectorSel, setSectorSel] = useState<string[]>([])
@@ -163,7 +150,7 @@ export function useMonitoreoFinalizadas() {
 
   const fetchTareas = useCallback(
     async (
-      ops: string[],
+      ops: (number | string)[],
       planos: string[],
       operarios: string[],
       sectores: string[],
@@ -197,22 +184,36 @@ export function useMonitoreoFinalizadas() {
     []
   )
 
-  // Initialise selections and auto-fetch when filter options arrive
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (loadingFiltros || initialized) return
-    const { ops, planos, operarios, sectores } = initSelections(filtros)
-    setOpSel(ops)
-    setPlanoSel(planos)
-    setOperarioSel(operarios)
-    setSectorSel(sectores)
     setInitialized(true)
-    fetchTareas(ops, planos, operarios, sectores, dateRange)
-  }, [filtros, loadingFiltros, initialized, fetchTareas])
+  }, [loadingFiltros, initialized])
+
+  useEffect(() => {
+    setOpSel([])
+    setPlanoSel([])
+    setOperarioSel([])
+    setSectorSel([])
+  }, [dateRange])
 
   const aplicarFiltros = useCallback(() => {
     fetchTareas(opSel, planoSel, operarioSel, sectorSel, dateRange)
   }, [opSel, planoSel, operarioSel, sectorSel, dateRange, fetchTareas])
+
+  const descargarExcel = useCallback(() => {
+    if (!dateRange?.from || !dateRange?.to) return
+    const payload = buildPayloadBase(opSel, planoSel, operarioSel, sectorSel)
+    const params = new URLSearchParams({
+      fecha_inicio: format(dateRange.from, "yyyy-MM-dd"),
+      fecha_fin: format(dateRange.to, "yyyy-MM-dd"),
+      numeros_op: payload.numeros_op.join(","),
+      numeros_plano: payload.numeros_plano.join(","),
+      operarios: payload.operarios.join(","),
+      sectores: payload.sectores.join(","),
+    })
+    const url = `/api/tareas/tareas-finalizadas-general/excel?${params}`
+    window.open(url, "_blank")
+  }, [dateRange, opSel, planoSel, operarioSel, sectorSel])
 
   return {
     filtros,
@@ -229,6 +230,7 @@ export function useMonitoreoFinalizadas() {
     tareas,
     loading,
     aplicarFiltros,
+    descargarExcel,
   }
 }
 

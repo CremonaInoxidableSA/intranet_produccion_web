@@ -152,12 +152,15 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
   keyLabel?: string
   extraClass?: string
   disabled?: boolean
-  values: string[]
-  onValuesChange: (values: string[]) => void
+  values: (string | number)[] // lectura: acepta ambos
+  onValuesChange: (values: string[]) => void // escritura: siempre string[]
 }) {
   const toggle = (id: string) => {
+    const stringValues = values.map(String)
     onValuesChange(
-      values.includes(id) ? values.filter((v) => v !== id) : [...values, id]
+      stringValues.includes(id)
+        ? stringValues.filter((v) => v !== id)
+        : [...stringValues, id]
     )
   }
 
@@ -165,7 +168,7 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
     values.length === 0
       ? placeholder
       : data
-          .filter((o) => values.includes(String(o[keyId])))
+          .filter((o) => values.map(String).includes(String(o[keyId])))
           .map((o) => o[keyLabel])
           .join(", ")
 
@@ -190,7 +193,7 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
       >
         {data.map((opcion) => {
           const id = String(opcion[keyId])
-          const selected = values.includes(id)
+          const selected = values.map(String).includes(id)
           return (
             <div
               key={id}
