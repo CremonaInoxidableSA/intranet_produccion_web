@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { PencilLine, Trash2 } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import {
   DialogTemplate,
   AlertDialogTemplate,
@@ -50,14 +48,28 @@ export default function Productos() {
     productoSeleccionado?.id_producto ?? null
   )
 
-  const laboresPorSector = labores.reduce<Record<string, typeof labores>>(
-    (acc, l) => {
-      if (!acc[l.sector]) acc[l.sector] = []
-      acc[l.sector].push(l)
-      return acc
-    },
-    {}
-  )
+  const laboresNombres = labores.map((l) => l.nombre)
+  const laboresSectores = labores.map((l) => l.sector)
+
+  // --- Eliminar producto ---
+  const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
+
+  const handleEliminarProducto = async () => {
+    if (productoEliminar === null) return
+    try {
+      const res = await fetch("/api/eliminar/eliminar-producto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_producto: productoEliminar }),
+      })
+      await handleApiResponse(res)
+      setProductoEliminar(null)
+      if (productoSeleccionado?.id_producto === productoEliminar) {
+        setProductoSeleccionado(null)
+      }
+      await refetchProductos()
+    } catch {}
+  }
 
   // --- Eliminar labor ---
   const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
@@ -65,7 +77,7 @@ export default function Productos() {
   const handleEliminarLabor = async () => {
     if (laborEliminar === null) return
     try {
-      const res = await fetch("/api/eliminar-labor", {
+      const res = await fetch("/api/eliminar/eliminar-labor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id_labor: laborEliminar }),
@@ -187,11 +199,20 @@ export default function Productos() {
               setSectorLabor("")
             }}
             extras={(_, index) => (
-              <BotonIcono
-                icono={PencilLine}
-                iconClass="size-5 opacity-50 hover:opacity-100"
-                onClick={() => abrirDialogEditar(productos[index])}
-              />
+              <div className="flex items-center gap-1">
+                <BotonIcono
+                  icono={PencilLine}
+                  iconClass="size-5 opacity-50 hover:opacity-100"
+                  onClick={() => abrirDialogEditar(productos[index])}
+                />
+                <BotonIcono
+                  icono={Trash2}
+                  iconClass="size-5 text-red-500"
+                  onClick={() =>
+                    setProductoEliminar(productos[index].id_producto)
+                  }
+                />
+              </div>
             )}
           />
           <h1 className="flex w-full shrink-0 items-center text-xl font-bold">
@@ -220,53 +241,20 @@ export default function Productos() {
 
         {/* Columna 2 - Labores */}
         <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
-          <h4 className="text-md mb-2 shrink-0 font-medium md:text-xl">
-            LISTADO DE LABORES
-            {productoSeleccionado && (
-              <span className="ml-2 opacity-50">
-                — {productoSeleccionado.nombre}
-              </span>
+          <TextScrollArea
+            tags={laboresNombres}
+            subtitles={laboresSectores}
+            placeholder={`LISTADO DE LABORES${productoSeleccionado ? ` — ${productoSeleccionado.nombre}` : ""}`}
+            extraClass="flex-1 min-h-0 p-5 border"
+            placeholderExtraClass="md:text-xl text-md"
+            extras={(_, index) => (
+              <BotonIcono
+                icono={Trash2}
+                iconClass="size-5 text-red-500"
+                onClick={() => setLaborEliminar(labores[index].id_labor)}
+              />
             )}
-          </h4>
-          <ScrollArea className="min-h-0 flex-1 rounded border p-5">
-            {labores.length === 0 ? (
-              <div className="flex h-full items-center justify-center opacity-50">
-                <p className="text-sm">No hay datos disponibles</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {Object.entries(laboresPorSector).map(
-                  ([sector, items], sectorIndex) => (
-                    <div key={sector}>
-                      {sectorIndex > 0 && <Separator className="my-2" />}
-                      <p className="mb-1 px-2 text-xs font-semibold uppercase opacity-40">
-                        {sector}
-                      </p>
-                      <div className="flex flex-col">
-                        {items.map((labor, laborIndex) => (
-                          <div key={labor.id_labor}>
-                            <span className="flex flex-row items-center rounded px-2 hover:bg-foreground/10">
-                              <span className="flex flex-1 py-2 pl-2 text-sm">
-                                {labor.nombre}
-                              </span>
-                              <BotonIcono
-                                icono={Trash2}
-                                iconClass="size-5 text-red-500"
-                                onClick={() => setLaborEliminar(labor.id_labor)}
-                              />
-                            </span>
-                            {laborIndex < items.length - 1 && (
-                              <Separator className="my-1 opacity-30" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            )}
-          </ScrollArea>
+          />
           <h1 className="flex w-full shrink-0 items-center text-xl font-bold">
             CARGAR NUEVO LABOR
           </h1>
@@ -337,6 +325,17 @@ export default function Productos() {
         dialogFooter={
           <Boton placeholder="GUARDAR" onClick={handleGuardarNombre} />
         }
+      />
+
+      {/* Confirm eliminar producto */}
+      <AlertDialogTemplate
+        open={productoEliminar !== null}
+        onOpenChange={(open) => {
+          if (!open) setProductoEliminar(null)
+        }}
+        title="¿Eliminar producto?"
+        description="Esta acción no se puede deshacer."
+        onConfirm={handleEliminarProducto}
       />
 
       {/* Confirm eliminar labor */}

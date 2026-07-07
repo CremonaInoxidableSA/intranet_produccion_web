@@ -112,7 +112,7 @@ export function useTareaEditor({
     if (id === null) return
 
     try {
-      const res = await fetch(`/api/eliminar-tarea?id_tarea=${id}`, {
+      const res = await fetch(`/api/eliminar/eliminar-tarea?id_tarea=${id}`, {
         method: "DELETE",
       })
 
