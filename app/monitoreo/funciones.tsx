@@ -41,6 +41,7 @@ export type TareaFinalizada = {
 interface UseTareaEditorProps {
   refetch: () => Promise<void>
   removeTareaLocal: (id: number) => void
+  onAfterAction?: () => void | Promise<void>
 }
 
 export function toOptions(items: (string | number)[]) {
@@ -115,7 +116,7 @@ export function useMonitoreoEnCurso() {
   }, [loadingFiltros, initialized, fetchTareas])
 
   const aplicarFiltros = useCallback(() => {
-    fetchTareas(opSel, planoSel, operarioSel, sectorSel)
+    return fetchTareas(opSel, planoSel, operarioSel, sectorSel)
   }, [opSel, planoSel, operarioSel, sectorSel, fetchTareas])
 
   return {
@@ -200,10 +201,15 @@ export function useMonitoreoFinalizadas() {
     []
   )
 
+  const aplicarFiltros = useCallback(() => {
+    return fetchTareas(opSel, planoSel, operarioSel, sectorSel, dateRange)
+  }, [opSel, planoSel, operarioSel, sectorSel, dateRange, fetchTareas])
+
   useEffect(() => {
     if (loadingFiltros || initialized) return
     setInitialized(true)
-  }, [loadingFiltros, initialized])
+    void aplicarFiltros()
+  }, [loadingFiltros, initialized, aplicarFiltros])
 
   useEffect(() => {
     setOpSel([])
@@ -211,10 +217,6 @@ export function useMonitoreoFinalizadas() {
     setOperarioSel([])
     setSectorSel([])
   }, [dateRange])
-
-  const aplicarFiltros = useCallback(() => {
-    fetchTareas(opSel, planoSel, operarioSel, sectorSel, dateRange)
-  }, [opSel, planoSel, operarioSel, sectorSel, dateRange, fetchTareas])
 
   const descargarExcel = useCallback(() => {
     if (!dateRange?.from || !dateRange?.to) return
@@ -248,6 +250,7 @@ export function useMonitoreoFinalizadas() {
 export function useTareaEditor({
   refetch,
   removeTareaLocal,
+  onAfterAction,
 }: UseTareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
@@ -359,8 +362,9 @@ export function useTareaEditor({
       setFilaEliminando(null)
       setTareaEditando(null)
       await refetch()
+      await onAfterAction?.()
     } catch {}
-  }, [filaEliminando, refetch, removeTareaLocal])
+  }, [filaEliminando, refetch, removeTareaLocal, onAfterAction])
 
   const handleGuardar = useCallback(async () => {
     const id = tareaEditando
@@ -488,8 +492,9 @@ export function useTareaEditor({
       removeTareaLocal(id)
       setTareaEditando(null)
       await refetch()
+      await onAfterAction?.()
     } catch {}
-  }, [tareaEditando, refetch, removeTareaLocal])
+  }, [tareaEditando, refetch, removeTareaLocal, onAfterAction])
 
   return {
     tareaEditando,

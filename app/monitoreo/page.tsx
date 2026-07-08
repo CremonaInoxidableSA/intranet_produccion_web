@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { secciones } from "./data"
 import {
@@ -10,7 +10,6 @@ import {
 } from "@/components/componentsClient"
 import {
   TextScrollArea,
-  BotonIcono,
   SelectorMultiple,
   Boton,
   Textarea,
@@ -27,11 +26,19 @@ import {
   useDetalleTareaFinalizada,
 } from "@/context/dataUserContext"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
-import { Trash2, Download } from "lucide-react"
+import { Download } from "lucide-react"
 
 export default function Monitoreo() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
-  const { tareas, refetch, removeTareaLocal } = useTareasUsuario()
+  const { refetch, removeTareaLocal } = useTareasUsuario()
+
+  const curso = useMonitoreoEnCurso()
+  const finalizadas = useMonitoreoFinalizadas()
+
+  const refreshMonitoreo = useCallback(async () => {
+    await Promise.all([curso.aplicarFiltros(), finalizadas.aplicarFiltros()])
+  }, [curso, finalizadas])
+
   const {
     tareaEditando,
     setTareaEditando,
@@ -55,16 +62,17 @@ export default function Monitoreo() {
     setShowReiniciarConfirm,
     handlePausarTarea,
     handleFinalizar,
-  } = useTareaEditor({ refetch, removeTareaLocal })
+  } = useTareaEditor({
+    refetch,
+    removeTareaLocal,
+    onAfterAction: refreshMonitoreo,
+  })
 
   const [tareaFinalizadaEditando, setTareaFinalizadaEditando] = useState<
     number | null
   >(null)
   const { detalle: detalleF, loading: loadingDetalleF } =
     useDetalleTareaFinalizada(tareaFinalizadaEditando)
-
-  const curso = useMonitoreoEnCurso()
-  const finalizadas = useMonitoreoFinalizadas()
 
   const etiquetasEnCurso = curso.tareas.map(
     (t) =>
@@ -166,13 +174,6 @@ export default function Monitoreo() {
             onTagClick={(_, index) =>
               setTareaEditando(curso.tareas[index].id_tarea)
             }
-            extras={(_, index) => (
-              <BotonIcono
-                icono={Trash2}
-                iconClass="size-6 text-red-600"
-                onClick={() => setFilaEliminando(curso.tareas[index].id_tarea)}
-              />
-            )}
           />
         </div>
 
@@ -252,15 +253,6 @@ export default function Monitoreo() {
             onTagClick={(_, index) =>
               setTareaFinalizadaEditando(finalizadas.tareas[index].id_tarea)
             }
-            extras={(_, index) => (
-              <BotonIcono
-                icono={Trash2}
-                iconClass="size-6 text-red-600"
-                onClick={() =>
-                  setFilaEliminando(finalizadas.tareas[index].id_tarea)
-                }
-              />
-            )}
           />
         </div>
       </div>
@@ -489,7 +481,12 @@ export default function Monitoreo() {
           ) : null
         }
         dialogFooter={
-          <div className="flex w-full justify-end">
+          <div className="flex w-full items-center justify-between gap-3">
+            <Boton
+              extraClass="border-red-600 bg-red-600/50 hover:bg-red-600"
+              onClick={() => setFilaEliminando(tareaFinalizadaEditando)}
+              placeholder="ELIMINAR"
+            />
             <Button
               onClick={() => {
                 if (detalleF && tareaFinalizadaEditando) {
