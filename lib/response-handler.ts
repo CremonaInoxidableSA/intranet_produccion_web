@@ -1,4 +1,9 @@
 import { toast } from "sonner"
+import {
+  getApiSourceFromUrl,
+  resetConnectionError,
+  setConnectionError,
+} from "@/lib/connectionManager"
 
 export function getErrorMessage(error: unknown): string {
   if (typeof error === "string") return error
@@ -72,6 +77,31 @@ export function getSuccessMessage(data: unknown): string {
 }
 
 /**
+ * Detecta si el error es de conexión con la API
+ */
+function isConnectionError(data: unknown): boolean {
+  if (typeof data === "string") {
+    return (
+      data.includes("No se pudo conectar") ||
+      data.includes("connection") ||
+      data.includes("servidor")
+    )
+  }
+
+  if (data && typeof data === "object") {
+    if ("error" in data && typeof data.error === "string") {
+      return (
+        data.error.includes("No se pudo conectar") ||
+        data.error.includes("connection") ||
+        data.error.includes("servidor")
+      )
+    }
+  }
+
+  return false
+}
+
+/**
  * Maneja una respuesta de la API: valida el status, extrae mensaje de éxito/error,
  * muestra toast, y devuelve los datos o lanza error.
  *
@@ -80,12 +110,12 @@ export function getSuccessMessage(data: unknown): string {
  * @returns Los datos parseados si la respuesta es ok
  * @throws Error con el mensaje de error si la respuesta no es ok
  */
-export async function handleApiResponse<T = any>(
+export async function handleApiResponse<T = unknown>(
   response: Response,
   successMessage?: string | ((data: T) => string)
 ): Promise<T> {
   // Intentar parsear JSON, pero si falla, usar texto
-  let data: any
+  let data: unknown
   const contentType = response.headers.get("content-type")
   if (contentType && contentType.includes("application/json")) {
     try {
@@ -100,18 +130,29 @@ export async function handleApiResponse<T = any>(
   if (!response.ok) {
     // Extraer mensaje de error
     const errorMsg = getErrorMessage(data)
+
+    // Detectar si es un error de conexión
+    if (isConnectionError(data)) {
+      setConnectionError(true, getApiSourceFromUrl(response.url))
+    }
+
     toast.error(errorMsg)
     throw new Error(errorMsg)
   }
 
+  // Respuesta exitosa - resetear estado de conexión para esa API
+  resetConnectionError(getApiSourceFromUrl(response.url))
+
+  const parsedData = data as T
+
   // Respuesta exitosa
   const msg =
     typeof successMessage === "function"
-      ? successMessage(data)
-      : successMessage || getSuccessMessage(data)
+      ? successMessage(parsedData)
+      : successMessage || getSuccessMessage(parsedData)
   if (msg) {
     toast.success(msg)
   }
 
-  return data
+  return parsedData
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { useUser } from "@/context/userContext"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 export type TareaUsuario = {
   id_tarea: number
@@ -19,7 +20,7 @@ export function useTareasUsuario() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch(
+      const response = await fetchWithConnectionCheck(
         `/api/listas/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}&_=${Date.now()}`,
         { cache: "no-store" }
       )
@@ -70,7 +71,7 @@ export function useDetalleTarea(id_tarea: number | null) {
     }
     setLoading(true)
     try {
-      const response = await fetch(
+      const response = await fetchWithConnectionCheck(
         `/api/detalles/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")
@@ -90,7 +91,6 @@ export function useDetalleTarea(id_tarea: number | null) {
   return { detalle, loading, error, refetch: fetchDetalle }
 }
 
-
 export type DetalleTareaFinalizada = {
   id_tarea: number
   fecha_inicio: Date
@@ -108,10 +108,12 @@ export type DetalleTareaFinalizada = {
   tiempo_extra: string
   tiempo_cronometrado: string
   tiempo_total: string
-  eventos: [{
-    fecha: Date
-    titulo: string
-  }]
+  eventos: [
+    {
+      fecha: Date
+      titulo: string
+    },
+  ]
 }
 
 export function useDetalleTareaFinalizada(id_tarea: number | null) {
@@ -126,7 +128,7 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
     }
     setLoading(true)
     try {
-      const response = await fetch(
+      const response = await fetchWithConnectionCheck(
         `/api/detalles/detalles-tareaFinalizada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")

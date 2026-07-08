@@ -178,6 +178,10 @@ export default function CargarTarea() {
     ]
   )
 
+  type CrearTareaResponse = {
+    id_tarea?: number
+  }
+
   const resetFormulario = useCallback(() => {
     setSectorSeleccionadoState(null)
     setProductoSeleccionadoState(null)
@@ -220,7 +224,7 @@ export default function CargarTarea() {
         body: JSON.stringify(body),
       })
 
-      await handleApiResponse(res, (data) =>
+      await handleApiResponse<CrearTareaResponse>(res, (data) =>
         data?.id_tarea
           ? `Tarea ${data.id_tarea} creada correctamente`
           : "Tarea creada correctamente"

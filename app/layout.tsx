@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme/themeProvider"
 import LayoutClient from "./layout-client"
 import { cn } from "@/lib/utils"
 import { UserProvider } from "@/context/userContext"
+import { ConnectionProvider } from "@/context/connectionContext"
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -32,7 +33,9 @@ export default function RootLayout({
       <body className="min-h-screen">
         <ThemeProvider>
           <UserProvider>
-            <LayoutClient>{children}</LayoutClient>
+            <ConnectionProvider>
+              <LayoutClient>{children}</LayoutClient>
+            </ConnectionProvider>
           </UserProvider>
         </ThemeProvider>
       </body>

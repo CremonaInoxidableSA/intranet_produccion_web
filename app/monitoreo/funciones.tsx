@@ -18,7 +18,7 @@ import {
 import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
-
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 export type TareaActiva = {
   id_tarea: number
@@ -75,20 +75,23 @@ export function useMonitoreoEnCurso() {
 
   const fetchTareas = useCallback(
     async (
-    ops: (number | string)[],
-    planos: string[],
-    operarios: string[],
-    sectores: string[]
+      ops: (number | string)[],
+      planos: string[],
+      operarios: string[],
+      sectores: string[]
     ) => {
       setLoading(true)
       try {
-        const res = await fetch("/api/tareas/tareas-activas-general", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            buildPayloadBase(ops, planos, operarios, sectores)
-          ),
-        })
+        const res = await fetchWithConnectionCheck(
+          "/api/tareas/tareas-activas-general",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(
+              buildPayloadBase(ops, planos, operarios, sectores)
+            ),
+          }
+        )
         const data = await res.json()
         const lista = Array.isArray(data)
           ? data
@@ -169,15 +172,18 @@ export function useMonitoreoFinalizadas() {
       if (!range?.from || !range?.to) return
       setLoading(true)
       try {
-        const res = await fetch("/api/tareas/tareas-finalizadas-general", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...buildPayloadBase(ops, planos, operarios, sectores),
-            fecha_inicio: format(range.from, "yyyy-MM-dd"),
-            fecha_fin: format(range.to, "yyyy-MM-dd"),
-          }),
-        })
+        const res = await fetchWithConnectionCheck(
+          "/api/tareas/tareas-finalizadas-general",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...buildPayloadBase(ops, planos, operarios, sectores),
+              fecha_inicio: format(range.from, "yyyy-MM-dd"),
+              fecha_fin: format(range.to, "yyyy-MM-dd"),
+            }),
+          }
+        )
         const data = await res.json()
         const lista = Array.isArray(data)
           ? data
@@ -281,7 +287,7 @@ export function useTareaEditor({
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/detalles/detalles-tareaActivaCronometradoSeleccionado?id_tarea=${id}`
       )
       if (!res.ok) {

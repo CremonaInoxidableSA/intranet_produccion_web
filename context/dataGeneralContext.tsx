@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 //------------------------------------CARGAR NUEVA TAREA------------------------------------//
 
@@ -17,7 +18,9 @@ export function useSectores() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("/api/listas/lista-sectores")
+        const response = await fetchWithConnectionCheck(
+          "/api/listas/lista-sectores"
+        )
         if (!response.ok) throw new Error("Error al obtener sectores")
         const data: Sector[] = await response.json()
         setSectores(data)
@@ -48,7 +51,7 @@ export function useProductosSector(id_sector: number | null) {
     async function fetchData() {
       setLoading(true)
       try {
-        const response = await fetch(
+        const response = await fetchWithConnectionCheck(
           `/api/listas/lista-productosSector?id_sector=${id_sector}`
         )
         if (!response.ok) throw new Error("Error al obtener productos")
@@ -80,7 +83,9 @@ export function useProductos() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch("/api/listas/lista-productos")
+      const response = await fetchWithConnectionCheck(
+        "/api/listas/lista-productos"
+      )
       if (!response.ok) throw new Error("Error al obtener productos")
       const data: Producto[] = await response.json()
       setProductos(data)
@@ -119,7 +124,7 @@ export function useLabores(
     async function fetchData() {
       setLoading(true)
       try {
-        const response = await fetch(
+        const response = await fetchWithConnectionCheck(
           `/api/listas/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
         )
         if (!response.ok) throw new Error("Error al obtener labores")
@@ -161,7 +166,9 @@ export function useOperarios() {
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await fetch("/api/listas/lista-operarios")
+      const response = await fetchWithConnectionCheck(
+        "/api/listas/lista-operarios"
+      )
       if (!response.ok) throw new Error("Error al obtener operarios")
       const data = await response.json()
       const operariosFormateados = data.map(
@@ -212,7 +219,7 @@ export function useLaborresProducto(id_producto: number | null) {
     }
     setLoading(true)
     try {
-      const response = await fetch(
+      const response = await fetchWithConnectionCheck(
         `/api/listas/lista-labores-producto?id_producto=${id_producto}`
       )
       if (!response.ok) throw new Error("Error al obtener labores")
@@ -255,7 +262,7 @@ export function useFiltrosEnCurso() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("/api/filtros/tareasEnCurso")
+        const res = await fetchWithConnectionCheck("/api/filtros/tareasEnCurso")
         if (!res.ok) throw new Error()
         const data: FiltrosMonitoreo = await res.json()
         setFiltros(data)
@@ -287,7 +294,9 @@ export function useFiltrosFinalizadas(
           fecha_inicio: fecha_inicio!,
           fecha_fin: fecha_fin!,
         })
-        const res = await fetch(`/api/filtros/tareasFinalizadas?${params}`)
+        const res = await fetchWithConnectionCheck(
+          `/api/filtros/tareasFinalizadas?${params}`
+        )
         if (!res.ok) throw new Error()
         const data: FiltrosMonitoreo = await res.json()
         setFiltros(data)
