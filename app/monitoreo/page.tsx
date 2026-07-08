@@ -30,13 +30,17 @@ import { Download } from "lucide-react"
 
 export default function Monitoreo() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
-  const { refetch, removeTareaLocal } = useTareasUsuario()
+  const { refetch, removeTareaLocal } = useTareasUsuario({ autoFetch: false })
 
   const curso = useMonitoreoEnCurso()
   const finalizadas = useMonitoreoFinalizadas()
 
   const refreshMonitoreo = useCallback(async () => {
-    await Promise.all([curso.aplicarFiltros(), finalizadas.aplicarFiltros()])
+    await Promise.all([
+      curso.aplicarFiltros(),
+      finalizadas.aplicarFiltros(),
+      finalizadas.refrescarFiltros(),
+    ])
   }, [curso, finalizadas])
 
   const {

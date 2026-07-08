@@ -11,10 +11,11 @@ export type TareaUsuario = {
   estado: string
 }
 
-export function useTareasUsuario() {
+export function useTareasUsuario(options?: { autoFetch?: boolean }) {
+  const { autoFetch = true } = options ?? {}
   const { id_current_user } = useUser()
   const [tareas, setTareas] = useState<TareaUsuario[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(autoFetch)
   const [error, setError] = useState<string | null>(null)
 
   const fetchData = useCallback(async () => {
@@ -39,8 +40,9 @@ export function useTareasUsuario() {
   }, [])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    if (!autoFetch) return
+    void fetchData()
+  }, [autoFetch, fetchData])
 
   return { tareas, loading, error, refetch: fetchData, removeTareaLocal }
 }

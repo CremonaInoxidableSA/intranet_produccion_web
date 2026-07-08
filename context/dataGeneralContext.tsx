@@ -119,10 +119,16 @@ export function useLabores(
   useEffect(() => {
     if (id_sector === null || id_producto === null) {
       setLabores([])
+      setError(null)
+      setLoading(false)
       return
     }
+
+    setLabores([])
+    setError(null)
+    setLoading(true)
+
     async function fetchData() {
-      setLoading(true)
       try {
         const response = await fetchWithConnectionCheck(
           `/api/listas/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
@@ -279,7 +285,8 @@ export function useFiltrosEnCurso() {
 
 export function useFiltrosFinalizadas(
   fecha_inicio?: string,
-  fecha_fin?: string
+  fecha_fin?: string,
+  refreshVersion?: number
 ) {
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
@@ -307,7 +314,7 @@ export function useFiltrosFinalizadas(
       }
     }
     fetchData()
-  }, [fecha_inicio, fecha_fin])
+  }, [fecha_inicio, fecha_fin, refreshVersion])
 
   return { filtros, loading }
 }

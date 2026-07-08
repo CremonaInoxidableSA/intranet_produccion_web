@@ -135,6 +135,13 @@ export default function CargarTarea() {
     setLaborManual("")
   }, [])
 
+  const handleCambioSector = useCallback((id: number | null) => {
+    setSectorSeleccionadoState(id)
+    setProductoSeleccionadoState(null)
+    setLaborSeleccionada(null)
+    setLaborManual("")
+  }, [])
+
   const productoActual = useMemo(
     () => productos.find((p) => p.id_producto === productoSeleccionado),
     [productos, productoSeleccionado]
@@ -145,9 +152,11 @@ export default function CargarTarea() {
     [productoActual]
   )
 
-  const mostrarInputLabor = useMemo(
-    () => esOtros || labores.length === 0,
-    [esOtros, labores.length]
+  const mostrarInputLabor = useMemo(() => esOtros, [esOtros])
+
+  const laborBloqueada = useMemo(
+    () => productoSeleccionado !== null && !esOtros && labores.length === 0,
+    [productoSeleccionado, esOtros, labores.length]
   )
 
   const laborNombre = useMemo(() => {
@@ -259,7 +268,7 @@ export default function CargarTarea() {
         labores,
         operarios,
         sectorSeleccionado,
-        setSectorSeleccionado,
+        handleCambioSector,
         productoSeleccionado,
         setProductoSeleccionado,
         operarioSeleccionado,
@@ -269,6 +278,7 @@ export default function CargarTarea() {
         laborManual,
         setLaborManual,
         mostrarInputLabor,
+        laborBloqueada,
         numeroOp,
         setNumeroOp,
         numeroPlano,

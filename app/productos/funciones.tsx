@@ -195,11 +195,12 @@ export function useTareaEditor({
 
       await handleApiResponse(res)
 
-      await fetchTiempoCronometrado(id)
+      setTiempoCronometrado("00:00:00")
+      await Promise.all([refetchDetalle(), fetchTiempoCronometrado(id)])
       setCronometroKey((prev) => prev + 1)
       setShowReiniciarConfirm(false)
     } catch {}
-  }, [tareaEditando, fetchTiempoCronometrado])
+  }, [tareaEditando, fetchTiempoCronometrado, refetchDetalle])
 
   const resetEditor = useCallback(() => {
     setTareaEditando(null)

@@ -38,6 +38,7 @@ export function getOpcionesNuevaTarea(
   laborManual: string,
   setLaborManual: (value: string) => void,
   mostrarInputLabor: boolean,
+  laborBloqueada: boolean,
   numeroOp: number | null,
   setNumeroOp: (v: number | null) => void,
   numeroPlano: string | null,
@@ -121,14 +122,14 @@ export function getOpcionesNuevaTarea(
                 type="text"
                 value={laborManual}
                 onChange={(e) => setLaborManual(e.target.value)}
-                disabled={productoSeleccionado === null}
+                disabled={productoSeleccionado === null || laborBloqueada}
               />
             ) : (
               <Selector
                 placeholder="TIPO DE LABOR"
                 data={labores}
                 keyId="id_labor"
-                disabled={productoSeleccionado === null}
+                disabled={productoSeleccionado === null || laborBloqueada}
                 value={
                   laborSeleccionada !== null ? String(laborSeleccionada) : ""
                 }

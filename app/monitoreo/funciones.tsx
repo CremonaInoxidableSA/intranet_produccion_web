@@ -1,14 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef } from "react"
-import {
-  format,
-  subMonths,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-} from "date-fns"
+import { format, startOfWeek, endOfWeek } from "date-fns"
 
 import { type DateRange } from "react-day-picker"
 import {
@@ -148,9 +141,12 @@ export function useMonitoreoFinalizadas() {
     ? format(dateRange.to, "yyyy-MM-dd")
     : undefined
 
+  const [filtrosRefreshVersion, setFiltrosRefreshVersion] = useState(0)
+
   const { filtros, loading: loadingFiltros } = useFiltrosFinalizadas(
     fechaInicioStr,
-    fechaFinStr
+    fechaFinStr,
+    filtrosRefreshVersion
   )
 
   const [opSel, setOpSel] = useState<(number | string)[]>([])
@@ -205,6 +201,10 @@ export function useMonitoreoFinalizadas() {
     return fetchTareas(opSel, planoSel, operarioSel, sectorSel, dateRange)
   }, [opSel, planoSel, operarioSel, sectorSel, dateRange, fetchTareas])
 
+  const refrescarFiltros = useCallback(() => {
+    setFiltrosRefreshVersion((prev) => prev + 1)
+  }, [])
+
   useEffect(() => {
     if (loadingFiltros || initialized) return
     setInitialized(true)
@@ -243,6 +243,7 @@ export function useMonitoreoFinalizadas() {
     tareas,
     loading,
     aplicarFiltros,
+    refrescarFiltros,
     descargarExcel,
   }
 }
@@ -436,11 +437,12 @@ export function useTareaEditor({
 
       await handleApiResponse(res)
 
-      await fetchTiempoCronometrado(id)
+      setTiempoCronometrado("00:00:00")
+      await Promise.all([refetchDetalle(), fetchTiempoCronometrado(id)])
       setCronometroKey((prev) => prev + 1)
       setShowReiniciarConfirm(false)
     } catch {}
-  }, [tareaEditando, fetchTiempoCronometrado])
+  }, [tareaEditando, fetchTiempoCronometrado, refetchDetalle])
 
   const resetEditor = useCallback(() => {
     setTareaEditando(null)
