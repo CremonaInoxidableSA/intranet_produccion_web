@@ -194,9 +194,4 @@
   button:disabled {
     @apply cursor-not-allowed;
   }
-  html {
-    @apply font-sans;
-    font-size: 18px;
-    letter-spacing: 0.5px;
-  }
 }

@@ -58,7 +58,7 @@ function buildPayloadBase(
 export function useMonitoreoEnCurso() {
   const { filtros, loading: loadingFiltros } = useFiltrosEnCurso()
 
-  const [opSel, setOpSel] = useState<(number | string)[]>([]) // antes: number[]|string[]
+  const [opSel, setOpSel] = useState<(number | string)[]>([])
   const [planoSel, setPlanoSel] = useState<string[]>([])
   const [operarioSel, setOperarioSel] = useState<string[]>([])
   const [sectorSel, setSectorSel] = useState<string[]>([])

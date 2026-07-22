@@ -147,10 +147,10 @@ export default function CargarTarea() {
     [productos, productoSeleccionado]
   )
 
-  const esOtros = useMemo(
-    () => productoActual?.nombre.trim().toLowerCase() === "otros",
-    [productoActual]
-  )
+  const esOtros = useMemo(() => {
+    const nombreProducto = productoActual?.nombre.trim().toLowerCase()
+    return nombreProducto === "otros" || nombreProducto === "otro"
+  }, [productoActual])
 
   const mostrarInputLabor = useMemo(() => esOtros, [esOtros])
 

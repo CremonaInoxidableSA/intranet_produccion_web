@@ -75,6 +75,11 @@ export default function Monitoreo() {
   const [tareaFinalizadaEditando, setTareaFinalizadaEditando] = useState<
     number | null
   >(null)
+
+  const handleEliminarTarea = useCallback(async () => {
+    await handleEliminar()
+    setTareaFinalizadaEditando(null)
+  }, [handleEliminar])
   const { detalle: detalleF, loading: loadingDetalleF } =
     useDetalleTareaFinalizada(tareaFinalizadaEditando)
 
@@ -537,7 +542,7 @@ export default function Monitoreo() {
         }}
         title="¿Eliminar tarea?"
         description={`Esta acción no se puede deshacer. Se eliminará la tarea ${filaEliminando ?? ""}.`}
-        onConfirm={handleEliminar}
+        onConfirm={handleEliminarTarea}
       />
 
       <AlertDialogTemplate
