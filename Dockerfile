@@ -24,6 +24,6 @@ RUN npm ci
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-EXPOSE 3000
+EXPOSE 3200
 
 CMD ["npm", "start"]

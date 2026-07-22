@@ -6,7 +6,7 @@ services:
     container_name: intranet_produccion_web
     restart: unless-stopped
     expose:
-      - "3000"
+      - "3200"
     env_file:
       - .env
     environment:
