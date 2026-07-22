@@ -12,10 +12,10 @@ services:
     environment:
       - NODE_ENV=production
     networks:
-      - intranet_produccion_network
+      - intranet_produccion_web_network
     volumes:
       - /home/ec2-user/.aws:/root/.aws:ro
 
 networks:
-  intranet_produccion_network:
+  intranet_produccion_web_network:
     external: true
