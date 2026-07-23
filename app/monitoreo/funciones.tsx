@@ -393,7 +393,7 @@ export function useTareaEditor({
     }
 
     if (tiempoChanged) {
-      const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/
+      const timeRegex = /^[0-9]+:[0-5][0-9]:[0-5][0-9]$/
       if (!timeRegex.test(tiempoExtraEdit)) {
         toast.error("Formato de tiempo extra inválido. Debe ser HH:MM:SS")
         return
