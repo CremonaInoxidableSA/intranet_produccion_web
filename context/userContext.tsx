@@ -10,8 +10,8 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType>({
   id_current_user: 1,
-  nombre_usuario_logeado: "Chimi",
-  apellido_usuario_logeado: "Churri",
+  nombre_usuario_logeado: "Pruebas",
+  apellido_usuario_logeado: "Usuario",
 })
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -19,8 +19,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     <UserContext.Provider
       value={{
         id_current_user: 1,
-        nombre_usuario_logeado: "Chimi",
-        apellido_usuario_logeado: "Churri",
+        nombre_usuario_logeado: "Pruebas",
+        apellido_usuario_logeado: "Usuario",
       }}
     >
       {children}
