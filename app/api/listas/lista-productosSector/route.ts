@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const API_BASE_URL = process.env.API_BASE_URL ?? "http://192.168.20.151:8200"
+const API_BASE_URL = process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
 
 export async function GET(request: NextRequest) {
   const id_sector = request.nextUrl.searchParams.get("id_sector")

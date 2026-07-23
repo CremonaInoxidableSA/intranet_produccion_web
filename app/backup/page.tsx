@@ -61,13 +61,6 @@ export default function BackUp() {
   const opciones = [
     {
       id: 1,
-      nombre: "BACKUP SQL",
-      onClick: () =>
-        descargarArchivo("/api/backup/sql", "backup_base_datos.sql"),
-      icono: <BsFiletypeSql className={estilosIconos} />,
-    },
-    {
-      id: 2,
       nombre: "EXCEL MASTER",
       onClick: () =>
         descargarArchivo(
@@ -75,7 +68,7 @@ export default function BackUp() {
           "reporte_master_tareas.xlsx"
         ),
       icono: <FaRegFileExcel className={estilosIconos} />,
-    },
+    }
   ]
 
   return (

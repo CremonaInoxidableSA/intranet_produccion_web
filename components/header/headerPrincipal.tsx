@@ -98,6 +98,7 @@ export default function HeaderPrincipal() {
 
         {/* Desktop: links + logo */}
         <div className="hidden w-[30%] items-center justify-end gap-5 xl:flex">
+          {/*
           {headerNavRight.map((item, index) => (
             <Link
               key={index}
@@ -107,6 +108,7 @@ export default function HeaderPrincipal() {
               {item.label}
             </Link>
           ))}
+          */}
           <Link
             href={urlConfig.externalUrl}
             rel="noopener noreferrer"
@@ -149,6 +151,7 @@ export default function HeaderPrincipal() {
             <X />
             <ThemeSwitcher />
           </div>
+          {/*
           {headerNavRight.map((item, index) => (
             <Link
               key={index}
@@ -159,6 +162,7 @@ export default function HeaderPrincipal() {
               {item.label}
             </Link>
           ))}
+          */}
           <button
             onClick={closeDrawer}
             aria-label="Cerrar menú"
