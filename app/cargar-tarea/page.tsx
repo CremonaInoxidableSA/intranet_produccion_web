@@ -381,7 +381,7 @@ export default function CargarTarea() {
                 <span
                   className={`rounded px-2 py-0.5 text-xs font-semibold ${
                     isPausada
-                      ? "bg-yellow-500/20 text-yellow-500"
+                      ? "bg-orangecremona/20 text-orangecremona"
                       : "bg-greencremona/20 text-greencremona"
                   }`}
                 >
