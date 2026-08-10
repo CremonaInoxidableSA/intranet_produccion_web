@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useReducer } from "react"
 import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
@@ -8,21 +8,67 @@ interface UseTareaEditorProps {
   removeTareaLocal: (id: number) => void
 }
 
+interface FormState {
+  descripcion: string
+  tiempoExtra: string
+  dirty: boolean
+}
+
+type FormAction =
+  | { type: "SET_FORM"; payload: { descripcion: string; tiempoExtra: string } }
+  | { type: "UPDATE_DESCRIPCION"; payload: string }
+  | { type: "UPDATE_TIEMPO_EXTRA"; payload: string }
+  | { type: "RESET_DIRTY" }
+  | { type: "SET_DIRTY" }
+
+function formReducer(state: FormState, action: FormAction): FormState {
+  switch (action.type) {
+    case "SET_FORM":
+      return {
+        ...state,
+        descripcion: action.payload.descripcion,
+        tiempoExtra: action.payload.tiempoExtra,
+        dirty: false,
+      }
+    case "UPDATE_DESCRIPCION":
+      return {
+        ...state,
+        descripcion: action.payload,
+        dirty: true,
+      }
+    case "UPDATE_TIEMPO_EXTRA":
+      return {
+        ...state,
+        tiempoExtra: action.payload,
+        dirty: true,
+      }
+    case "RESET_DIRTY":
+      return {
+        ...state,
+        dirty: false,
+      }
+    case "SET_DIRTY":
+      return {
+        ...state,
+        dirty: true,
+      }
+    default:
+      return state
+  }
+}
+
 export function useTareaEditor({
   refetch,
   removeTareaLocal,
 }: UseTareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
-  const [descripcionEdit, setDescripcionEdit] = useState("")
-  const [tiempoExtraEdit, setTiempoExtraEdit] = useState("00:00:00")
-  const [dirty, setDirty] = useState(false)
   const [cronometroKey, setCronometroKey] = useState(0)
   const [showCloseConfirm, setShowCloseConfirm] = useState(false)
   const [showReiniciarConfirm, setShowReiniciarConfirm] = useState(false)
-
   const [tiempoCronometrado, setTiempoCronometrado] =
     useState<string>("00:00:00")
+
   const {
     detalle,
     loading: loadingDetalle,
@@ -30,23 +76,29 @@ export function useTareaEditor({
   } = useDetalleTarea(tareaEditando)
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timerIdRef = useRef<number | null>(null)
+
+  const [formState, dispatch] = useReducer(formReducer, {
+    descripcion: "",
+    tiempoExtra: "00:00:00",
+    dirty: false,
+  })
+
+  const descripcionEdit = formState.descripcion
+  const tiempoExtraEdit = formState.tiempoExtra
+  const dirty = formState.dirty
 
   useEffect(() => {
     if (detalle) {
-      setDescripcionEdit(detalle.descripcion || "")
-      setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
-      setDirty(false)
+      dispatch({
+        type: "SET_FORM",
+        payload: {
+          descripcion: detalle.descripcion || "",
+          tiempoExtra: detalle.tiempo_extra || "00:00:00",
+        },
+      })
     }
   }, [detalle])
-
-  useEffect(() => {
-    if (detalle) {
-      const descChanged = descripcionEdit !== (detalle.descripcion || "")
-      const tiempoChanged =
-        tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-      setDirty(descChanged || tiempoChanged)
-    }
-  }, [descripcionEdit, tiempoExtraEdit, detalle])
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
@@ -55,48 +107,54 @@ export function useTareaEditor({
       )
       if (!res.ok) {
         if (res.status === 404) {
-          setTiempoCronometrado("00:00:00")
-          return
+          return "00:00:00"
         }
         throw new Error("Error al obtener tiempo")
       }
       const data = await res.json()
-      if (data.tiempo_cronometrado) {
-        setTiempoCronometrado(data.tiempo_cronometrado)
-      } else {
-        setTiempoCronometrado("00:00:00")
-      }
+      return data.tiempo_cronometrado || "00:00:00"
     } catch (error) {
       console.error("Error fetching tiempo cronometrado:", error)
+      return "00:00:00"
     }
   }, [])
 
+  const actualizarTiempoCronometrado = useCallback(
+    async (id: number) => {
+      const nuevoTiempo = await fetchTiempoCronometrado(id)
+      setTiempoCronometrado(nuevoTiempo)
+    },
+    [fetchTiempoCronometrado]
+  )
+
   useEffect(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+    if (timerIdRef.current) {
+      clearTimeout(timerIdRef.current)
+      timerIdRef.current = null
     }
 
-    if (tareaEditando === null || !detalle) return
+    if (tareaEditando !== null && detalle) {
+      const isActive = detalle.estado?.toLowerCase() === "activa"
 
-    const isActive = detalle.estado?.toLowerCase() === "activa"
+      if (isActive) {
+        actualizarTiempoCronometrado(tareaEditando)
 
-    fetchTiempoCronometrado(tareaEditando)
-
-    if (isActive) {
-      intervalRef.current = setInterval(() => {
-        if (
-          tareaEditando !== null &&
-          detalle?.estado?.toLowerCase() === "activa"
-        ) {
-          fetchTiempoCronometrado(tareaEditando)
-        } else {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current)
-            intervalRef.current = null
+        intervalRef.current = setInterval(() => {
+          if (
+            tareaEditando !== null &&
+            detalle?.estado?.toLowerCase() === "activa"
+          ) {
+            actualizarTiempoCronometrado(tareaEditando)
+          } else {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current)
+              intervalRef.current = null
+            }
           }
-        }
-      }, 5000)
+        }, 5000)
+      } else {
+        actualizarTiempoCronometrado(tareaEditando)
+      }
     }
 
     return () => {
@@ -104,8 +162,12 @@ export function useTareaEditor({
         clearInterval(intervalRef.current)
         intervalRef.current = null
       }
+      if (timerIdRef.current) {
+        clearTimeout(timerIdRef.current)
+        timerIdRef.current = null
+      }
     }
-  }, [tareaEditando, detalle?.estado, fetchTiempoCronometrado])
+  }, [tareaEditando, detalle, actualizarTiempoCronometrado])
 
   const handleEliminar = useCallback(async () => {
     const id = filaEliminando
@@ -172,8 +234,8 @@ export function useTareaEditor({
         await handleApiResponse(res)
       }
 
-      setDirty(false)
-      refetch()
+      dispatch({ type: "RESET_DIRTY" })
+      await refetch()
     } catch (error) {
       console.error("Error en handleGuardar:", error)
     }
@@ -196,15 +258,15 @@ export function useTareaEditor({
       await handleApiResponse(res)
 
       setTiempoCronometrado("00:00:00")
-      await Promise.all([refetchDetalle(), fetchTiempoCronometrado(id)])
+      await Promise.all([refetchDetalle(), actualizarTiempoCronometrado(id)])
       setCronometroKey((prev) => prev + 1)
       setShowReiniciarConfirm(false)
     } catch {}
-  }, [tareaEditando, fetchTiempoCronometrado, refetchDetalle])
+  }, [tareaEditando, actualizarTiempoCronometrado, refetchDetalle])
 
   const resetEditor = useCallback(() => {
     setTareaEditando(null)
-    setDirty(false)
+    dispatch({ type: "RESET_DIRTY" })
   }, [])
 
   const handlePausarTarea = useCallback(async () => {
@@ -229,11 +291,16 @@ export function useTareaEditor({
       if (!esPausada) {
       } else {
         setTimeout(() => {
-          fetchTiempoCronometrado(id)
+          actualizarTiempoCronometrado(id)
         }, 500)
       }
     } catch {}
-  }, [tareaEditando, detalle?.estado, refetchDetalle, fetchTiempoCronometrado])
+  }, [
+    tareaEditando,
+    detalle?.estado,
+    refetchDetalle,
+    actualizarTiempoCronometrado,
+  ])
 
   const handleFinalizar = useCallback(async () => {
     const id = tareaEditando
@@ -261,9 +328,11 @@ export function useTareaEditor({
     filaEliminando,
     setFilaEliminando,
     descripcionEdit,
-    setDescripcionEdit,
+    setDescripcionEdit: (value: string) =>
+      dispatch({ type: "UPDATE_DESCRIPCION", payload: value }),
     tiempoExtraEdit,
-    setTiempoExtraEdit,
+    setTiempoExtraEdit: (value: string) =>
+      dispatch({ type: "UPDATE_TIEMPO_EXTRA", payload: value }),
     dirty,
     cronometroKey,
     showCloseConfirm,

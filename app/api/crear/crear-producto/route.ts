@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(data)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "No se pudo conectar con el servidor" },
       { status: 500 }

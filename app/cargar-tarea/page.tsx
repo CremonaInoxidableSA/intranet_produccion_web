@@ -122,13 +122,6 @@ export default function CargarTarea() {
     } catch {}
   }, [operarioOcupadoInfo, refetch])
 
-  const setSectorSeleccionado = useCallback((id: number | null) => {
-    setSectorSeleccionadoState(id)
-    setProductoSeleccionadoState(null)
-    setLaborSeleccionada(null)
-    setLaborManual("")
-  }, [])
-
   const setProductoSeleccionado = useCallback((id: number | null) => {
     setProductoSeleccionadoState(id)
     setLaborSeleccionada(null)
@@ -491,20 +484,20 @@ export default function CargarTarea() {
         dialogFooter={
           <div className="flex w-full flex-row items-center justify-between">
             <Boton
-              extraClass="border-red-600 bg-red-600/50 hover:bg-red-600"
+              extraClass="border-red-600 bg-red-600/60 hover:bg-red-600"
               onClick={() => setFilaEliminando(tareaEditando)}
               placeholder="ELIMINAR"
             />
             <div className="flex w-full flex-row items-center justify-end gap-5">
               <Boton
-                extraClass="border-greencremona bg-greencremona/40 hover:bg-greencremona/80"
+                extraClass="border-greencremona bg-greencremona/60 hover:bg-greencremona/80"
                 placeholder="GUARDAR"
                 onClick={handleGuardar}
                 disabled={!dirty}
               />
               <Boton
-                extraClass="border-bluecremona bg-bluecremona/40 hover:bg-bluecremona/80"
-                placeholder="FINALIZAR"
+                extraClass="border-bluecremona bg-bluecremona/60 hover:bg-bluecremona/80"
+                placeholder="FINALIZAR TAREA"
                 onClick={handleFinalizar}
                 disabled={dirty}
               />

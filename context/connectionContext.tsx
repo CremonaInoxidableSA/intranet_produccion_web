@@ -21,7 +21,7 @@ const ConnectionContext = createContext<ConnectionContextType | undefined>(
   undefined
 )
 
-export function ConnectionProvider({
+export function ConnectionProvider({ 
   children,
 }: {
   children: React.ReactNode

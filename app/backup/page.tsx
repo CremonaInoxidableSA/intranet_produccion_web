@@ -1,13 +1,12 @@
 "use client"
 
 import { FaRegFileExcel } from "react-icons/fa"
-import { BsFiletypeSql } from "react-icons/bs"
 import { useState } from "react"
 
 const estilosIconos = "h-12 w-12"
 
 export default function BackUp() {
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
 
   const descargarArchivo = async (url: string, nombrePorDefecto: string) => {
     setLoading(true)
