@@ -1,14 +1,18 @@
 import { useState, useMemo, useCallback } from "react"
 import { useUser } from "@/context/userContext"
 import { useOperarios } from "@/context/dataGeneralContext"
-import { roles, type UsuarioEditando } from "./data"
+import { UsersData } from "@/types/types"
 import { handleApiResponse } from "@/lib/response-handler"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { roles } from "./data"
 
 export function useUsuarioForm() {
   const [nombre, setNombre] = useState("")
   const [apellido, setApellido] = useState("")
   const [legajo, setLegajo] = useState("")
   const [rolId, setRolId] = useState("")
+  const [email, setEmail] = useState("")
+  const [dni, setDni] = useState("")
   const [loading, setLoading] = useState(false)
 
   const { id_current_user } = useUser()
@@ -34,8 +38,10 @@ export function useUsuarioForm() {
       nombre.trim() !== "" &&
       apellido.trim() !== "" &&
       legajo.trim() !== "" &&
-      rolId !== "",
-    [nombre, apellido, legajo, rolId]
+      rolId !== "" &&
+      dni.trim() !== "" &&
+      email.trim() !== "",
+    [nombre, apellido, legajo, rolId, dni, email]
   )
 
   const resetFormulario = useCallback(() => {
@@ -43,6 +49,8 @@ export function useUsuarioForm() {
     setApellido("")
     setLegajo("")
     setRolId("")
+    setDni("")
+    setEmail("")
   }, [])
 
   const handleCargarUsuario = useCallback(async () => {
@@ -52,7 +60,7 @@ export function useUsuarioForm() {
 
     setLoading(true)
     try {
-      const res = await fetch("/api/crear/crear-usuario", {
+      const res = await fetchWithConnectionCheck("/api/crear/crear-usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -61,6 +69,8 @@ export function useUsuarioForm() {
           apellido: apellido.trim(),
           legajo: Number(legajo),
           rol: rolSeleccionado.rol,
+          email: email.trim(),
+          dni: Number(dni),
         }),
       })
       await handleApiResponse(res)
@@ -96,6 +106,10 @@ export function useUsuarioForm() {
     usuarios,
     loadingUsuarios,
     refetchUsuarios,
+    email,
+    setEmail,
+    dni,
+    setDni,
   }
 }
 
@@ -106,19 +120,22 @@ export function useUsuarioEditor({
 }) {
   const { id_current_user } = useUser()
 
-  const [usuarioEditando, setUsuarioEditando] =
-    useState<UsuarioEditando | null>(null)
+  const [usuarioEditando, setUsuarioEditando] = useState<UsersData | null>(null)
   const [nombreEdit, setNombreEdit] = useState("")
   const [apellidoEdit, setApellidoEdit] = useState("")
   const [rolIdEdit, setRolIdEdit] = useState("")
+  const [emailEdit, setEmailEdit] = useState("")
+  const [dniEdit, setDniEdit] = useState("")
   const [loadingEdit, setLoadingEdit] = useState(false)
 
-  const abrirEdicion = useCallback((usuario: UsuarioEditando) => {
+  const abrirEdicion = useCallback((usuario: UsersData) => {
     setUsuarioEditando(usuario)
-    setNombreEdit(usuario.nombre)
-    setApellidoEdit(usuario.apellido)
+    setNombreEdit(usuario.nombre?.toString() ?? "")
+    setApellidoEdit(usuario.apellido?.toString() ?? "")
     const rolActual = roles.find((r) => r.rol === usuario.rol_nombre)
     setRolIdEdit(rolActual?.id_rol ?? "")
+    setEmailEdit(usuario.email ?? "")
+    setDniEdit(usuario.dni?.toString() ?? "")
   }, [])
 
   const cerrarEdicion = useCallback(() => {
@@ -126,6 +143,8 @@ export function useUsuarioEditor({
     setNombreEdit("")
     setApellidoEdit("")
     setRolIdEdit("")
+    setEmailEdit("")
+    setDniEdit("")
   }, [])
 
   const formularioEditCompleto = useMemo(
@@ -144,18 +163,21 @@ export function useUsuarioEditor({
 
     setLoadingEdit(true)
     try {
-      const res = await fetch("/api/actualizar/actualizar-usuarioProduccion", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          current_user_id: id_current_user,
-          id_operario: usuarioEditando.id_operario,
-          nombre: nombreEdit.trim(),
-          apellido: apellidoEdit.trim(),
-          viejo_rol_nombre: usuarioEditando.rol_nombre,
-          rol_nombre: rolNuevo.rol,
-        }),
-      })
+      const res = await fetchWithConnectionCheck(
+        "/api/actualizar/actualizar-usuarioProduccion",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            current_user_id: id_current_user,
+            id_operario: usuarioEditando.id,
+            nombre: nombreEdit.trim(),
+            apellido: apellidoEdit.trim(),
+            viejo_rol_nombre: usuarioEditando.rol_nombre,
+            rol_nombre: rolNuevo.rol,
+          }),
+        }
+      )
       await handleApiResponse(res)
       cerrarEdicion()
       await refetchUsuarios()
@@ -187,5 +209,9 @@ export function useUsuarioEditor({
     formularioEditCompleto,
     handleGuardarEdicion,
     loadingEdit,
+    emailEdit,
+    setEmailEdit,
+    dniEdit,
+    setDniEdit,
   }
 }

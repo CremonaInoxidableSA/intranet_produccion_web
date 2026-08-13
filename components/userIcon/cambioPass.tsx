@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
-import keycloak from "@/lib/keycloak/keycloak"
 import { useAuth } from "@/context/AuthProvider"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 type CambioPassProps = {
   open: boolean
@@ -78,11 +78,10 @@ const CambioPass = ({ open, onOpenChange }: CambioPassProps) => {
     setLoading(true)
 
     try {
-      const response = await fetch("/api/personal/change-password", {
+      const response = await fetchWithConnectionCheck("/api/personal/change-password", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${keycloak.token}`,
         },
         body: JSON.stringify({
           password: form.new_password,

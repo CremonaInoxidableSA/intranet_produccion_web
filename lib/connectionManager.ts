@@ -1,4 +1,4 @@
-// Este archivo no usa React, por lo que puede importarse desde cualquier lugar
+import { fetchWithKeycloak } from "@/lib/keycloak/keycloak-fetch"
 
 export type ApiConnectionSource = "produccion" | "auth" | "unknown"
 
@@ -113,6 +113,30 @@ export function resetConnectionError(apiSource?: ApiConnectionSource) {
   setConnectionError(false, apiSource ?? "unknown")
 }
 
+function isApiRouteRequest(input: RequestInfo | URL): boolean {
+  const value =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url
+
+  if (value.startsWith("/api/")) {
+    return true
+  }
+
+  try {
+    const base =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost"
+    const url = new URL(value, base)
+    return url.pathname.startsWith("/api/")
+  } catch {
+    return false
+  }
+}
+
 /**
  * Detecta si hay error de conexión en una respuesta
  */
@@ -153,7 +177,9 @@ export async function fetchWithConnectionCheck(
   init?: RequestInit
 ): Promise<Response> {
   try {
-    const response = await fetch(input, init)
+    const response = isApiRouteRequest(input)
+      ? await fetchWithKeycloak(input, init)
+      : await fetch(input, init)
 
     // Verificar si es un error de conexión
     if (!response.ok) {

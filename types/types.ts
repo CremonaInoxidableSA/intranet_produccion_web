@@ -22,7 +22,7 @@ export interface SubmodulosData {
 export interface GruposData {
   nombre?: string
   permisos?: (string | PermisosData)[]
-  modulos?: (string | ModulosData)[]
+  modulos?: (string | ModuloPersonal)[]
   submodulos?: (string | SubmodulosData)[]
 }
 
@@ -40,10 +40,11 @@ export interface UsersData {
   grupos?: (string | GruposData)[]
   modulos?: (string | ModulosData)[]
   submodulos?: (string | SubmodulosData)[]
-  modulos_personales?: ModulosPersonales
-  submodulos_personales?: SubmodulosPersonales
+  modulos_personales?: Record<string, ModuloPersonal>
+  submodulos_personales?: Record<string, SubmoduloPersonal>
   permisos?: (string | PermisosData)[]
 
+  rol_nombre?: string
   apellidoNombre?: string
 }
 
@@ -123,6 +124,7 @@ export interface UserAvatarProps {
 export interface ModuloPersonal {
   path: string
   icono: string
+  habilitado: boolean
 }
 
 export interface SubmoduloPersonal {

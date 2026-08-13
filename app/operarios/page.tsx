@@ -24,6 +24,10 @@ export default function Operarios() {
     setLegajo,
     rolId,
     setRolId,
+    dni,
+    setDni,
+    email,
+    setEmail,
     formularioCompleto,
     handleCargarUsuario,
     loading,
@@ -45,6 +49,10 @@ export default function Operarios() {
     formularioEditCompleto,
     handleGuardarEdicion,
     loadingEdit,
+    emailEdit,
+    setEmailEdit,
+    dniEdit,
+    setDniEdit,
   } = useUsuarioEditor({ refetchUsuarios })
 
   const tagOperarioMap = useMemo(
@@ -95,10 +103,24 @@ export default function Operarios() {
                 disabled={loading}
               />
               <Inputs
+                placeholder="EMAIL"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+              <Inputs
                 placeholder="LEGAJO"
                 type="number"
                 value={legajo}
                 onChange={(e) => setLegajo(e.target.value)}
+                disabled={loading}
+              />
+              <Inputs
+                placeholder="DNI"
+                type="text"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
                 disabled={loading}
               />
               <Selector
@@ -146,11 +168,13 @@ export default function Operarios() {
             const operario = tagOperarioMap.get(tag)
             if (!operario) return
             abrirEdicion({
-              id_operario: operario.id_operario,
+              id: operario.id_operario,
               nombre: operario.nombre,
               apellido: operario.apellido,
               rol_nombre: operario.rol_nombre,
               legajo: operario.legajo,
+              email: operario.email,
+              dni: operario.dni,
             })
           }}
           placeholder="LISTADO DE USUARIOS"

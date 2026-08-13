@@ -27,6 +27,7 @@ import {
 } from "@/context/dataUserContext"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import { Download } from "lucide-react"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 export default function Monitoreo() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -82,6 +83,47 @@ export default function Monitoreo() {
   }, [handleEliminar])
   const { detalle: detalleF, loading: loadingDetalleF } =
     useDetalleTareaFinalizada(tareaFinalizadaEditando)
+
+  const descargarReporteTarea = useCallback(async (idTarea: number) => {
+    try {
+      const res = await fetchWithConnectionCheck(
+        `/api/reportes/descargarReporteTarea?id_tarea=${idTarea}`,
+        { method: "GET" }
+      )
+
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}`)
+      }
+
+      const blob = await res.blob()
+      const contentDisposition = res.headers.get("content-disposition")
+      let nombreArchivo = `tarea_${idTarea}.xlsx`
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename\*?=([^;]+)/i)
+        if (match) {
+          let raw = match[1].trim()
+          if (raw.startsWith('"') && raw.endsWith('"')) {
+            raw = raw.slice(1, -1)
+          }
+          nombreArchivo = raw.includes("UTF-8''")
+            ? decodeURIComponent(raw.split("''").pop() ?? raw)
+            : decodeURIComponent(raw)
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = blobUrl
+      a.download = nombreArchivo
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(blobUrl)
+    } catch {
+      // Mantener comportamiento silencioso para no interrumpir el flujo del dialog.
+    }
+  }, [])
 
   const etiquetasEnCurso = curso.tareas.map(
     (t) =>
@@ -499,12 +541,7 @@ export default function Monitoreo() {
             <Button
               onClick={() => {
                 if (detalleF && tareaFinalizadaEditando) {
-                  const link = document.createElement("a")
-                  link.href = `/api/reportes/descargarReporteTarea?id_tarea=${tareaFinalizadaEditando}`
-                  link.download = `tarea_${tareaFinalizadaEditando}.xlsx`
-                  document.body.appendChild(link)
-                  link.click()
-                  document.body.removeChild(link)
+                  void descargarReporteTarea(tareaFinalizadaEditando)
                 }
               }}
               className="flex items-center gap-2"

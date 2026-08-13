@@ -17,7 +17,7 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Intranet Gestion",
+  title: "Intranet Produccion",
 }
 
 export default function RootLayout({

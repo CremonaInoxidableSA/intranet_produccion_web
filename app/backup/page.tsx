@@ -2,6 +2,7 @@
 
 import { FaRegFileExcel } from "react-icons/fa"
 import { useState } from "react"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 const estilosIconos = "h-12 w-12"
 
@@ -11,7 +12,7 @@ export default function BackUp() {
   const descargarArchivo = async (url: string, nombrePorDefecto: string) => {
     setLoading(true)
     try {
-      const res = await fetch(url, { method: "GET" })
+      const res = await fetchWithConnectionCheck(url, { method: "GET" })
       if (!res.ok) throw new Error(`Error ${res.status}`)
 
       const blob = await res.blob()
@@ -67,7 +68,7 @@ export default function BackUp() {
           "reporte_master_tareas.xlsx"
         ),
       icono: <FaRegFileExcel className={estilosIconos} />,
-    }
+    },
   ]
 
   return (

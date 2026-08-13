@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 interface UseTareaEditorProps {
   refetch: () => Promise<void>
@@ -50,7 +51,7 @@ export function useTareaEditor({
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/detalles/detalles-tareaActivaCronometradoSeleccionado?id_tarea=${id}`
       )
       if (!res.ok) {
@@ -112,9 +113,12 @@ export function useTareaEditor({
     if (id === null) return
 
     try {
-      const res = await fetch(`/api/eliminar/eliminar-tarea?id_tarea=${id}`, {
-        method: "DELETE",
-      })
+      const res = await fetchWithConnectionCheck(
+        `/api/eliminar/eliminar-tarea?id_tarea=${id}`,
+        {
+          method: "DELETE",
+        }
+      )
 
       await handleApiResponse(res)
 
@@ -142,7 +146,7 @@ export function useTareaEditor({
 
     if (descChanged) {
       promises.push(
-        fetch("/api/actualizar/actualizar-descripcion", {
+        fetchWithConnectionCheck("/api/actualizar/actualizar-descripcion", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, descripcion: descripcionEdit }),
@@ -157,7 +161,7 @@ export function useTareaEditor({
         return
       }
       promises.push(
-        fetch("/api/actualizar/actualizar-tiempoExtra", {
+        fetchWithConnectionCheck("/api/actualizar/actualizar-tiempoExtra", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, tiempo_extra: tiempoExtraEdit }),
@@ -184,7 +188,7 @@ export function useTareaEditor({
     if (!id) return
 
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         "/api/actualizar/actualizar-reiniciarCronometro",
         {
           method: "PUT",
@@ -217,7 +221,7 @@ export function useTareaEditor({
       : `/api/actualizar/actualizar-pausarCronometro?id_tarea=${id}`
 
     try {
-      const res = await fetch(url, {
+      const res = await fetchWithConnectionCheck(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       })
@@ -240,7 +244,7 @@ export function useTareaEditor({
     if (!id) return
 
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/actualizar/actualizar-finalizarTarea?id_tarea=${id}`,
         {
           method: "POST",

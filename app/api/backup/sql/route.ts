@@ -1,14 +1,22 @@
 import { NextResponse } from "next/server"
-
+import { getBearerTokenFromRequest } from "@/app/api/_utils/authApi"
 const API_BASE_URL =
   process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
 
-export async function GET() {
+export async function GET(request: Request) {
+  const token = getBearerTokenFromRequest(request)
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "No autorizado: falta el token" },
+      { status: 401 }
+    )
+  }
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/backups/descargar-dump-sql`
-    )
+    const response = await fetch(`${API_BASE_URL}/backups/descargar-dump-sql`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
 
     if (!response.ok) {
       return NextResponse.json(

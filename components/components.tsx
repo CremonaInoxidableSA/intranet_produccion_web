@@ -83,8 +83,8 @@ export function BotonIcono({
 }
 
 //---------------------------------------SELECTORES---------------------------------------//
-type SimpleArray = (string | number)[]
-type ObjectArray = Record<string, string | number>[]
+type SimpleArray = (string | number | undefined)[]
+type ObjectArray = Record<string, string | number | undefined>[]
 type ArrayData = SimpleArray | ObjectArray
 
 function isObjectArray(data: ArrayData): data is ObjectArray {

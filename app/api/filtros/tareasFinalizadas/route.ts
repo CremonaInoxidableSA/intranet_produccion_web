@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server"
-
+import { getBearerTokenFromRequest } from "@/app/api/_utils/authApi"
 const API_BASE_URL =
   process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
+export async function GET(request: Request) {
+  const token = getBearerTokenFromRequest(request)
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "No autorizado: falta el token" },
+      { status: 401 }
+    )
+  }
+
+  const { searchParams } = new URL(request.url)
   const fecha_inicio = searchParams.get("fecha_inicio")
   const fecha_fin = searchParams.get("fecha_fin")
 
@@ -13,25 +22,25 @@ export async function GET(req: Request) {
       fetch(
         `${API_BASE_URL}/filtros/numeros-op-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json" },
+          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/numeros-plano-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json" },
+          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/listado-operarios-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json" },
+          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/sectores-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json" },
+          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
         }
       ),
     ])

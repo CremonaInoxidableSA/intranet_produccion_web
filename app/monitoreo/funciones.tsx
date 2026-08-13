@@ -218,14 +218,50 @@ export function useMonitoreoFinalizadas() {
     setSectorSel([])
   }, [dateRange])
 
-  const descargarExcel = useCallback(() => {
+  const descargarExcel = useCallback(async () => {
     if (!dateRange?.from || !dateRange?.to) return
+
     const params = new URLSearchParams({
       fecha_inicio: format(dateRange.from, "yyyy-MM-dd"),
       fecha_fin: format(dateRange.to, "yyyy-MM-dd"),
     })
+
     const url = `/api/reportes/descargarReporteFecha?${params}`
-    window.open(url, "_blank")
+
+    try {
+      const res = await fetchWithConnectionCheck(url, { method: "GET" })
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}`)
+      }
+
+      const blob = await res.blob()
+      const contentDisposition = res.headers.get("content-disposition")
+      let nombreArchivo = "reporte_tareas.xlsx"
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename\*?=([^;]+)/i)
+        if (match) {
+          let raw = match[1].trim()
+          if (raw.startsWith('"') && raw.endsWith('"')) {
+            raw = raw.slice(1, -1)
+          }
+          nombreArchivo = raw.includes("UTF-8''")
+            ? decodeURIComponent(raw.split("''").pop() ?? raw)
+            : decodeURIComponent(raw)
+        }
+      }
+
+      const blobUrl = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = blobUrl
+      a.download = nombreArchivo
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(blobUrl)
+    } catch {
+      toast.error("No se pudo descargar el reporte")
+    }
   }, [dateRange])
 
   return {
@@ -353,9 +389,12 @@ export function useTareaEditor({
     if (id === null) return
 
     try {
-      const res = await fetch(`/api/eliminar/eliminar-tarea?id_tarea=${id}`, {
-        method: "DELETE",
-      })
+      const res = await fetchWithConnectionCheck(
+        `/api/eliminar/eliminar-tarea?id_tarea=${id}`,
+        {
+          method: "DELETE",
+        }
+      )
 
       await handleApiResponse(res)
 
@@ -384,7 +423,7 @@ export function useTareaEditor({
 
     if (descChanged) {
       promises.push(
-        fetch("/api/actualizar/actualizar-descripcion", {
+        fetchWithConnectionCheck("/api/actualizar/actualizar-descripcion", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, descripcion: descripcionEdit }),
@@ -399,7 +438,7 @@ export function useTareaEditor({
         return
       }
       promises.push(
-        fetch("/api/actualizar/actualizar-tiempoExtra", {
+        fetchWithConnectionCheck("/api/actualizar/actualizar-tiempoExtra", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id_tarea: id, tiempo_extra: tiempoExtraEdit }),
@@ -426,7 +465,7 @@ export function useTareaEditor({
     if (!id) return
 
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         "/api/actualizar/actualizar-reiniciarCronometro",
         {
           method: "PUT",
@@ -459,7 +498,7 @@ export function useTareaEditor({
       : `/api/actualizar/actualizar-pausarCronometro?id_tarea=${id}`
 
     try {
-      const res = await fetch(url, {
+      const res = await fetchWithConnectionCheck(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       })
@@ -467,6 +506,7 @@ export function useTareaEditor({
       await handleApiResponse(res)
 
       await refetchDetalle()
+      await onAfterAction?.()
 
       if (!esPausada) {
       } else {
@@ -475,14 +515,20 @@ export function useTareaEditor({
         }, 500)
       }
     } catch {}
-  }, [tareaEditando, detalle?.estado, refetchDetalle, fetchTiempoCronometrado])
+  }, [
+    tareaEditando,
+    detalle?.estado,
+    refetchDetalle,
+    fetchTiempoCronometrado,
+    onAfterAction,
+  ])
 
   const handleFinalizar = useCallback(async () => {
     const id = tareaEditando
     if (!id) return
 
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/actualizar/actualizar-finalizarTarea?id_tarea=${id}`,
         {
           method: "POST",

@@ -24,6 +24,7 @@ import { useTareasUsuario } from "@/context/dataUserContext"
 import { useUser } from "@/context/userContext"
 import { useTareaEditor } from "./funciones"
 import { handleApiResponse } from "@/lib/response-handler"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -94,7 +95,7 @@ export default function CargarTarea() {
       return
     }
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/comprobacion-operarioOcupado?id_operario=${id}`
       )
       const data = await res.json()
@@ -111,7 +112,7 @@ export default function CargarTarea() {
   const handlePausarTareaPrevia = useCallback(async () => {
     if (!operarioOcupadoInfo) return
     try {
-      const res = await fetch(
+      const res = await fetchWithConnectionCheck(
         `/api/actualizar/actualizar-pausarCronometro?id_tarea=${operarioOcupadoInfo.id_tarea}`,
         { method: "POST", headers: { "Content-Type": "application/json" } }
       )
@@ -220,7 +221,7 @@ export default function CargarTarea() {
     }
 
     try {
-      const res = await fetch("/api/crear/crear-tarea", {
+      const res = await fetchWithConnectionCheck("/api/crear/crear-tarea", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

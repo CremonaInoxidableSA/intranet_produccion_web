@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getBearerTokenFromRequest } from "@/app/api/_utils/authApi"
 
-const API_BASE_URL = process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
+const API_BASE_URL =
+  process.env.API_PRODUCCION_URL ?? "http://192.168.20.151:8200"
 
 export async function GET(request: NextRequest) {
+  const token = getBearerTokenFromRequest(request)
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "No autorizado: falta el token" },
+      { status: 401 }
+    )
+  }
+
   const id_sector = request.nextUrl.searchParams.get("id_sector")
 
   if (!id_sector) {
@@ -15,7 +26,12 @@ export async function GET(request: NextRequest) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/productos/lista-productos-sector?id_sector=${id_sector}`,
-      { headers: { Accept: "application/json" } }
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     )
 
     if (!response.ok) {

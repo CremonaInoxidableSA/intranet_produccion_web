@@ -22,6 +22,7 @@ import {
 } from "@/context/dataGeneralContext"
 import type { Producto } from "@/context/dataGeneralContext"
 import { handleApiResponse } from "@/lib/response-handler"
+import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 
 export default function Productos() {
   const { sectores } = useSectores()
@@ -57,11 +58,14 @@ export default function Productos() {
   const handleEliminarProducto = async () => {
     if (productoEliminar === null) return
     try {
-      const res = await fetch("/api/eliminar/eliminar-producto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_producto: productoEliminar }),
-      })
+      const res = await fetchWithConnectionCheck(
+        "/api/eliminar/eliminar-producto",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_producto: productoEliminar }),
+        }
+      )
       await handleApiResponse(res)
       setProductoEliminar(null)
       if (productoSeleccionado?.id_producto === productoEliminar) {
@@ -77,11 +81,14 @@ export default function Productos() {
   const handleEliminarLabor = async () => {
     if (laborEliminar === null) return
     try {
-      const res = await fetch("/api/eliminar/eliminar-labor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_labor: laborEliminar }),
-      })
+      const res = await fetchWithConnectionCheck(
+        "/api/eliminar/eliminar-labor",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id_labor: laborEliminar }),
+        }
+      )
       await handleApiResponse(res)
       setLaborEliminar(null)
       await refetchLabores()
@@ -102,7 +109,7 @@ export default function Productos() {
       return
     }
     try {
-      const res = await fetch("/api/crear/crear-labor", {
+      const res = await fetchWithConnectionCheck("/api/crear/crear-labor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -128,7 +135,7 @@ export default function Productos() {
       return
     }
     try {
-      const res = await fetch("/api/crear/crear-producto", {
+      const res = await fetchWithConnectionCheck("/api/crear/crear-producto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -161,14 +168,17 @@ export default function Productos() {
       return
     }
     try {
-      const res = await fetch("/api/actualizar/actualizar-nombre-producto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id_producto: productoEditando.id_producto,
-          nombre: nombreEdit.trim(),
-        }),
-      })
+      const res = await fetchWithConnectionCheck(
+        "/api/actualizar/actualizar-nombre-producto",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_producto: productoEditando.id_producto,
+            nombre: nombreEdit.trim(),
+          }),
+        }
+      )
       await handleApiResponse(res)
       setProductoEditando(null)
       await refetchProductos()

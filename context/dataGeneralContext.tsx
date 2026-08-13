@@ -150,18 +150,20 @@ export function useLabores(
 }
 
 export type Operario = {
-  id_operario: number
+  id_operario: string | undefined
   nombre: string
   apellido: string
   nombre_completo: string
   legajo: number
   rol_nombre: string
   rol_display: string
+  email?: string
+  dni?: number
 }
 
 const ROL_DISPLAY: Record<string, string> = {
   "encargado-produccion": "ENCARGADO",
-  operario: "OPERARIO",
+  "operario": "OPERARIO",
 }
 
 export function useOperarios() {

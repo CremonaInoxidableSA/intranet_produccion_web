@@ -1,14 +1,24 @@
 import { NextResponse } from "next/server"
-
+import { getBearerTokenFromRequest } from "@/app/api/_utils/authApi"
 const API_BASE_URL = process.env.API_AUTH_URL ?? "http://192.168.20.151:8000"
 
-export async function GET() {
+export async function GET(request: Request) {
+  const token = getBearerTokenFromRequest(request)
+
+  if (!token) {
+    return NextResponse.json(
+      { error: "No autorizado: falta el token" },
+      { status: 401 }
+    )
+  }
+
   try {
     const response = await fetch(
       `${API_BASE_URL}/obtener-usuarios-produccion`,
       {
         headers: {
           Accept: "application/json",
+          Authorization: `Bearer ${token}`,
         },
       }
     )
