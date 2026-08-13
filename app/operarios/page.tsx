@@ -168,10 +168,10 @@ export default function Operarios() {
             const operario = tagOperarioMap.get(tag)
             if (!operario) return
             abrirEdicion({
-              id: operario.id_operario,
+              id_operario: operario.id_operario,
               nombre: operario.nombre,
               apellido: operario.apellido,
-              rol_nombre: operario.rol_nombre,
+              grupo: operario.grupo,
               legajo: operario.legajo,
               email: operario.email,
               dni: operario.dni,

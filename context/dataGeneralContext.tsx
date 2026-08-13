@@ -2,13 +2,25 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import type {
+  FiltrosMonitoreo,
+  Labor,
+  LaborProducto,
+  Operario,
+  Producto,
+  Sector,
+} from "@/types/types"
+
+export type {
+  FiltrosMonitoreo,
+  Labor,
+  LaborProducto,
+  Operario,
+  Producto,
+  Sector,
+} from "@/types/types"
 
 //------------------------------------CARGAR NUEVA TAREA------------------------------------//
-
-export type Sector = {
-  id_sector: number
-  nombre: string
-}
 
 export function useSectores() {
   const [sectores, setSectores] = useState<Sector[]>([])
@@ -36,13 +48,8 @@ export function useSectores() {
   return { sectores, loading, error }
 }
 
-export type ProductoSector = {
-  id_producto: number
-  nombre: string
-}
-
 export function useProductosSector(id_sector: number | null) {
-  const [productos, setProductos] = useState<ProductoSector[]>([])
+  const [productos, setProductos] = useState<Producto[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -55,7 +62,7 @@ export function useProductosSector(id_sector: number | null) {
           `/api/listas/lista-productosSector?id_sector=${id_sector}`
         )
         if (!response.ok) throw new Error("Error al obtener productos")
-        const data: ProductoSector[] = await response.json()
+        const data: Producto[] = await response.json()
         setProductos(data)
       } catch {
         setError("No se pudo cargar la lista de productos")
@@ -67,12 +74,6 @@ export function useProductosSector(id_sector: number | null) {
   }, [id_sector])
 
   return { productos, loading, error }
-}
-
-export type Producto = {
-  id_producto: number
-  nombre: string
-  sectores: string[]
 }
 
 export function useProductos() {
@@ -101,11 +102,6 @@ export function useProductos() {
   }, [fetchData])
 
   return { productos, loading, error, refetch: fetchData }
-}
-
-export type Labor = {
-  id_labor: number
-  nombre: string
 }
 
 export function useLabores(
@@ -149,21 +145,9 @@ export function useLabores(
   return { labores, loading, error }
 }
 
-export type Operario = {
-  id_operario: string | undefined
-  nombre: string
-  apellido: string
-  nombre_completo: string
-  legajo: number
-  rol_nombre: string
-  rol_display: string
-  email?: string
-  dni?: number
-}
-
 const ROL_DISPLAY: Record<string, string> = {
   "encargado-produccion": "ENCARGADO",
-  "operario": "OPERARIO",
+  operario: "OPERARIO",
 }
 
 export function useOperarios() {
@@ -181,15 +165,14 @@ export function useOperarios() {
       const data = await response.json()
       const operariosFormateados = data.map(
         (o: {
-          id_operario: number
+          id: number
           nombre: string
           apellido: string
-          legajo: number
-          rol_nombre: string
+          grupo: string
         }) => ({
           ...o,
           nombre_completo: `${o.apellido} ${o.nombre}`,
-          rol_display: ROL_DISPLAY[o.rol_nombre] ?? o.rol_nombre.toUpperCase(),
+          rol_display: ROL_DISPLAY[o.grupo] ?? o.grupo.toUpperCase(),
         })
       )
       setOperarios(operariosFormateados)
@@ -208,12 +191,6 @@ export function useOperarios() {
 }
 
 //------------------------------------LABORES POR PRODUCTO------------------------------------//
-
-export type LaborProducto = {
-  id_labor: number
-  nombre: string
-  sector: string
-}
 
 export function useLaborresProducto(id_producto: number | null) {
   const [labores, setLabores] = useState<LaborProducto[]>([])
@@ -248,13 +225,6 @@ export function useLaborresProducto(id_producto: number | null) {
 }
 
 //------------------------------------FILTROS MONITOREO------------------------------------//
-
-export type FiltrosMonitoreo = {
-  numeros_op: number[]
-  numeros_plano: string[]
-  operarios: string[]
-  sectores: string[]
-}
 
 const FILTROS_EMPTY: FiltrosMonitoreo = {
   numeros_op: [],

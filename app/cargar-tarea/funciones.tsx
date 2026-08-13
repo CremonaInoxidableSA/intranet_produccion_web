@@ -3,24 +3,7 @@ import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-
-interface UseTareaEditorProps {
-  refetch: () => Promise<void>
-  removeTareaLocal: (id: number) => void
-}
-
-interface FormState {
-  descripcion: string
-  tiempoExtra: string
-  dirty: boolean
-}
-
-type FormAction =
-  | { type: "SET_FORM"; payload: { descripcion: string; tiempoExtra: string } }
-  | { type: "UPDATE_DESCRIPCION"; payload: string }
-  | { type: "UPDATE_TIEMPO_EXTRA"; payload: string }
-  | { type: "RESET_DIRTY" }
-  | { type: "SET_DIRTY" }
+import type { FormAction, FormState, TareaEditorProps } from "@/types/types"
 
 function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
@@ -61,7 +44,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
 export function useTareaEditor({
   refetch,
   removeTareaLocal,
-}: UseTareaEditorProps) {
+}: TareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [cronometroKey, setCronometroKey] = useState(0)
@@ -175,9 +158,12 @@ export function useTareaEditor({
     if (id === null) return
 
     try {
-      const res = await fetchWithConnectionCheck(`/api/eliminar/eliminar-tarea?id_tarea=${id}`, {
-        method: "DELETE",
-      })
+      const res = await fetchWithConnectionCheck(
+        `/api/eliminar/eliminar-tarea?id_tarea=${id}`,
+        {
+          method: "DELETE",
+        }
+      )
 
       await handleApiResponse(res)
 

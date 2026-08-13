@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react"
 import { useUser } from "@/context/userContext"
 import { useOperarios } from "@/context/dataGeneralContext"
-import { UsersData } from "@/types/types"
+import { Operario } from "@/types/types"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 import { roles } from "./data"
@@ -120,7 +120,7 @@ export function useUsuarioEditor({
 }) {
   const { id_current_user } = useUser()
 
-  const [usuarioEditando, setUsuarioEditando] = useState<UsersData | null>(null)
+  const [usuarioEditando, setUsuarioEditando] = useState<Operario | null>(null)
   const [nombreEdit, setNombreEdit] = useState("")
   const [apellidoEdit, setApellidoEdit] = useState("")
   const [rolIdEdit, setRolIdEdit] = useState("")
@@ -128,11 +128,11 @@ export function useUsuarioEditor({
   const [dniEdit, setDniEdit] = useState("")
   const [loadingEdit, setLoadingEdit] = useState(false)
 
-  const abrirEdicion = useCallback((usuario: UsersData) => {
+  const abrirEdicion = useCallback((usuario: Operario) => {
     setUsuarioEditando(usuario)
     setNombreEdit(usuario.nombre?.toString() ?? "")
     setApellidoEdit(usuario.apellido?.toString() ?? "")
-    const rolActual = roles.find((r) => r.rol === usuario.rol_nombre)
+    const rolActual = roles.find((r) => r.rol === usuario.grupo)
     setRolIdEdit(rolActual?.id_rol ?? "")
     setEmailEdit(usuario.email ?? "")
     setDniEdit(usuario.dni?.toString() ?? "")
@@ -170,11 +170,11 @@ export function useUsuarioEditor({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             current_user_id: id_current_user,
-            id_operario: usuarioEditando.id,
+            id_operario: usuarioEditando.id_operario,
             nombre: nombreEdit.trim(),
             apellido: apellidoEdit.trim(),
-            viejo_rol_nombre: usuarioEditando.rol_nombre,
-            rol_nombre: rolNuevo.rol,
+            viejo_grupo: usuarioEditando.grupo,
+            grupo: rolNuevo.rol,
           }),
         }
       )

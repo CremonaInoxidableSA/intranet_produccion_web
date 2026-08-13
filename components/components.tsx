@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/popover"
 import { LucideIcon, Check, ChevronDown } from "lucide-react"
 import { Virtuoso } from "react-virtuoso"
+import type { ArrayData, ItemCardProps, ObjectArray } from "@/types/types"
 
 //---------------------------------------BOTONES---------------------------------------//
 export function Boton({
@@ -83,10 +84,6 @@ export function BotonIcono({
 }
 
 //---------------------------------------SELECTORES---------------------------------------//
-type SimpleArray = (string | number | undefined)[]
-type ObjectArray = Record<string, string | number | undefined>[]
-type ArrayData = SimpleArray | ObjectArray
-
 function isObjectArray(data: ArrayData): data is ObjectArray {
   return data.length > 0 && typeof data[0] === "object"
 }
@@ -120,11 +117,17 @@ export const Selector = React.memo(function Selector({
       <SelectContent position="popper">
         <SelectGroup>
           {isObjectArray(data)
-            ? data.map((opcion) => (
-                <SelectItem key={opcion[keyId]} value={String(opcion[keyId])}>
-                  {opcion[keyLabel]}
-                </SelectItem>
-              ))
+            ? data.map((opcion) => {
+                const opcionRecord = opcion as Record<string, unknown>
+                return (
+                  <SelectItem
+                    key={String(opcionRecord[keyId])}
+                    value={String(opcionRecord[keyId])}
+                  >
+                    {String(opcionRecord[keyLabel] ?? "")}
+                  </SelectItem>
+                )
+              })
             : data.map((opcion) => (
                 <SelectItem key={opcion} value={String(opcion)}>
                   {String(opcion)}
@@ -133,6 +136,138 @@ export const Selector = React.memo(function Selector({
         </SelectGroup>
       </SelectContent>
     </Select>
+  )
+})
+
+export const SelectorConBusqueda = React.memo(function SelectorConBusqueda({
+  placeholder,
+  data,
+  keyId = "id",
+  keyLabel = "nombre",
+  onValueChange,
+  extraClass,
+  value,
+  disabled = false,
+}: {
+  placeholder: string
+  data: ArrayData
+  keyId?: string
+  keyLabel?: string
+  extraClass?: string
+  disabled?: boolean
+  value?: string
+  onValueChange?: (value: string) => void
+}) {
+  const [open, setOpen] = React.useState(false)
+  const [search, setSearch] = React.useState("")
+
+  const opcionesFiltradas = React.useMemo(() => {
+    const query = search.trim().toLowerCase()
+
+    if (!isObjectArray(data)) {
+      return data.filter((opcion) =>
+        String(opcion).toLowerCase().includes(query)
+      )
+    }
+
+    if (!query) return data
+
+    return data.filter((opcion) => {
+      const opcionRecord = opcion as Record<string, unknown>
+      const texto = [
+        String(opcionRecord[keyId] ?? ""),
+        String(opcionRecord[keyLabel] ?? ""),
+        String(opcionRecord.nombre ?? ""),
+        String(opcionRecord.apellido ?? ""),
+        String(opcionRecord.legajo ?? ""),
+      ]
+        .join(" ")
+        .toLowerCase()
+
+      return texto.includes(query)
+    })
+  }, [data, keyId, keyLabel, search])
+
+  const selectedLabel = React.useMemo(() => {
+    if (!isObjectArray(data) || value === undefined || value === "") {
+      return ""
+    }
+
+    const selected = data.find((opcion) => {
+      const opcionRecord = opcion as Record<string, unknown>
+      return String(opcionRecord[keyId]) === String(value)
+    })
+
+    return selected
+      ? String((selected as Record<string, unknown>)[keyLabel] ?? "")
+      : ""
+  }, [data, keyId, keyLabel, value])
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen)
+        if (!nextOpen) {
+          setSearch("")
+        }
+      }}
+    >
+      <PopoverTrigger asChild disabled={disabled}>
+        <button
+          type="button"
+          className={`flex min-h-10 w-full items-center justify-between rounded border-2 border-background6 bg-background3 px-3 py-2 text-left text-sm transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${extraClass ?? ""}`}
+        >
+          <span className={selectedLabel ? "" : "opacity-50"}>
+            {selectedLabel || placeholder}
+          </span>
+          <ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-(--radix-popover-trigger-width) p-2"
+        align="start"
+      >
+        <div className="flex flex-col gap-2">
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Buscar operario..."
+            className="h-9"
+            autoFocus
+          />
+
+          <div className="max-h-60 overflow-y-auto">
+            {opcionesFiltradas.length > 0 ? (
+              opcionesFiltradas.map((opcion) => {
+                const opcionRecord = opcion as Record<string, unknown>
+                const id = String(opcionRecord[keyId])
+                const label = String(opcionRecord[keyLabel] ?? "")
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      onValueChange?.(id)
+                      setOpen(false)
+                    }}
+                    className={`flex w-full items-center justify-between rounded px-2 py-2 text-left text-sm transition-colors hover:bg-foreground/10 ${value === id ? "bg-foreground/5" : ""}`}
+                  >
+                    <span>{label}</span>
+                    {value === id && <Check className="size-4" />}
+                  </button>
+                )
+              })
+            ) : (
+              <p className="px-2 py-2 text-sm opacity-60">
+                No se encontraron operarios
+              </p>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 })
 
@@ -178,8 +313,14 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
     values.length === 0
       ? placeholder
       : data
-          .filter((o) => values.map(String).includes(String(o[keyId])))
-          .map((o) => o[keyLabel])
+          .filter((o) => {
+            const optionRecord = o as Record<string, unknown>
+            return values.map(String).includes(String(optionRecord[keyId]))
+          })
+          .map((o) => {
+            const optionRecord = o as Record<string, unknown>
+            return String(optionRecord[keyLabel] ?? "")
+          })
           .join(", ")
 
   return (
@@ -202,7 +343,8 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
         align="start"
       >
         {data.map((opcion) => {
-          const id = String(opcion[keyId])
+          const optionRecord = opcion as Record<string, unknown>
+          const id = String(optionRecord[keyId])
           const selected = values.map(String).includes(id)
           return (
             <div
@@ -213,7 +355,7 @@ export const SelectorMultiple = React.memo(function SelectorMultiple({
               <div className="flex size-4 shrink-0 items-center justify-center rounded border border-foreground/30">
                 {selected && <Check className="size-3" />}
               </div>
-              <span>{opcion[keyLabel]}</span>
+              <span>{String(optionRecord[keyLabel] ?? "")}</span>
             </div>
           )
         })}
@@ -375,7 +517,6 @@ export function Textarea({
 }
 
 //---------------------------------------CAMPOS---------------------------------------//
-import { ReactNode } from "react"
 import {
   Item,
   ItemActions,
@@ -385,19 +526,6 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { ChevronRightIcon } from "lucide-react"
-
-type ItemCardProps = {
-  title: ReactNode
-  description?: ReactNode
-  icon?: ReactNode
-  actions?: ReactNode
-  href?: string
-  variant?: "default" | "outline" | "muted"
-  size?: "default" | "sm" | "xs"
-  className?: string
-  children?: ReactNode
-  showChevron?: boolean
-}
 
 export function ItemCard({
   title,

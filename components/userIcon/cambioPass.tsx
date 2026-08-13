@@ -19,11 +19,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import { useAuth } from "@/context/AuthProvider"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-
-type CambioPassProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
+import type { CambioPassProps } from "@/types/types"
 
 const CambioPass = ({ open, onOpenChange }: CambioPassProps) => {
   const [form, setForm] = useState({
@@ -78,16 +74,19 @@ const CambioPass = ({ open, onOpenChange }: CambioPassProps) => {
     setLoading(true)
 
     try {
-      const response = await fetchWithConnectionCheck("/api/personal/change-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          password: form.new_password,
-          password_confirmation: form.new_password_confirmation,
-        }),
-      })
+      const response = await fetchWithConnectionCheck(
+        "/api/personal/change-password",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            password: form.new_password,
+            password_confirmation: form.new_password_confirmation,
+          }),
+        }
+      )
 
       const data = await response.json()
 

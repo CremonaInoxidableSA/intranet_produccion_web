@@ -4,24 +4,14 @@ import React, { createContext, useContext, useState, useEffect } from "react"
 import {
   subscribeToConnectionError,
   resetConnectionError as resetConnectionErrorManager,
-  type ApiConnectionSource,
-  type ConnectionErrorState,
 } from "@/lib/connectionManager"
-
-interface ConnectionContextType {
-  isConnectionError: boolean
-  connectionErrors: Array<{
-    apiSource: ApiConnectionSource
-    message: string
-  }>
-  resetConnectionError: () => void
-}
+import type { ConnectionContextType, ConnectionErrorState } from "@/types/types"
 
 const ConnectionContext = createContext<ConnectionContextType | undefined>(
   undefined
 )
 
-export function ConnectionProvider({ 
+export function ConnectionProvider({
   children,
 }: {
   children: React.ReactNode

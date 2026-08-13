@@ -1,3 +1,5 @@
+import type { ReactNode } from "react"
+
 export interface PermisosData {
   nombre?: string
   descripcion?: string
@@ -44,7 +46,7 @@ export interface UsersData {
   submodulos_personales?: Record<string, SubmoduloPersonal>
   permisos?: (string | PermisosData)[]
 
-  rol_nombre?: string
+  grupo?: string
   apellidoNombre?: string
 }
 
@@ -134,3 +136,210 @@ export interface SubmoduloPersonal {
 
 export type ModulosPersonales = Record<string, ModuloPersonal>
 export type SubmodulosPersonales = Record<string, SubmoduloPersonal>
+
+// ------------------------------------DOMINIO PRODUCCION------------------------------------
+
+export interface Sector {
+  id_sector: number
+  nombre: string
+}
+
+export interface Producto {
+  id_producto: number
+  nombre: string
+  sectores: string[]
+}
+
+export interface Labor {
+  id_labor: number
+  nombre: string
+}
+
+export interface Operario {
+  id_operario: number | undefined
+  nombre: string
+  apellido: string
+  nombre_completo?: string
+  legajo: number
+  grupo: string
+  rol_display?: string
+  email?: string
+  dni?: number
+
+  detail?: string
+  nombre_labor?: string
+  nombre_creador?: string
+  apellido_creador?: string
+  id_tarea?: number
+}
+
+export interface LaborProducto {
+  id_labor: number
+  nombre: string
+  sector: string
+}
+
+export interface FiltrosMonitoreo {
+  numeros_op: number[]
+  numeros_plano: string[]
+  operarios: string[]
+  sectores: string[]
+}
+
+export interface TareaUsuario {
+  id_tarea: number
+  nombre_operario_seleccionado: string
+  apellido_operario_seleccionado: string
+  nombre_producto: string
+  nombre_labor: string
+  estado: string
+}
+
+export interface DetalleTarea {
+  id_tarea: number
+  nombre_operario_seleccionado: string
+  apellido_operario_seleccionado: string
+  nombre_sector: string
+  numero_op: number
+  numero_plano: string
+  nombre_producto: string
+  nombre_labor: string
+  descripcion: string
+  tiempo_extra: string
+  estado: string
+
+  //-Finalizada-//
+  fecha_inicio?: Date
+  fecha_fin?: Date
+  apellido_creador?: string
+  nombre_creador?: string
+  tiempo_cronometrado?: string
+  tiempo_total?: string
+  eventos?: EventoTareaFinalizada[]
+}
+
+export interface EventoTareaFinalizada {
+  fecha: Date
+  titulo: string
+}
+
+export interface Tarea {
+  id_tarea: number
+  nombre_operario_seleccionado: string
+  apellido_operario_seleccionado: string
+  nombre_producto: string
+  nombre_labor: string
+  estado: string
+}
+
+// ------------------------------------CONEXION Y CONTEXTO------------------------------------
+
+export type ApiConnectionSource = "produccion" | "auth" | "unknown"
+
+export interface ConnectionErrorState {
+  hasError: boolean
+  failedApis: ApiConnectionSource[]
+  messages: string[]
+}
+
+export type ConnectionErrorListener = (state: ConnectionErrorState) => void
+
+export interface ConnectionErrorItem {
+  apiSource: ApiConnectionSource
+  message: string
+}
+
+export interface ConnectionContextType {
+  isConnectionError: boolean
+  connectionErrors: ConnectionErrorItem[]
+  resetConnectionError: () => void
+}
+
+export interface UserContextType {
+  id_current_user: number
+  nombre_usuario_logeado: string
+  apellido_usuario_logeado: string
+}
+
+// ------------------------------------PAGINAS Y HOOKS------------------------------------
+export interface CrearTareaResponse {
+  id_tarea?: number
+}
+
+export interface TareaEditorProps {
+  refetch: () => Promise<void>
+  removeTareaLocal: (id: number) => void
+}
+
+export interface MonitoreoTareaEditorProps extends TareaEditorProps {
+  onAfterAction?: () => void | Promise<void>
+}
+
+export interface FormState {
+  descripcion: string
+  tiempoExtra: string
+  dirty: boolean
+}
+
+export interface SetFormAction {
+  type: "SET_FORM"
+  payload: { descripcion: string; tiempoExtra: string }
+}
+
+export interface UpdateDescripcionAction {
+  type: "UPDATE_DESCRIPCION"
+  payload: string
+}
+
+export interface UpdateTiempoExtraAction {
+  type: "UPDATE_TIEMPO_EXTRA"
+  payload: string
+}
+
+export interface ResetDirtyAction {
+  type: "RESET_DIRTY"
+}
+
+export interface SetDirtyAction {
+  type: "SET_DIRTY"
+}
+
+export type FormAction =
+  | SetFormAction
+  | UpdateDescripcionAction
+  | UpdateTiempoExtraAction
+  | ResetDirtyAction
+  | SetDirtyAction
+
+export type NombreConNombre = string | { nombre?: string } | null | undefined
+
+// ------------------------------------COMPONENTES------------------------------------
+
+export type SimpleArray = (string | number | undefined)[]
+export type ObjectArray = object[]
+export type ArrayData = SimpleArray | ObjectArray
+
+export interface ItemCardProps {
+  title: ReactNode
+  description?: ReactNode
+  icon?: ReactNode
+  actions?: ReactNode
+  href?: string
+  variant?: "default" | "outline" | "muted"
+  size?: "default" | "sm" | "xs"
+  className?: string
+  children?: ReactNode
+  showChevron?: boolean
+}
+
+export interface CronometroEdicionProps {
+  value: string
+  estado?: string
+  onTogglePausa?: () => void
+  onReiniciar?: () => void
+}
+
+export interface CambioPassProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}

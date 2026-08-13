@@ -12,30 +12,10 @@ import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-
-export type TareaActiva = {
-  id_tarea: number
-  nombre_operario_seleccionado: string
-  apellido_operario_seleccionado: string
-  nombre_producto: string
-  nombre_labor: string
-  estado: string
-}
-
-export type TareaFinalizada = {
-  id_tarea: number
-  nombre_operario_seleccionado: string
-  apellido_operario_seleccionado: string
-  nombre_producto: string
-  nombre_labor: string
-  estado: string
-}
-
-interface UseTareaEditorProps {
-  refetch: () => Promise<void>
-  removeTareaLocal: (id: number) => void
-  onAfterAction?: () => void | Promise<void>
-}
+import type {
+  MonitoreoTareaEditorProps,
+  Tarea
+} from "@/types/types"
 
 export function toOptions(items: (string | number)[]) {
   return items.map((item) => ({ id: String(item), nombre: String(item) }))
@@ -64,7 +44,7 @@ export function useMonitoreoEnCurso() {
   const [sectorSel, setSectorSel] = useState<string[]>([])
   const [initialized, setInitialized] = useState(false)
 
-  const [tareas, setTareas] = useState<TareaActiva[]>([])
+  const [tareas, setTareas] = useState<Tarea[]>([])
   const [loading, setLoading] = useState(false)
 
   const fetchTareas = useCallback(
@@ -155,7 +135,7 @@ export function useMonitoreoFinalizadas() {
   const [sectorSel, setSectorSel] = useState<string[]>([])
   const [initialized, setInitialized] = useState(false)
 
-  const [tareas, setTareas] = useState<TareaFinalizada[]>([])
+  const [tareas, setTareas] = useState<Tarea[]>([])
   const [loading, setLoading] = useState(false)
 
   const fetchTareas = useCallback(
@@ -288,7 +268,7 @@ export function useTareaEditor({
   refetch,
   removeTareaLocal,
   onAfterAction,
-}: UseTareaEditorProps) {
+}: MonitoreoTareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [descripcionEdit, setDescripcionEdit] = useState("")

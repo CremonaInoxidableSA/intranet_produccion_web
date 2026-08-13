@@ -20,7 +20,7 @@ import {
   useProductos,
   useLaborresProducto,
 } from "@/context/dataGeneralContext"
-import type { Producto } from "@/context/dataGeneralContext"
+import type { Producto } from "@/types/types"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 

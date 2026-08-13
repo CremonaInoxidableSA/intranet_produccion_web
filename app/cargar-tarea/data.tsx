@@ -1,11 +1,11 @@
-import { Selector, Inputs, Textarea } from "@/components/components"
+import {
+  Selector,
+  SelectorConBusqueda,
+  Inputs,
+  Textarea,
+} from "@/components/components"
 import { CronometroCreacion, DuracionInput } from "@/components/cronometro"
-import type {
-  Sector,
-  ProductoSector,
-  Labor,
-  Operario,
-} from "@/context/dataGeneralContext"
+import type { Sector, Producto, Labor, Operario } from "@/types/types"
 
 export const secciones = [
   {
@@ -23,7 +23,7 @@ export const secciones = [
 ]
 
 export function getOpcionesNuevaTarea(
-  productos: ProductoSector[],
+  productos: Producto[],
   sectores: Sector[],
   labores: Labor[],
   operarios: Operario[],
@@ -31,7 +31,7 @@ export function getOpcionesNuevaTarea(
   setSectorSeleccionado: (id: number | null) => void,
   productoSeleccionado: number | null,
   setProductoSeleccionado: (id: number | null) => void,
-  operarioSeleccionado: number | null,
+  operarioSeleccionado: number | null | undefined,
   setOperarioSeleccionado: (id: number | null) => void,
   laborSeleccionada: number | null,
   setLaborSeleccionada: (id: number | null) => void,
@@ -59,7 +59,7 @@ export function getOpcionesNuevaTarea(
             OPERARIO
           </h1>
           <div className="flex flex-col gap-5">
-            <Selector
+            <SelectorConBusqueda
               placeholder="SELECCIONE EL OPERARIO"
               data={operarios}
               keyId="id_operario"

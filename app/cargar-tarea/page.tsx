@@ -25,6 +25,7 @@ import { useUser } from "@/context/userContext"
 import { useTareaEditor } from "./funciones"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import type { CrearTareaResponse, Operario } from "@/types/types"
 
 export default function CargarTarea() {
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
@@ -35,7 +36,7 @@ export default function CargarTarea() {
     number | null
   >(null)
   const [operarioSeleccionado, setOperarioSeleccionado] = useState<
-    number | null
+    number | null | undefined
   >(null)
   const [laborSeleccionada, setLaborSeleccionada] = useState<number | null>(
     null
@@ -80,14 +81,8 @@ export default function CargarTarea() {
   const { productos } = useProductosSector(sectorSeleccionado)
   const { labores } = useLabores(sectorSeleccionado, productoSeleccionado)
 
-  const [operarioOcupadoInfo, setOperarioOcupadoInfo] = useState<{
-    detail: string
-    nombre_labor: string
-    nombre_creador: string
-    apellido_creador: string
-    id_tarea: number
-    id_operario: number
-  } | null>(null)
+  const [operarioOcupadoInfo, setOperarioOcupadoInfo] =
+    useState<Operario | null>(null)
 
   const handleSeleccionarOperario = useCallback(async (id: number | null) => {
     if (id === null) {
@@ -161,7 +156,7 @@ export default function CargarTarea() {
 
   const formularioCompleto = useMemo(
     () =>
-      operarioSeleccionado !== null &&
+      (operarioSeleccionado !== null || operarioSeleccionado === undefined) &&
       sectorSeleccionado !== null &&
       productoSeleccionado !== null &&
       numeroOp !== null &&
@@ -180,10 +175,6 @@ export default function CargarTarea() {
       laborSeleccionada,
     ]
   )
-
-  type CrearTareaResponse = {
-    id_tarea?: number
-  }
 
   const resetFormulario = useCallback(() => {
     setSectorSeleccionadoState(null)

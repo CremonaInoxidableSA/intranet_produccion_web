@@ -1,12 +1,7 @@
 "use client"
 
 import { createContext, useContext } from "react"
-
-type UserContextType = {
-  id_current_user: number
-  nombre_usuario_logeado: string
-  apellido_usuario_logeado: string
-}
+import type { UserContextType } from "@/types/types"
 
 const UserContext = createContext<UserContextType>({
   id_current_user: 1,

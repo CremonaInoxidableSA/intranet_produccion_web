@@ -1,15 +1,15 @@
 import { useEffect, useState, useCallback } from "react"
 import { useUser } from "@/context/userContext"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import type {
+  DetalleTarea,
+  TareaUsuario,
+} from "@/types/types"
 
-export type TareaUsuario = {
-  id_tarea: number
-  nombre_operario_seleccionado: string
-  apellido_operario_seleccionado: string
-  nombre_producto: string
-  nombre_labor: string
-  estado: string
-}
+export type {
+  DetalleTarea,
+  TareaUsuario,
+} from "@/types/types"
 
 export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   const { autoFetch = true } = options ?? {}
@@ -47,20 +47,6 @@ export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   return { tareas, loading, error, refetch: fetchData, removeTareaLocal }
 }
 
-export type DetalleTarea = {
-  id_tarea: number
-  nombre_operario_seleccionado: string
-  apellido_operario_seleccionado: string
-  nombre_sector: string
-  numero_op: number
-  numero_plano: string
-  nombre_producto: string
-  nombre_labor: string
-  descripcion: string
-  tiempo_extra: string
-  estado: string
-}
-
 export function useDetalleTarea(id_tarea: number | null) {
   const [detalle, setDetalle] = useState<DetalleTarea | null>(null)
   const [loading, setLoading] = useState(false)
@@ -93,33 +79,8 @@ export function useDetalleTarea(id_tarea: number | null) {
   return { detalle, loading, error, refetch: fetchDetalle }
 }
 
-export type DetalleTareaFinalizada = {
-  id_tarea: number
-  fecha_inicio: Date
-  fecha_fin: Date
-  apellido_creador: string
-  nombre_creador: string
-  apellido_operario_seleccionado: string
-  nombre_operario_seleccionado: string
-  nombre_sector: string
-  numero_op: number
-  numero_plano: string
-  nombre_producto: string
-  nombre_labor: string
-  descripcion: string
-  tiempo_extra: string
-  tiempo_cronometrado: string
-  tiempo_total: string
-  eventos: [
-    {
-      fecha: Date
-      titulo: string
-    },
-  ]
-}
-
 export function useDetalleTareaFinalizada(id_tarea: number | null) {
-  const [detalle, setDetalle] = useState<DetalleTareaFinalizada | null>(null)
+  const [detalle, setDetalle] = useState<DetalleTarea | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -134,7 +95,7 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
         `/api/detalles/detalles-tareaFinalizada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")
-      const data: DetalleTareaFinalizada = await response.json()
+      const data: DetalleTarea = await response.json()
       setDetalle(data)
     } catch {
       setError("No se pudo cargar el detalle de la tarea")

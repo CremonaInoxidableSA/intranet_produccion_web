@@ -1,14 +1,9 @@
 import { Selector, Inputs, Textarea } from "@/components/components"
 import { CronometroCreacion, DuracionInput } from "@/components/cronometro"
-import type {
-  Sector,
-  ProductoSector,
-  Labor,
-  Operario,
-} from "@/context/dataGeneralContext"
+import type { Sector, Producto, Labor, Operario } from "@/types/types"
 
 export function getProductos(
-  productos: ProductoSector[],
+  productos: Producto[],
   sectores: Sector[],
   labores: Labor[],
   operarios: Operario[],

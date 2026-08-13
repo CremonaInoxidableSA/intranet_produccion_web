@@ -3,8 +3,7 @@
 import { useCallback, useMemo } from "react"
 import { useAuth } from "@/context/AuthProvider"
 import { AUTORIZACIONES, type Autorizacion } from "@/lib/permisos"
-
-type NombreConNombre = string | { nombre?: string } | null | undefined
+import type { NombreConNombre } from "@/types/types"
 
 const toNombre = (value: NombreConNombre) => {
   if (typeof value === "string") {

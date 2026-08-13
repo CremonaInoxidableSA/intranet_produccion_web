@@ -13,15 +13,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/obtener-usuarios-produccion`,
-      {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    const response = await fetch(`${API_BASE_URL}/usuarios-produccion/lista`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
     if (!response.ok) {
       return NextResponse.json(

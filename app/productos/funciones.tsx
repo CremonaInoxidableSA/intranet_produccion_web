@@ -3,16 +3,12 @@ import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-
-interface UseTareaEditorProps {
-  refetch: () => Promise<void>
-  removeTareaLocal: (id: number) => void
-}
+import type { TareaEditorProps } from "@/types/types"
 
 export function useTareaEditor({
   refetch,
   removeTareaLocal,
-}: UseTareaEditorProps) {
+}: TareaEditorProps) {
   const [tareaEditando, setTareaEditando] = useState<number | null>(null)
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [descripcionEdit, setDescripcionEdit] = useState("")

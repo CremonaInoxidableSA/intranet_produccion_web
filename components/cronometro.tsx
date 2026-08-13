@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Play, Pause, TimerReset } from "lucide-react"
 import { BotonIcono } from "./components"
+import type { CronometroEdicionProps } from "@/types/types"
 
 export function CronometroCreacion({
   disabled = false,
@@ -64,13 +65,6 @@ export function CronometroCreacion({
       </div>
     </div>
   )
-}
-
-interface CronometroEdicionProps {
-  value: string
-  estado?: string
-  onTogglePausa?: () => void
-  onReiniciar?: () => void
 }
 
 export function CronometroEdicion({

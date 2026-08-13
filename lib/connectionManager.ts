@@ -1,14 +1,15 @@
 import { fetchWithKeycloak } from "@/lib/keycloak/keycloak-fetch"
+import type {
+  ApiConnectionSource,
+  ConnectionErrorListener,
+  ConnectionErrorState,
+} from "@/types/types"
 
-export type ApiConnectionSource = "produccion" | "auth" | "unknown"
-
-export interface ConnectionErrorState {
-  hasError: boolean
-  failedApis: ApiConnectionSource[]
-  messages: string[]
-}
-
-type ConnectionErrorListener = (state: ConnectionErrorState) => void
+export type {
+  ApiConnectionSource,
+  ConnectionErrorListener,
+  ConnectionErrorState,
+} from "@/types/types"
 
 const listeners = new Set<ConnectionErrorListener>()
 let currentErrorState: ConnectionErrorState = {
