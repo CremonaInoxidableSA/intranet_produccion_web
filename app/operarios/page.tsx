@@ -155,7 +155,7 @@ export default function Operarios() {
             return (
               <span
                 className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                  rol_display === "ENCARGADO"
+                  rol_display === "GRUPO_ENCARGADO_PRODUCCION"
                     ? "bg-redcremona/20 text-redcremona"
                     : "bg-greencremona/20 text-greencremona"
                 }`}
@@ -168,7 +168,7 @@ export default function Operarios() {
             const operario = tagOperarioMap.get(tag)
             if (!operario) return
             abrirEdicion({
-              id_operario: operario.id_operario,
+              id: operario.id,
               nombre: operario.nombre,
               apellido: operario.apellido,
               grupo: operario.grupo,

@@ -41,7 +41,7 @@ export function getProductos(
             <Selector
               placeholder="SELECCIONE EL OPERARIO"
               data={operarios}
-              keyId="id_operario"
+              keyId="id"
               keyLabel="nombre_completo"
               value={
                 operarioSeleccionado !== null

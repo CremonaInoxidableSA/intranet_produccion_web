@@ -14,12 +14,24 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url)
-  const id_operario = searchParams.get("id_operario")
+  const idOperario = searchParams.get("id_operario") ?? searchParams.get("id")
+
+  if (!idOperario) {
+    return NextResponse.json(
+      { error: "Falta el parámetro requerido: id_operario" },
+      { status: 400 }
+    )
+  }
 
   try {
     const response = await fetch(
-      `${API_BASE_URL}/comprobaciones/tarea-activa-operario?id_operario=${id_operario}`,
-      { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } }
+      `${API_BASE_URL}/comprobaciones/tarea-activa-operario?id_operario=${encodeURIComponent(idOperario)}`,
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     )
 
     if (!response.ok) {

@@ -60,7 +60,7 @@ export function useUsuarioForm() {
 
     setLoading(true)
     try {
-      const res = await fetchWithConnectionCheck("/api/crear/crear-usuario", {
+      const res = await fetchWithConnectionCheck("/api/auth/crear-usuario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -170,7 +170,7 @@ export function useUsuarioEditor({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             current_user_id: id_current_user,
-            id_operario: usuarioEditando.id_operario,
+            id: usuarioEditando.id,
             nombre: nombreEdit.trim(),
             apellido: apellidoEdit.trim(),
             viejo_grupo: usuarioEditando.grupo,

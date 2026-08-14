@@ -60,7 +60,7 @@ export function useDetalleTarea(id_tarea: number | null) {
     setLoading(true)
     try {
       const response = await fetchWithConnectionCheck(
-        `/api/detalles/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
+        `/api/auth/detalles/detalles-tareaActivaSeleccionada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")
       const data: DetalleTarea = await response.json()
@@ -92,7 +92,7 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
     setLoading(true)
     try {
       const response = await fetchWithConnectionCheck(
-        `/api/detalles/detalles-tareaFinalizada?id_tarea=${id_tarea}`
+        `/api/auth/detalles/detalles-tareaFinalizada?id_tarea=${id_tarea}`
       )
       if (!response.ok) throw new Error("Error al obtener detalle")
       const data: DetalleTarea = await response.json()

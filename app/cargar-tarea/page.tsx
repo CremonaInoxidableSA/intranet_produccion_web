@@ -36,7 +36,7 @@ export default function CargarTarea() {
     number | null
   >(null)
   const [operarioSeleccionado, setOperarioSeleccionado] = useState<
-    number | null | undefined
+    string | null
   >(null)
   const [laborSeleccionada, setLaborSeleccionada] = useState<number | null>(
     null
@@ -84,14 +84,14 @@ export default function CargarTarea() {
   const [operarioOcupadoInfo, setOperarioOcupadoInfo] =
     useState<Operario | null>(null)
 
-  const handleSeleccionarOperario = useCallback(async (id: number | null) => {
+  const handleSeleccionarOperario = useCallback(async (id: string | null) => {
     if (id === null) {
       setOperarioSeleccionado(null)
       return
     }
     try {
       const res = await fetchWithConnectionCheck(
-        `/api/comprobacion-operarioOcupado?id_operario=${id}`
+        `/api/comprobacion-operarioOcupado?id_operario=${encodeURIComponent(id)}`
       )
       const data = await res.json()
       if (data.success === false) {
@@ -112,7 +112,7 @@ export default function CargarTarea() {
         { method: "POST", headers: { "Content-Type": "application/json" } }
       )
       await handleApiResponse(res)
-      setOperarioSeleccionado(operarioOcupadoInfo.id_operario)
+      setOperarioSeleccionado(String(operarioOcupadoInfo.id_operario ?? ""))
       setOperarioOcupadoInfo(null)
       await refetch()
     } catch {}
@@ -156,7 +156,7 @@ export default function CargarTarea() {
 
   const formularioCompleto = useMemo(
     () =>
-      (operarioSeleccionado !== null || operarioSeleccionado === undefined) &&
+      operarioSeleccionado !== null &&
       sectorSeleccionado !== null &&
       productoSeleccionado !== null &&
       numeroOp !== null &&
@@ -189,14 +189,16 @@ export default function CargarTarea() {
   }, [])
 
   const handleCrearTarea = useCallback(async () => {
-    if (!formularioCompleto || !id_current_user) return
+    const userId = Number(id_current_user)
+    if (!formularioCompleto || !Number.isFinite(userId) || userId <= 0) return
 
     const operarioActual = operarios.find(
-      (o) => o.id_operario === operarioSeleccionado
+      (o) =>
+        String(o.id_operario ?? o.id ?? "") === String(operarioSeleccionado)
     )
 
     const body = {
-      id_usuario_logeado: id_current_user,
+      id_usuario_logeado: userId,
       nombre_usuario_logeado,
       apellido_usuario_logeado,
       id_operario_seleccionado: operarioSeleccionado,
@@ -555,7 +557,9 @@ export default function CargarTarea() {
               <span className="block">
                 <span className="font-semibold">Operario:</span>{" "}
                 {operarios.find(
-                  (o) => o.id_operario === operarioOcupadoInfo.id_operario
+                  (o) =>
+                    String(o.id_operario ?? o.id ?? "") ===
+                    String(operarioOcupadoInfo.id_operario ?? "")
                 )?.nombre_completo ?? `ID ${operarioOcupadoInfo.id_operario}`}
               </span>
               <span className="block">

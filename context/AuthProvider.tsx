@@ -127,9 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const getUserDetails = useCallback(async (): Promise<UsersData> => {
     const [detailsPayload, modulosPayload, submodulosPayload] =
       await Promise.all([
-        getJsonResponse("/api/personal/detalles"),
-        getJsonResponse("/api/personal/modulos-personales"),
-        getJsonResponse("/api/personal/submodulos-personales"),
+        getJsonResponse("/api/auth/detalles"),
+        getJsonResponse("/api/auth/modulos-personales"),
+        getJsonResponse("/api/auth/submodulos-personales"),
       ])
 
     const data = toRecord(detailsPayload)

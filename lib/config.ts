@@ -1,5 +1,5 @@
 export const middlewarePaths = {
-  gestion: process.env.GESTION_URL ?? "/config_usuarios",
+  gestion: process.env.GESTION_URL ?? "https://localhost:3000/config_usuarios",
 } as const
 
 export const urlConfig = {

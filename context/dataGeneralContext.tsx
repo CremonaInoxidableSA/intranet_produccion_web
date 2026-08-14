@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { useAuth } from "@/context/AuthProvider"
 import type {
   FiltrosMonitoreo,
   Labor,
@@ -23,11 +24,18 @@ export type {
 //------------------------------------CARGAR NUEVA TAREA------------------------------------//
 
 export function useSectores() {
+  const { loading: authLoading, user } = useAuth()
   const [sectores, setSectores] = useState<Sector[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     async function fetchData() {
       try {
         const response = await fetchWithConnectionCheck(
@@ -43,7 +51,7 @@ export function useSectores() {
       }
     }
     fetchData()
-  }, [])
+  }, [authLoading, user])
 
   return { sectores, loading, error }
 }
@@ -77,6 +85,7 @@ export function useProductosSector(id_sector: number | null) {
 }
 
 export function useProductos() {
+  const { loading: authLoading, user } = useAuth()
   const [productos, setProductos] = useState<Producto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -98,8 +107,14 @@ export function useProductos() {
   }, [])
 
   useEffect(() => {
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     fetchData()
-  }, [fetchData])
+  }, [authLoading, user, fetchData])
 
   return { productos, loading, error, refetch: fetchData }
 }
@@ -146,11 +161,12 @@ export function useLabores(
 }
 
 const ROL_DISPLAY: Record<string, string> = {
-  "encargado-produccion": "ENCARGADO",
-  operario: "OPERARIO",
+  GRUPO_ENCARGADO_PRODUCCION: "ENCARGADO",
+  GRUPO_OPERARIO: "OPERARIO",
 }
 
 export function useOperarios() {
+  const { loading: authLoading, user } = useAuth()
   const [operarios, setOperarios] = useState<Operario[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -159,7 +175,8 @@ export function useOperarios() {
     setLoading(true)
     try {
       const response = await fetchWithConnectionCheck(
-        "/api/listas/lista-operarios"
+        "/api/auth/lista-operarios",
+        { cache: "no-store" }
       )
       if (!response.ok) throw new Error("Error al obtener operarios")
       const data = await response.json()
@@ -184,8 +201,14 @@ export function useOperarios() {
   }, [])
 
   useEffect(() => {
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     fetchData()
-  }, [fetchData])
+  }, [authLoading, user, fetchData])
 
   return { operarios, loading, error, refetch: fetchData }
 }
@@ -234,10 +257,17 @@ const FILTROS_EMPTY: FiltrosMonitoreo = {
 }
 
 export function useFiltrosEnCurso() {
+  const { loading: authLoading, user } = useAuth()
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     async function fetchData() {
       try {
         const res = await fetchWithConnectionCheck("/api/filtros/tareasEnCurso")
@@ -250,7 +280,7 @@ export function useFiltrosEnCurso() {
       }
     }
     fetchData()
-  }, [])
+  }, [authLoading, user])
 
   return { filtros, loading }
 }
@@ -260,10 +290,16 @@ export function useFiltrosFinalizadas(
   fecha_fin?: string,
   refreshVersion?: number
 ) {
+  const { loading: authLoading, user } = useAuth()
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (authLoading) return
+    if (!user) {
+      setLoading(false)
+      return
+    }
     if (!fecha_inicio || !fecha_fin) return
 
     async function fetchData() {
@@ -286,7 +322,7 @@ export function useFiltrosFinalizadas(
       }
     }
     fetchData()
-  }, [fecha_inicio, fecha_fin, refreshVersion])
+  }, [authLoading, user, fecha_inicio, fecha_fin, refreshVersion])
 
   return { filtros, loading }
 }

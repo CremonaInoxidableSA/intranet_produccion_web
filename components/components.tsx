@@ -239,9 +239,13 @@ export const SelectorConBusqueda = React.memo(function SelectorConBusqueda({
 
           <div className="max-h-60 overflow-y-auto">
             {opcionesFiltradas.length > 0 ? (
-              opcionesFiltradas.map((opcion) => {
+              opcionesFiltradas.map((opcion, index) => {
                 const opcionRecord = opcion as Record<string, unknown>
-                const id = String(opcionRecord[keyId])
+                const rawId = opcionRecord[keyId] ?? opcionRecord.id
+                const id =
+                  rawId !== undefined && rawId !== null && String(rawId) !== ""
+                    ? String(rawId)
+                    : `fallback-${index}`
                 const label = String(opcionRecord[keyLabel] ?? "")
 
                 return (

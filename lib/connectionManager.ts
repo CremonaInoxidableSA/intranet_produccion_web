@@ -64,11 +64,7 @@ export function getApiSourceFromUrl(
   const normalized = value.toLowerCase()
 
   if (
-    normalized.includes("/api/proxy/auth/") ||
-    normalized.includes("/api/crear/crear-usuario") ||
-    normalized.includes("/api/actualizar/actualizar-usuario") ||
-    normalized.includes("/api/listas/lista-operarios") ||
-    normalized.includes("/api/crear/crear-usuario")
+    normalized.includes("/api/auth/")
   ) {
     return "auth"
   }

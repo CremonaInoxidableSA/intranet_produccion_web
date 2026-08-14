@@ -31,8 +31,8 @@ export function getOpcionesNuevaTarea(
   setSectorSeleccionado: (id: number | null) => void,
   productoSeleccionado: number | null,
   setProductoSeleccionado: (id: number | null) => void,
-  operarioSeleccionado: number | null | undefined,
-  setOperarioSeleccionado: (id: number | null) => void,
+  operarioSeleccionado: string | null,
+  setOperarioSeleccionado: (id: string | null) => void,
   laborSeleccionada: number | null,
   setLaborSeleccionada: (id: number | null) => void,
   laborManual: string,
@@ -62,14 +62,14 @@ export function getOpcionesNuevaTarea(
             <SelectorConBusqueda
               placeholder="SELECCIONE EL OPERARIO"
               data={operarios}
-              keyId="id_operario"
+              keyId="id"
               keyLabel="nombre_completo"
               value={
                 operarioSeleccionado !== null
                   ? String(operarioSeleccionado)
                   : ""
               }
-              onValueChange={(value) => setOperarioSeleccionado(Number(value))}
+              onValueChange={(value) => setOperarioSeleccionado(value)}
             />
             <Selector
               placeholder="SELECCIONE EL SECTOR"

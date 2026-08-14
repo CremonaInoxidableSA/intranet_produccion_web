@@ -156,7 +156,8 @@ export interface Labor {
 }
 
 export interface Operario {
-  id_operario: number | undefined
+  id?: string | number | null
+  id_operario?: number | string
   nombre: string
   apellido: string
   nombre_completo?: string

@@ -75,7 +75,7 @@ const CambioPass = ({ open, onOpenChange }: CambioPassProps) => {
 
     try {
       const response = await fetchWithConnectionCheck(
-        "/api/personal/change-password",
+        "/api/auth/change-password",
         {
           method: "PUT",
           headers: {

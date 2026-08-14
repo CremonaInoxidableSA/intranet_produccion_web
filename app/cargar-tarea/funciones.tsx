@@ -87,7 +87,7 @@ export function useTareaEditor({
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
       const res = await fetchWithConnectionCheck(
-        `/api/detalles/detalles-tareaActivaCronometradoSeleccionado?id_tarea=${id}`
+        `/api/auth/detalles/detalles-tareaActivaCronometradoSeleccionado?id_tarea=${id}`
       )
       if (!res.ok) {
         if (res.status === 404) {
