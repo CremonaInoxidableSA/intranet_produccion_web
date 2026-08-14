@@ -25,6 +25,7 @@ import { useUser } from "@/context/userContext"
 import { useTareaEditor } from "./funciones"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { toast } from "sonner"
 import type { CrearTareaResponse, Operario } from "@/types/types"
 
 export default function CargarTarea() {
@@ -157,10 +158,15 @@ export default function CargarTarea() {
   const formularioCompleto = useMemo(
     () =>
       operarioSeleccionado !== null &&
+      operarioSeleccionado.trim() !== "" &&
       sectorSeleccionado !== null &&
+      sectorSeleccionado > 0 &&
       productoSeleccionado !== null &&
+      productoSeleccionado > 0 &&
       numeroOp !== null &&
-      numeroPlano !== "" &&
+      numeroOp > 0 &&
+      numeroPlano !== null &&
+      numeroPlano.trim() !== "" &&
       (mostrarInputLabor
         ? laborManual.trim() !== ""
         : laborSeleccionada !== null),
@@ -189,18 +195,30 @@ export default function CargarTarea() {
   }, [])
 
   const handleCrearTarea = useCallback(async () => {
-    const userId = Number(id_current_user)
-    if (!formularioCompleto || !Number.isFinite(userId) || userId <= 0) return
+    if (!formularioCompleto) {
+      toast.error("Complete todos los campos obligatorios antes de confirmar")
+      return
+    }
+
+    if (id_current_user.trim() === "") {
+      toast.error("No se pudo identificar el usuario logueado")
+      return
+    }
 
     const operarioActual = operarios.find(
       (o) =>
         String(o.id_operario ?? o.id ?? "") === String(operarioSeleccionado)
     )
 
+    if (!operarioActual) {
+      toast.error("No se encontró el operario seleccionado")
+      return
+    }
+
     const body = {
-      id_usuario_logeado: userId,
-      nombre_usuario_logeado,
-      apellido_usuario_logeado,
+      nombre_usuario_logeado: nombre_usuario_logeado,
+      apellido_usuario_logeado: apellido_usuario_logeado,
+      id_usuario_logeado: id_current_user,
       id_operario_seleccionado: operarioSeleccionado,
       nombre_operario_seleccionado: operarioActual?.nombre ?? "",
       apellido_operario_seleccionado: operarioActual?.apellido ?? "",
@@ -228,7 +246,9 @@ export default function CargarTarea() {
 
       resetFormulario()
       await refetch()
-    } catch {}
+    } catch (error) {
+      console.error("Error al crear tarea:", error)
+    }
   }, [
     formularioCompleto,
     id_current_user,

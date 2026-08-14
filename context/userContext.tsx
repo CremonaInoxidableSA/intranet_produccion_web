@@ -10,10 +10,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
 
   const value = useMemo<UserContextType>(() => {
-    const parsedId = Number.parseInt(String(user?.id ?? ""), 10)
-
     return {
-      id_current_user: Number.isFinite(parsedId) ? parsedId : 0,
+      id_current_user: String(user?.id ?? ""),
       nombre_usuario_logeado: user?.nombre ?? "",
       apellido_usuario_logeado: user?.apellido ?? "",
     }

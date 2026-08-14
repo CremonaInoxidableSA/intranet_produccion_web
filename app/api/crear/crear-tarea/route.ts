@@ -18,7 +18,11 @@ export async function POST(request: Request) {
 
     const requiredFields = [
       "id_usuario_logeado",
+      "nombre_usuario_logeado",
+      "apellido_usuario_logeado",
       "id_operario_seleccionado",
+      "nombre_operario_seleccionado",
+      "apellido_operario_seleccionado",
       "id_sector",
       "numero_op",
       "numero_plano",
@@ -27,6 +31,7 @@ export async function POST(request: Request) {
       "descripcion",
       "tiempo_extra",
     ]
+
     for (const field of requiredFields) {
       if (!(field in body)) {
         return NextResponse.json(

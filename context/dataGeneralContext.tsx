@@ -160,9 +160,9 @@ export function useLabores(
   return { labores, loading, error }
 }
 
-const ROL_DISPLAY: Record<string, string> = {
+const GRUPO_DISPLAY: Record<string, string> = {
   GRUPO_ENCARGADO_PRODUCCION: "ENCARGADO",
-  GRUPO_OPERARIO: "OPERARIO",
+  GRUPO_OPERARIO_PRODUCCION: "OPERARIO",
 }
 
 export function useOperarios() {
@@ -189,7 +189,7 @@ export function useOperarios() {
         }) => ({
           ...o,
           nombre_completo: `${o.apellido} ${o.nombre}`,
-          rol_display: ROL_DISPLAY[o.grupo] ?? o.grupo.toUpperCase(),
+          grupo_display: GRUPO_DISPLAY[o.grupo] ?? o.grupo.toUpperCase(),
         })
       )
       setOperarios(operariosFormateados)

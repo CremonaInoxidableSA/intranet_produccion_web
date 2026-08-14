@@ -68,7 +68,7 @@ export default function Operarios() {
       new Map(
         usuarios.map((u) => [
           `${u.apellido} ${u.nombre} - ${u.legajo}`,
-          u.rol_display,
+          u.grupo_display,
         ])
       ),
     [usuarios]
@@ -151,16 +151,16 @@ export default function Operarios() {
               : usuarios.map((u) => `${u.apellido} ${u.nombre} - ${u.legajo}`)
           }
           extras={(tag) => {
-            const rol_display = tagRolMap.get(tag) ?? ""
+            const grupo_display = tagRolMap.get(tag) ?? ""
             return (
               <span
                 className={`rounded px-2 py-0.5 text-xs font-semibold ${
-                  rol_display === "GRUPO_ENCARGADO_PRODUCCION"
-                    ? "bg-redcremona/20 text-redcremona"
+                  grupo_display === "ENCARGADO"
+                    ? "bg-orangecremona/20 text-orangecremona"
                     : "bg-greencremona/20 text-greencremona"
                 }`}
               >
-                {rol_display}
+                {grupo_display}
               </span>
             )
           }}

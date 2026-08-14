@@ -163,7 +163,7 @@ export interface Operario {
   nombre_completo?: string
   legajo: number
   grupo: string
-  rol_display?: string
+  grupo_display?: string
   email?: string
   dni?: number
 
@@ -257,7 +257,7 @@ export interface ConnectionContextType {
 }
 
 export interface UserContextType {
-  id_current_user: number
+  id_current_user: string
   nombre_usuario_logeado: string
   apellido_usuario_logeado: string
 }
