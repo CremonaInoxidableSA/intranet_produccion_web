@@ -1,7 +1,10 @@
 "use client"
 
 import { useMemo } from "react"
-import { DialogTemplate } from "@/components/componentsClient"
+import {
+  AlertDialogTemplate,
+  DialogTemplate,
+} from "@/components/componentsClient"
 import {
   Selector,
   Inputs,
@@ -11,7 +14,7 @@ import {
 } from "@/components/components"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { roles } from "./data"
+import { grupos } from "./data"
 import { useUsuarioForm, useUsuarioEditor } from "./funciones"
 
 export default function Operarios() {
@@ -22,8 +25,8 @@ export default function Operarios() {
     setApellido,
     legajo,
     setLegajo,
-    rolId,
-    setRolId,
+    grupoId,
+    setGrupoId,
     dni,
     setDni,
     email,
@@ -34,6 +37,11 @@ export default function Operarios() {
     usuarios,
     loadingUsuarios,
     refetchUsuarios,
+    usuarioPendienteGrupo,
+    mensajeAsignarGrupo,
+    cerrarDialogoAsignarGrupo,
+    handleAsignarGrupoExistente,
+    loadingAsignarGrupo,
   } = useUsuarioForm()
 
   const {
@@ -44,15 +52,11 @@ export default function Operarios() {
     setNombreEdit,
     apellidoEdit,
     setApellidoEdit,
-    rolIdEdit,
-    setRolIdEdit,
+    grupoIdEdit,
+    setGrupoIdEdit,
     formularioEditCompleto,
     handleGuardarEdicion,
     loadingEdit,
-    emailEdit,
-    setEmailEdit,
-    dniEdit,
-    setDniEdit,
   } = useUsuarioEditor({ refetchUsuarios })
 
   const tagOperarioMap = useMemo(
@@ -63,7 +67,7 @@ export default function Operarios() {
     [usuarios]
   )
 
-  const tagRolMap = useMemo(
+  const tagGrupoMap = useMemo(
     () =>
       new Map(
         usuarios.map((u) => [
@@ -124,12 +128,12 @@ export default function Operarios() {
                 disabled={loading}
               />
               <Selector
-                placeholder="ROL"
-                data={roles}
-                keyId="id_rol"
-                keyLabel="nombre_rol"
-                value={rolId}
-                onValueChange={setRolId}
+                placeholder="GRUPO"
+                data={grupos}
+                keyId="id_grupo"
+                keyLabel="nombre_grupo"
+                value={grupoId}
+                onValueChange={setGrupoId}
                 disabled={loading}
               />
               <Button
@@ -151,7 +155,7 @@ export default function Operarios() {
               : usuarios.map((u) => `${u.apellido} ${u.nombre} - ${u.legajo}`)
           }
           extras={(tag) => {
-            const grupo_display = tagRolMap.get(tag) ?? ""
+            const grupo_display = tagGrupoMap.get(tag) ?? ""
             return (
               <span
                 className={`rounded px-2 py-0.5 text-xs font-semibold ${
@@ -229,15 +233,15 @@ export default function Operarios() {
               variant="outline"
               size="sm"
               className="p-3"
-              title="ROL DEL USUARIO"
+              title="GRUPO DEL USUARIO"
               description={
                 <Selector
-                  placeholder="ROL"
-                  data={roles}
-                  keyId="id_rol"
-                  keyLabel="nombre_rol"
-                  value={rolIdEdit}
-                  onValueChange={setRolIdEdit}
+                  placeholder="GRUPO"
+                  data={grupos}
+                  keyId="id_grupo"
+                  keyLabel="nombre_grupo"
+                  value={grupoIdEdit}
+                  onValueChange={setGrupoIdEdit}
                   disabled={loadingEdit}
                 />
               }
@@ -260,6 +264,20 @@ export default function Operarios() {
             onClick={handleGuardarEdicion}
           />
         }
+      />
+
+      <AlertDialogTemplate
+        open={usuarioPendienteGrupo !== null}
+        onOpenChange={(open) => {
+          if (!open) cerrarDialogoAsignarGrupo()
+        }}
+        title="AVISO"
+        description={mensajeAsignarGrupo}
+        cancelText="Cancelar"
+        confirmText={loadingAsignarGrupo ? "ASIGNANDO..." : "ASIGNAR GRUPO"}
+        onConfirm={handleAsignarGrupoExistente}
+        cancelDisabled={loadingAsignarGrupo}
+        confirmDisabled={loadingAsignarGrupo}
       />
     </div>
   )

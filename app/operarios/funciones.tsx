@@ -1,21 +1,29 @@
 import { useState, useMemo, useCallback } from "react"
-import { useUser } from "@/context/userContext"
+import { toast } from "sonner"
 import { useOperarios } from "@/context/dataGeneralContext"
 import { Operario } from "@/types/types"
-import { handleApiResponse } from "@/lib/response-handler"
+import { getErrorMessage, handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-import { roles } from "./data"
+import {
+  CrearUsuarioResponse,
+  getGrupoById,
+  grupos,
+  isCreateUserCodeExisteGeneral,
+  isCreateUserCodeExisteProduccion,
+  UsuarioPendienteGrupo,
+} from "./data"
 
 export function useUsuarioForm() {
   const [nombre, setNombre] = useState("")
   const [apellido, setApellido] = useState("")
   const [legajo, setLegajo] = useState("")
-  const [rolId, setRolId] = useState("")
+  const [grupoId, setGrupoId] = useState("")
   const [email, setEmail] = useState("")
   const [dni, setDni] = useState("")
   const [loading, setLoading] = useState(false)
-
-  const { id_current_user } = useUser()
+  const [loadingAsignarGrupo, setLoadingAsignarGrupo] = useState(false)
+  const [usuarioPendienteGrupo, setUsuarioPendienteGrupo] =
+    useState<UsuarioPendienteGrupo | null>(null)
   const {
     operarios,
     loading: loadingUsuarios,
@@ -38,25 +46,29 @@ export function useUsuarioForm() {
       nombre.trim() !== "" &&
       apellido.trim() !== "" &&
       legajo.trim() !== "" &&
-      rolId !== "" &&
+      grupoId !== "" &&
       dni.trim() !== "" &&
       email.trim() !== "",
-    [nombre, apellido, legajo, rolId, dni, email]
+    [nombre, apellido, legajo, grupoId, dni, email]
   )
 
   const resetFormulario = useCallback(() => {
     setNombre("")
     setApellido("")
     setLegajo("")
-    setRolId("")
+    setGrupoId("")
     setDni("")
     setEmail("")
   }, [])
 
+  const cerrarDialogoAsignarGrupo = useCallback(() => {
+    setUsuarioPendienteGrupo(null)
+  }, [])
+
   const handleCargarUsuario = useCallback(async () => {
     if (!formularioCompleto) return
-    const rolSeleccionado = roles.find((r) => r.id_rol === rolId)
-    if (!rolSeleccionado) return
+    const grupoSeleccionado = getGrupoById(grupoId)
+    if (!grupoSeleccionado) return
 
     setLoading(true)
     try {
@@ -67,28 +79,98 @@ export function useUsuarioForm() {
           nombre: nombre.trim(),
           apellido: apellido.trim(),
           legajo: Number(legajo),
-          grupo: rolSeleccionado.rol,
+          grupo: grupoSeleccionado.grupo,
           email: email.trim(),
           dni: Number(dni),
         }),
       })
-      await handleApiResponse(res)
-      resetFormulario()
-      await refetchUsuarios()
+
+      let data: CrearUsuarioResponse | null = null
+      try {
+        data = (await res.clone().json()) as CrearUsuarioResponse
+      } catch {
+        data = null
+      }
+
+      if (isCreateUserCodeExisteGeneral(data?.code) && typeof data?.id === "string") {
+        setUsuarioPendienteGrupo({
+          id: data.id,
+          grupo: grupoSeleccionado.grupo,
+          detail:
+            data.detail ??
+            "El usuario ya existe en la intranet general y puede recibir el grupo seleccionado.",
+        })
+        return
+      }
+
+      if (isCreateUserCodeExisteProduccion(data?.code)) {
+        toast.error(
+          data?.detail ??
+            "El usuario ya existe y ya tiene asignado un grupo de produccion."
+        )
+        return
+      }
+
+      if (res.ok) {
+        await handleApiResponse(res)
+        resetFormulario()
+        await refetchUsuarios()
+        return
+      }
+
+      toast.error(getErrorMessage(data))
     } catch {
     } finally {
       setLoading(false)
     }
   }, [
     formularioCompleto,
-    id_current_user,
     nombre,
     apellido,
     legajo,
-    rolId,
+    grupoId,
+    resetFormulario,
+    refetchUsuarios,
+    email,
+    dni,
+  ])
+
+  const handleAsignarGrupoExistente = useCallback(async () => {
+    if (!usuarioPendienteGrupo) return
+
+    setLoadingAsignarGrupo(true)
+    try {
+      const res = await fetchWithConnectionCheck(
+        "/api/auth/asignar-grupo-produccion",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: usuarioPendienteGrupo.id,
+            grupo: usuarioPendienteGrupo.grupo,
+          }),
+        }
+      )
+
+      await handleApiResponse(res)
+      cerrarDialogoAsignarGrupo()
+      resetFormulario()
+      await refetchUsuarios()
+    } finally {
+      setLoadingAsignarGrupo(false)
+    }
+  }, [
+    usuarioPendienteGrupo,
+    cerrarDialogoAsignarGrupo,
     resetFormulario,
     refetchUsuarios,
   ])
+
+  const mensajeAsignarGrupo = useMemo(() => {
+    if (!usuarioPendienteGrupo) return ""
+
+    return `${usuarioPendienteGrupo.detail} ¿Desea agregar el grupo ${usuarioPendienteGrupo.grupo} al usuario?`
+  }, [usuarioPendienteGrupo])
 
   return {
     nombre,
@@ -97,8 +179,8 @@ export function useUsuarioForm() {
     setApellido,
     legajo,
     setLegajo,
-    rolId,
-    setRolId,
+    grupoId,
+    setGrupoId,
     formularioCompleto,
     handleCargarUsuario,
     loading,
@@ -109,6 +191,11 @@ export function useUsuarioForm() {
     setEmail,
     dni,
     setDni,
+    usuarioPendienteGrupo,
+    mensajeAsignarGrupo,
+    cerrarDialogoAsignarGrupo,
+    handleAsignarGrupoExistente,
+    loadingAsignarGrupo,
   }
 }
 
@@ -117,12 +204,10 @@ export function useUsuarioEditor({
 }: {
   refetchUsuarios: () => Promise<void>
 }) {
-  const { id_current_user } = useUser()
-
   const [usuarioEditando, setUsuarioEditando] = useState<Operario | null>(null)
   const [nombreEdit, setNombreEdit] = useState("")
   const [apellidoEdit, setApellidoEdit] = useState("")
-  const [rolIdEdit, setRolIdEdit] = useState("")
+  const [grupoIdEdit, setGrupoIdEdit] = useState("")
   const [emailEdit, setEmailEdit] = useState("")
   const [dniEdit, setDniEdit] = useState("")
   const [loadingEdit, setLoadingEdit] = useState(false)
@@ -131,8 +216,8 @@ export function useUsuarioEditor({
     setUsuarioEditando(usuario)
     setNombreEdit(usuario.nombre?.toString() ?? "")
     setApellidoEdit(usuario.apellido?.toString() ?? "")
-    const rolActual = roles.find((r) => r.rol === usuario.grupo)
-    setRolIdEdit(rolActual?.id_rol ?? "")
+    const grupoActual = grupos.find((r) => r.grupo === usuario.grupo)
+    setGrupoIdEdit(grupoActual?.id_grupo ?? "")
     setEmailEdit(usuario.email ?? "")
     setDniEdit(usuario.dni?.toString() ?? "")
   }, [])
@@ -141,7 +226,7 @@ export function useUsuarioEditor({
     setUsuarioEditando(null)
     setNombreEdit("")
     setApellidoEdit("")
-    setRolIdEdit("")
+    setGrupoIdEdit("")
     setEmailEdit("")
     setDniEdit("")
   }, [])
@@ -150,29 +235,33 @@ export function useUsuarioEditor({
     () =>
       nombreEdit.trim() !== "" &&
       apellidoEdit.trim() !== "" &&
-      rolIdEdit !== "",
-    [nombreEdit, apellidoEdit, rolIdEdit]
+      emailEdit.trim() !== "" &&
+      dniEdit.trim() !== "" &&
+      grupoIdEdit !== "",
+    [nombreEdit, apellidoEdit, emailEdit, dniEdit, grupoIdEdit]
   )
 
   const handleGuardarEdicion = useCallback(async () => {
     if (!usuarioEditando || !formularioEditCompleto) return
 
-    const rolNuevo = roles.find((r) => r.id_rol === rolIdEdit)
-    if (!rolNuevo) return
+    const grupoNuevo = grupos.find((r) => r.id_grupo === grupoIdEdit)
+    if (!grupoNuevo) return
 
     setLoadingEdit(true)
     try {
       const res = await fetchWithConnectionCheck(
-        "/api/actualizar/actualizar-usuarioProduccion",
+        "/api/auth/editar-usuarioProduccion",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            id: usuarioEditando.id,
+            user_id: usuarioEditando.id,
+            email: emailEdit.trim(),
             nombre: nombreEdit.trim(),
             apellido: apellidoEdit.trim(),
-            viejo_grupo: usuarioEditando.grupo,
-            grupo: rolNuevo.rol,
+            legajo: usuarioEditando.legajo,
+            dni: Number(dniEdit),
+            grupo: grupoNuevo.grupo,
           }),
         }
       )
@@ -186,10 +275,11 @@ export function useUsuarioEditor({
   }, [
     usuarioEditando,
     formularioEditCompleto,
-    rolIdEdit,
-    id_current_user,
+    grupoIdEdit,
+    emailEdit,
     nombreEdit,
     apellidoEdit,
+    dniEdit,
     cerrarEdicion,
     refetchUsuarios,
   ])
@@ -202,8 +292,8 @@ export function useUsuarioEditor({
     setNombreEdit,
     apellidoEdit,
     setApellidoEdit,
-    rolIdEdit,
-    setRolIdEdit,
+    grupoIdEdit,
+    setGrupoIdEdit,
     formularioEditCompleto,
     handleGuardarEdicion,
     loadingEdit,

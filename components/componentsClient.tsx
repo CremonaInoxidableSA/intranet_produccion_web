@@ -189,6 +189,8 @@ export function AlertDialogTemplate({
   onConfirm,
   cancelText = "Cancelar",
   confirmText = "Confirmar",
+  cancelDisabled = false,
+  confirmDisabled = false,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -197,6 +199,8 @@ export function AlertDialogTemplate({
   onConfirm: () => void
   cancelText?: string
   confirmText?: string
+  cancelDisabled?: boolean
+  confirmDisabled?: boolean
 }) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -206,8 +210,10 @@ export function AlertDialogTemplate({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
+          <AlertDialogCancel disabled={cancelDisabled}>
+            {cancelText}
+          </AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} disabled={confirmDisabled}>
             {confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>

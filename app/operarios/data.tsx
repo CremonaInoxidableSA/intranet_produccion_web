@@ -1,4 +1,50 @@
-export const roles = [
-  { id_rol: "1", nombre_rol: "GRUPO_ENCARGADO_PRODUCCION", rol: "GRUPO_ENCARGADO_PRODUCCION" },
-  { id_rol: "2", nombre_rol: "GRUPO_OPERARIO_PRODUCCION", rol: "GRUPO_OPERARIO_PRODUCCION" },
+export const grupos = [
+  {
+    id_grupo: "1",
+    nombre_grupo: "GRUPO_ENCARGADO_PRODUCCION",
+    grupo: "GRUPO_ENCARGADO_PRODUCCION",
+  },
+  {
+    id_grupo: "2",
+    nombre_grupo: "GRUPO_OPERARIO_PRODUCCION",
+    grupo: "GRUPO_OPERARIO_PRODUCCION",
+  },
 ]
+
+export const CREATE_USER_CODE_EXISTE_GENERAL = "EXISTE_GENERAL"
+export const CREATE_USER_CODE_EXISTE_PRODUCCION = "EXISTE_PRODUCCION"
+export const CREATE_USER_CODE_EXISTE_GENERAL_ALIAS =
+  "CREATE_USER_CODE_EXISTE_GENERAL"
+export const CREATE_USER_CODE_EXISTE_PRODUCCION_ALIAS =
+  "CREATE_USER_CODE_EXISTE_PRODUCCION"
+
+export interface CrearUsuarioResponse {
+  success?: boolean
+  code?: string
+  detail?: string
+  id?: string
+}
+
+export interface UsuarioPendienteGrupo {
+  id: string
+  grupo: string
+  detail: string
+}
+
+export function getGrupoById(grupoId: string) {
+  return grupos.find((grupo) => grupo.id_grupo === grupoId)
+}
+
+export function isCreateUserCodeExisteGeneral(code?: string) {
+  return (
+    code === CREATE_USER_CODE_EXISTE_GENERAL ||
+    code === CREATE_USER_CODE_EXISTE_GENERAL_ALIAS
+  )
+}
+
+export function isCreateUserCodeExisteProduccion(code?: string) {
+  return (
+    code === CREATE_USER_CODE_EXISTE_PRODUCCION ||
+    code === CREATE_USER_CODE_EXISTE_PRODUCCION_ALIAS
+  )
+}
