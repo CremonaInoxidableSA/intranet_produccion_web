@@ -64,11 +64,10 @@ export function useUsuarioForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          current_user_id: id_current_user,
           nombre: nombre.trim(),
           apellido: apellido.trim(),
           legajo: Number(legajo),
-          rol: rolSeleccionado.rol,
+          grupo: rolSeleccionado.rol,
           email: email.trim(),
           dni: Number(dni),
         }),
@@ -169,7 +168,6 @@ export function useUsuarioEditor({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            current_user_id: id_current_user,
             id: usuarioEditando.id,
             nombre: nombreEdit.trim(),
             apellido: apellidoEdit.trim(),
