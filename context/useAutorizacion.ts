@@ -89,7 +89,7 @@ export function useAutorizacion() {
         eliminar: tienePermiso(AUTORIZACIONES.ELIMINAR_SUBMODULOS),
         deshabilitar: tienePermiso(AUTORIZACIONES.DESHABILITAR_SUBMODULOS),
         habilitar: tienePermiso(AUTORIZACIONES.HABILITAR_SUBMODULOS),
-        nueva_tarea: tienePermiso(AUTORIZACIONES.SUBMODULO_NUEVA_TAREA),
+        tarea: tienePermiso(AUTORIZACIONES.SUBMODULO_TAREAS),
         operarios: tienePermiso(AUTORIZACIONES.SUBMODULO_OPERARIOS),
         productos: tienePermiso(AUTORIZACIONES.SUBMODULO_PRODUCTOS),
         monitoreo: tienePermiso(AUTORIZACIONES.SUBMODULO_MONITOREO),

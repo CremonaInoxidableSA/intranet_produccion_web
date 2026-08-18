@@ -43,9 +43,8 @@ const toAbsoluteUrl = (path: string) => {
 const toTitle = (value: string) =>
   value
     .replace(/^SUBMODULO_/, "")
-    .toLowerCase()
     .replace(/_/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase())
+    .toUpperCase()
 
 export default function Home() {
   const { user } = useAuth()
@@ -82,7 +81,7 @@ export default function Home() {
             rel={esEnlaceExterno ? "noopener noreferrer" : undefined}
             className="flex aspect-square flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
           >
-            <Icon className="h-12 w-12" />
+            <Icon className="size-20" />
             <div className="text-sm font-semibold xl:text-xl">
               {submodulo.titulo}
             </div>
