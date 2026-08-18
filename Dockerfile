@@ -2,9 +2,11 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+ENV npm_config_legacy_peer_deps=true
+
 COPY package*.json ./
 
-RUN npm cache clean --force && npm install --prefer-offline --no-audit
+RUN npm ci --force
 
 COPY . .
 
@@ -17,9 +19,11 @@ ENV TZ=America/Argentina/Buenos_Aires
 
 WORKDIR /app
 
+ENV npm_config_legacy_peer_deps=true
+
 COPY package*.json ./
 
-RUN npm cache clean --force && npm install --prefer-offline --no-audit
+RUN npm ci --force
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
