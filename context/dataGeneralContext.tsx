@@ -161,8 +161,8 @@ export function useLabores(
 }
 
 const GRUPO_DISPLAY: Record<string, string> = {
-  GRUPO_ENCARGADO_PRODUCCION: "ENCARGADO",
-  GRUPO_OPERARIO_PRODUCCION: "OPERARIO",
+  GRUPO_ENCARGADOS_PRODUCCION: "ENCARGADO",
+  GRUPO_OPERARIOS_PRODUCCION: "OPERARIO",
 }
 
 export function useOperarios() {

@@ -159,7 +159,7 @@ export function DialogTemplate({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}>
         <DialogContent
           className="sm:max-w-lg"
           onPointerDownOutside={(e) => e.preventDefault()}

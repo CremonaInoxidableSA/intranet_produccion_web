@@ -66,6 +66,12 @@ export default function Operarios() {
     setDniEdit,
     legajoEdit,
     setLegajoEdit,
+    usuarioAEliminar,
+    abrirEliminacion,
+    cerrarEliminacion,
+    handleEliminarUsuario,
+    loadingEliminar,
+    loadingDetalleEdicion,
   } = useUsuarioEditor({ refetchUsuarios })
 
   const tagOperarioMap = useMemo(
@@ -135,7 +141,7 @@ export default function Operarios() {
               />
               <Inputs
                 placeholder="DNI"
-                type="text"
+                type="number"
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
                 disabled={loading}
@@ -221,7 +227,7 @@ export default function Operarios() {
                   type="text"
                   value={nombreEdit}
                   onChange={(e) => setNombreEdit(e.target.value)}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
@@ -237,7 +243,7 @@ export default function Operarios() {
                   type="text"
                   value={apellidoEdit}
                   onChange={(e) => setApellidoEdit(e.target.value)}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
@@ -253,7 +259,7 @@ export default function Operarios() {
                   type="email"
                   value={emailEdit}
                   onChange={(e) => setEmailEdit(e.target.value)}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
@@ -269,7 +275,7 @@ export default function Operarios() {
                   type="text"
                   value={dniEdit}
                   onChange={(e) => setDniEdit(e.target.value)}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
@@ -287,7 +293,7 @@ export default function Operarios() {
                   keyLabel="nombre_grupo"
                   value={grupoIdEdit}
                   onValueChange={setGrupoIdEdit}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
@@ -303,20 +309,53 @@ export default function Operarios() {
                   type="number"
                   value={legajoEdit}
                   onChange={(e) => setLegajoEdit(e.target.value)}
-                  disabled={loadingEdit}
+                  disabled={loadingEdit || loadingDetalleEdicion}
                 />
               }
             />
           </div>
         }
         dialogFooter={
-          <Boton
-            placeholder={loadingEdit ? "GUARDANDO..." : "GUARDAR"}
-            extraClass="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona"
-            disabled={loadingEdit}
-            onClick={handleGuardarEdicion}
-          />
+          <div className="flex w-full items-center justify-between">
+            <Boton
+              placeholder={loadingEliminar ? "ELIMINANDO..." : "ELIMINAR"}
+              extraClass="border-redcremona bg-redcremona/50 text-white hover:bg-redcremona"
+              disabled={loadingEliminar || loadingEdit || loadingDetalleEdicion}
+              onClick={abrirEliminacion}
+            />
+            <Boton
+              placeholder={
+                loadingDetalleEdicion
+                  ? "CARGANDO..."
+                  : loadingEdit
+                    ? "GUARDANDO..."
+                    : "GUARDAR"
+              }
+              extraClass="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona"
+              disabled={
+                loadingEdit || loadingDetalleEdicion || !formularioEditCompleto
+              }
+              onClick={handleGuardarEdicion}
+            />
+          </div>
         }
+      />
+
+      <AlertDialogTemplate
+        open={usuarioAEliminar !== null}
+        onOpenChange={(open) => {
+          if (!open) cerrarEliminacion()
+        }}
+        title="¿Eliminar usuario?"
+        description={`Esta acción no se puede deshacer.${
+          usuarioAEliminar
+            ? ` Se eliminará a ${usuarioAEliminar.apellido} ${usuarioAEliminar.nombre}.`
+            : ""
+        }`}
+        confirmText={loadingEliminar ? "ELIMINANDO..." : "ELIMINAR"}
+        onConfirm={handleEliminarUsuario}
+        cancelDisabled={loadingEliminar}
+        confirmDisabled={loadingEliminar}
       />
 
       <AlertDialogTemplate

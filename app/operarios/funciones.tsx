@@ -122,7 +122,8 @@ export function useUsuarioForm() {
       }
 
       toast.error(getErrorMessage(data))
-    } catch {
+    } catch (error) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -215,17 +216,71 @@ export function useUsuarioEditor({
   const [dniEdit, setDniEdit] = useState("")
   const [legajoEdit, setLegajoEdit] = useState("")
   const [loadingEdit, setLoadingEdit] = useState(false)
+  const [loadingDetalleEdicion, setLoadingDetalleEdicion] = useState(false)
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<Operario | null>(
+    null
+  )
+  const [loadingEliminar, setLoadingEliminar] = useState(false)
+  const [valoresOriginales, setValoresOriginales] = useState<{
+    nombre: string
+    apellido: string
+    grupoId: string
+    email: string
+    dni: string
+    legajo: string
+  } | null>(null)
 
-  const abrirEdicion = useCallback((usuario: Operario) => {
-    setUsuarioEditando(usuario)
-    setNombreEdit(usuario.nombre?.toString() ?? "")
-    setApellidoEdit(usuario.apellido?.toString() ?? "")
-    const grupoActual = grupos.find((r) => r.grupo === usuario.grupo)
-    setGrupoIdEdit(grupoActual?.id_grupo ?? "")
-    setEmailEdit(usuario.email ?? "")
-    setDniEdit(usuario.dni?.toString() ?? "")
-    setLegajoEdit(usuario.legajo?.toString() ?? "")
+  const aplicarValoresEdicion = useCallback((usuario: Operario) => {
+    const grupoActual = grupos.find(
+      (r) =>
+        r.grupo.trim().toUpperCase() === usuario.grupo?.trim().toUpperCase()
+    )
+
+    const nombreInicial = usuario.nombre?.toString() ?? ""
+    const apellidoInicial = usuario.apellido?.toString() ?? ""
+    const grupoIdInicial = grupoActual?.id_grupo ?? ""
+    const emailInicial = usuario.email ?? ""
+    const dniInicial = usuario.dni?.toString() ?? ""
+    const legajoInicial = usuario.legajo?.toString() ?? ""
+
+    setNombreEdit(nombreInicial)
+    setApellidoEdit(apellidoInicial)
+    setGrupoIdEdit(grupoIdInicial)
+    setEmailEdit(emailInicial)
+    setDniEdit(dniInicial)
+    setLegajoEdit(legajoInicial)
+    setValoresOriginales({
+      nombre: nombreInicial,
+      apellido: apellidoInicial,
+      grupoId: grupoIdInicial,
+      email: emailInicial,
+      dni: dniInicial,
+      legajo: legajoInicial,
+    })
   }, [])
+
+  const abrirEdicion = useCallback(
+    async (usuario: Operario) => {
+      setUsuarioEditando(usuario)
+      aplicarValoresEdicion(usuario)
+
+      if (!usuario.id) return
+
+      setLoadingDetalleEdicion(true)
+      try {
+        const res = await fetchWithConnectionCheck(
+          `/api/auth/detalles-usuarioProduccion?user_id=${usuario.id}`
+        )
+        const data = await handleApiResponse<Operario>(res, "")
+        aplicarValoresEdicion({ ...usuario, ...data })
+      } catch (error) {
+        toast.error(getErrorMessage(error))
+      } finally {
+        setLoadingDetalleEdicion(false)
+      }
+    },
+    [aplicarValoresEdicion]
+  )
 
   const cerrarEdicion = useCallback(() => {
     setUsuarioEditando(null)
@@ -235,21 +290,39 @@ export function useUsuarioEditor({
     setEmailEdit("")
     setDniEdit("")
     setLegajoEdit("")
+    setValoresOriginales(null)
+    setLoadingDetalleEdicion(false)
   }, [])
 
-  const formularioEditCompleto = useMemo(
-    () =>
-      nombreEdit.trim() !== "" &&
-      apellidoEdit.trim() !== "" &&
-      emailEdit.trim() !== "" &&
-      dniEdit.trim() !== "" &&
-      legajoEdit.trim() !== "" &&
-      grupoIdEdit !== "",
-    [nombreEdit, apellidoEdit, emailEdit, dniEdit, legajoEdit, grupoIdEdit]
-  )
+  const huboCambios = useMemo(() => {
+    if (!valoresOriginales) return false
+    return (
+      nombreEdit !== valoresOriginales.nombre ||
+      apellidoEdit !== valoresOriginales.apellido ||
+      grupoIdEdit !== valoresOriginales.grupoId ||
+      emailEdit !== valoresOriginales.email ||
+      dniEdit !== valoresOriginales.dni ||
+      legajoEdit !== valoresOriginales.legajo
+    )
+  }, [
+    valoresOriginales,
+    nombreEdit,
+    apellidoEdit,
+    grupoIdEdit,
+    emailEdit,
+    dniEdit,
+    legajoEdit,
+  ])
+
+  const formularioEditCompleto = useMemo(() => huboCambios, [huboCambios])
 
   const handleGuardarEdicion = useCallback(async () => {
     if (!usuarioEditando || !formularioEditCompleto) return
+
+    if (!usuarioEditando.id) {
+      toast.error("No se pudo identificar el usuario a editar")
+      return
+    }
 
     const grupoNuevo = grupos.find((r) => r.id_grupo === grupoIdEdit)
     if (!grupoNuevo) return
@@ -274,7 +347,8 @@ export function useUsuarioEditor({
       await handleApiResponse(res)
       cerrarEdicion()
       await refetchUsuarios()
-    } catch {
+    } catch (error) {
+      toast.error(getErrorMessage(error))
     } finally {
       setLoadingEdit(false)
     }
@@ -290,6 +364,39 @@ export function useUsuarioEditor({
     cerrarEdicion,
     refetchUsuarios,
   ])
+
+  const abrirEliminacion = useCallback(() => {
+    if (!usuarioEditando) return
+    setUsuarioAEliminar(usuarioEditando)
+  }, [usuarioEditando])
+
+  const cerrarEliminacion = useCallback(() => {
+    setUsuarioAEliminar(null)
+  }, [])
+
+  const handleEliminarUsuario = useCallback(async () => {
+    if (!usuarioAEliminar?.id) return
+
+    setLoadingEliminar(true)
+    try {
+      const res = await fetchWithConnectionCheck(
+        `/api/auth/eliminar-usuarioProduccion?user_id=${usuarioAEliminar.id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: usuarioAEliminar.id }),
+        }
+      )
+      await handleApiResponse(res)
+      cerrarEliminacion()
+      cerrarEdicion()
+      await refetchUsuarios()
+    } catch (error) {
+      toast.error(getErrorMessage(error))
+    } finally {
+      setLoadingEliminar(false)
+    }
+  }, [usuarioAEliminar, cerrarEliminacion, cerrarEdicion, refetchUsuarios])
 
   return {
     usuarioEditando,
@@ -310,5 +417,11 @@ export function useUsuarioEditor({
     setDniEdit,
     legajoEdit,
     setLegajoEdit,
+    usuarioAEliminar,
+    abrirEliminacion,
+    cerrarEliminacion,
+    handleEliminarUsuario,
+    loadingEliminar,
+    loadingDetalleEdicion,
   }
 }

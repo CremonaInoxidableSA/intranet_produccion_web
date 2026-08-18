@@ -1,13 +1,13 @@
 export const grupos = [
   {
     id_grupo: "1",
-    nombre_grupo: "GRUPO_ENCARGADO_PRODUCCION",
-    grupo: "GRUPO_ENCARGADO_PRODUCCION",
+    nombre_grupo: "GRUPO_ENCARGADOS_PRODUCCION",
+    grupo: "GRUPO_ENCARGADOS_PRODUCCION",
   },
   {
     id_grupo: "2",
-    nombre_grupo: "GRUPO_OPERARIO_PRODUCCION",
-    grupo: "GRUPO_OPERARIO_PRODUCCION",
+    nombre_grupo: "GRUPO_OPERARIOS_PRODUCCION",
+    grupo: "GRUPO_OPERARIOS_PRODUCCION",
   },
 ]
 
