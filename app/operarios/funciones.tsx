@@ -92,7 +92,10 @@ export function useUsuarioForm() {
         data = null
       }
 
-      if (isCreateUserCodeExisteGeneral(data?.code) && typeof data?.id === "string") {
+      if (
+        isCreateUserCodeExisteGeneral(data?.code) &&
+        typeof data?.id === "string"
+      ) {
         setUsuarioPendienteGrupo({
           id: data.id,
           grupo: grupoSeleccionado.grupo,
@@ -210,6 +213,7 @@ export function useUsuarioEditor({
   const [grupoIdEdit, setGrupoIdEdit] = useState("")
   const [emailEdit, setEmailEdit] = useState("")
   const [dniEdit, setDniEdit] = useState("")
+  const [legajoEdit, setLegajoEdit] = useState("")
   const [loadingEdit, setLoadingEdit] = useState(false)
 
   const abrirEdicion = useCallback((usuario: Operario) => {
@@ -220,6 +224,7 @@ export function useUsuarioEditor({
     setGrupoIdEdit(grupoActual?.id_grupo ?? "")
     setEmailEdit(usuario.email ?? "")
     setDniEdit(usuario.dni?.toString() ?? "")
+    setLegajoEdit(usuario.legajo?.toString() ?? "")
   }, [])
 
   const cerrarEdicion = useCallback(() => {
@@ -229,6 +234,7 @@ export function useUsuarioEditor({
     setGrupoIdEdit("")
     setEmailEdit("")
     setDniEdit("")
+    setLegajoEdit("")
   }, [])
 
   const formularioEditCompleto = useMemo(
@@ -237,8 +243,9 @@ export function useUsuarioEditor({
       apellidoEdit.trim() !== "" &&
       emailEdit.trim() !== "" &&
       dniEdit.trim() !== "" &&
+      legajoEdit.trim() !== "" &&
       grupoIdEdit !== "",
-    [nombreEdit, apellidoEdit, emailEdit, dniEdit, grupoIdEdit]
+    [nombreEdit, apellidoEdit, emailEdit, dniEdit, legajoEdit, grupoIdEdit]
   )
 
   const handleGuardarEdicion = useCallback(async () => {
@@ -250,16 +257,15 @@ export function useUsuarioEditor({
     setLoadingEdit(true)
     try {
       const res = await fetchWithConnectionCheck(
-        "/api/auth/editar-usuarioProduccion",
+        `/api/auth/editar-usuarioProduccion?user_id=${usuarioEditando.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            user_id: usuarioEditando.id,
             email: emailEdit.trim(),
             nombre: nombreEdit.trim(),
             apellido: apellidoEdit.trim(),
-            legajo: usuarioEditando.legajo,
+            legajo: Number(legajoEdit),
             dni: Number(dniEdit),
             grupo: grupoNuevo.grupo,
           }),
@@ -280,6 +286,7 @@ export function useUsuarioEditor({
     nombreEdit,
     apellidoEdit,
     dniEdit,
+    legajoEdit,
     cerrarEdicion,
     refetchUsuarios,
   ])
@@ -301,5 +308,7 @@ export function useUsuarioEditor({
     setEmailEdit,
     dniEdit,
     setDniEdit,
+    legajoEdit,
+    setLegajoEdit,
   }
 }

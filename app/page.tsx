@@ -1,63 +1,94 @@
+"use client"
+
+import { useMemo, type ComponentType } from "react"
 import {
-  Users,
-  Timer,
-  PackageSearch,
-  DatabaseBackup,
-  CircuitBoard,
+  CircleHelp,
+  type LucideProps,
+  icons as lucideIcons,
 } from "lucide-react"
+import { useAuth } from "@/context/AuthProvider"
+import { useAutorizacion } from "@/context/useAutorizacion"
 
-import Link from "next/link"
+const fallbackIcon: ComponentType<LucideProps> = CircleHelp
 
-const estilosIconos = "h-12 w-12"
+const resolveIcon = (iconName: string) => {
+  const lucideIcon = lucideIcons[iconName as keyof typeof lucideIcons]
+  return lucideIcon ?? fallbackIcon
+}
 
-const opciones = [
-  {
-    id: 1,
-    nombre: "NUEVA TAREA",
-    icono: <Timer className={estilosIconos} />,
-    enlace: "/cargar-tarea",
-  },
-  {
-    id: 2,
-    nombre: "OPERARIOS",
-    icono: <Users className={estilosIconos} />,
-    enlace: "/operarios",
-  },
-  {
-    id: 3,
-    nombre: "PRODUCTOS",
-    icono: <PackageSearch className={estilosIconos} />,
-    enlace: "/productos",
-  },
-  {
-    id: 4,
-    nombre: "MONITOREO",
-    icono: <CircuitBoard className={estilosIconos} />,
-    enlace: "/monitoreo",
-  },
-  {
-    id: 5,
-    nombre: "BACKUP",
-    icono: <DatabaseBackup className={estilosIconos} />,
-    enlace: "/backup",
-  },
-]
+const toAbsoluteUrl = (path: string) => {
+  const rawPath = path.trim()
+
+  if (!rawPath) {
+    return "#"
+  }
+
+  if (rawPath.startsWith("/")) {
+    return rawPath.replace(/\/{2,}/g, "/")
+  }
+
+  if (/^https?:\/\//i.test(rawPath)) {
+    const [protocolo, ...resto] = rawPath.split("://")
+    const rutaNormalizada = resto.join("://").replace(/\/{2,}/g, "/")
+    return `${protocolo}://${rutaNormalizada}`
+  }
+
+  if (rawPath.includes(".")) {
+    return `https://${rawPath}`.replace(/([^:]\/)\/+?/g, "$1")
+  }
+
+  return `/${rawPath.replace(/^\/+/, "").replace(/\/{2,}/g, "/")}`
+}
+
+const toTitle = (value: string) =>
+  value
+    .replace(/^SUBMODULO_/, "")
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
 
 export default function Home() {
+  const { user } = useAuth()
+  const { tieneAccesoSubmodulo } = useAutorizacion()
+
+  const submodulosDisponibles = useMemo(
+    () =>
+      Object.entries(user?.submodulos_personales ?? {})
+        .filter(([nombre]) => tieneAccesoSubmodulo(nombre))
+        .map(([nombre, submodulo]) => {
+          const Icon = resolveIcon(submodulo.icono)
+
+          return {
+            nombre,
+            titulo: toTitle(nombre),
+            enlace: toAbsoluteUrl(submodulo.path),
+            Icon,
+          }
+        }),
+    [tieneAccesoSubmodulo, user?.submodulos_personales]
+  )
+
   return (
     <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
-      {opciones.map((opcion) => (
-        <Link
-          key={opcion.id}
-          href={opcion.enlace}
-          className="flex aspect-square flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
-        >
-          <div>{opcion.icono}</div>
-          <div className="text-sm font-semibold xl:text-xl">
-            {opcion.nombre}
-          </div>
-        </Link>
-      ))}
+      {submodulosDisponibles.map((submodulo) => {
+        const Icon = submodulo.Icon
+        const esEnlaceExterno = /^https?:\/\//i.test(submodulo.enlace)
+
+        return (
+          <a
+            key={submodulo.nombre}
+            href={submodulo.enlace}
+            target={esEnlaceExterno ? "_blank" : undefined}
+            rel={esEnlaceExterno ? "noopener noreferrer" : undefined}
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
+          >
+            <Icon className="h-12 w-12" />
+            <div className="text-sm font-semibold xl:text-xl">
+              {submodulo.titulo}
+            </div>
+          </a>
+        )
+      })}
     </div>
   )
 }

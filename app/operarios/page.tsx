@@ -57,6 +57,12 @@ export default function Operarios() {
     formularioEditCompleto,
     handleGuardarEdicion,
     loadingEdit,
+    emailEdit,
+    setEmailEdit,
+    dniEdit,
+    setDniEdit,
+    legajoEdit,
+    setLegajoEdit,
   } = useUsuarioEditor({ refetchUsuarios })
 
   const tagOperarioMap = useMemo(
@@ -233,6 +239,38 @@ export default function Operarios() {
               variant="outline"
               size="sm"
               className="p-3"
+              title="EMAIL DEL USUARIO"
+              description={
+                <Inputs
+                  placeholder="EMAIL"
+                  type="email"
+                  value={emailEdit}
+                  onChange={(e) => setEmailEdit(e.target.value)}
+                  disabled={loadingEdit}
+                />
+              }
+            />
+
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
+              title="DNI DEL USUARIO"
+              description={
+                <Inputs
+                  placeholder="DNI"
+                  type="text"
+                  value={dniEdit}
+                  onChange={(e) => setDniEdit(e.target.value)}
+                  disabled={loadingEdit}
+                />
+              }
+            />
+
+            <ItemCard
+              variant="outline"
+              size="sm"
+              className="p-3"
               title="GRUPO DEL USUARIO"
               description={
                 <Selector
@@ -252,7 +290,15 @@ export default function Operarios() {
               size="sm"
               className="p-3"
               title="LEGAJO DEL USUARIO"
-              description={usuarioEditando ? usuarioEditando.legajo : ""}
+              description={
+                <Inputs
+                  placeholder="LEGAJO"
+                  type="number"
+                  value={legajoEdit}
+                  onChange={(e) => setLegajoEdit(e.target.value)}
+                  disabled={loadingEdit}
+                />
+              }
             />
           </div>
         }
@@ -260,7 +306,7 @@ export default function Operarios() {
           <Boton
             placeholder={loadingEdit ? "GUARDANDO..." : "GUARDAR"}
             extraClass="border-bluecremona bg-bluecremona/50 text-white hover:bg-bluecremona"
-            disabled={!formularioEditCompleto || loadingEdit}
+            disabled={loadingEdit}
             onClick={handleGuardarEdicion}
           />
         }

@@ -5,7 +5,7 @@ import { getExternalApiUrl } from "@/app/api/_utils/authApi"
 import type { SubmodulosPersonales } from "@/types/types"
 
 const EXTERNAL_API_URL = getExternalApiUrl("/submodulos-personales/lista")
-const MODULO_PADRE = "MODULO_AUTH"
+const MODULO_PADRE = "MODULO_PRODUCCION"
 
 export async function GET(request: NextRequest) {
   if (!EXTERNAL_API_URL) {

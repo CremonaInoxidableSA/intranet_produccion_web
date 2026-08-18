@@ -13,17 +13,30 @@ export async function PUT(request: Request) {
   }
 
   try {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get("user_id")
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Falta el parametro user_id" },
+        { status: 400 }
+      )
+    }
+
     const body = await request.json()
 
-    const response = await fetch(`${API_BASE_URL}/usuario-produccion/editar`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios-produccion/editar?user_id=${userId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }
+    )
 
     if (!response.ok) {
       return NextResponse.json(
