@@ -23,8 +23,11 @@ import {
 import type { Producto } from "@/types/types"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
+import { AUTORIZACIONES } from "@/lib/permisos"
 
 export default function Productos() {
+  const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_PRODUCTOS)
   const { sectores } = useSectores()
   const { productos, refetch: refetchProductos } = useProductos()
 
@@ -187,6 +190,10 @@ export default function Productos() {
 
   const productoNombres = productos.map((p) => p.nombre)
   const productoSubtitulos = productos.map((p) => p.sectores.join(", "))
+
+  if (!accesoPermitido) {
+    return null
+  }
 
   return (
     <div className="flex h-500 flex-col items-center justify-center gap-2 p-5 xl:flex-1">

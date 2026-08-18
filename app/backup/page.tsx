@@ -3,10 +3,13 @@
 import { FaRegFileExcel } from "react-icons/fa"
 import { useState } from "react"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
+import { AUTORIZACIONES } from "@/lib/permisos"
 
 const estilosIconos = "h-12 w-12"
 
 export default function BackUp() {
+  const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_BACKUP)
   const [, setLoading] = useState(false)
 
   const descargarArchivo = async (url: string, nombrePorDefecto: string) => {
@@ -70,6 +73,10 @@ export default function BackUp() {
       icono: <FaRegFileExcel className={estilosIconos} />,
     },
   ]
+
+  if (!accesoPermitido) {
+    return null
+  }
 
   return (
     <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">

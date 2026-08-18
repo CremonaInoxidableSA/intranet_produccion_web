@@ -27,8 +27,11 @@ import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 import { toast } from "sonner"
 import type { CrearTareaResponse, Operario } from "@/types/types"
+import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
+import { AUTORIZACIONES } from "@/lib/permisos"
 
 export default function CargarTarea() {
+  const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_TAREAS)
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const [sectorSeleccionado, setSectorSeleccionadoState] = useState<
     number | null
@@ -317,6 +320,10 @@ export default function CargarTarea() {
       handleCrearTarea,
     ]
   )
+
+  if (!accesoPermitido) {
+    return null
+  }
 
   return (
     <div className="flex flex-1 flex-col p-5">

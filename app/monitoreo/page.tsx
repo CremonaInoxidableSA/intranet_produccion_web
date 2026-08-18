@@ -10,10 +10,10 @@ import {
 } from "@/components/componentsClient"
 import {
   TextScrollArea,
-  SelectorMultiple,
   Boton,
   Textarea,
   ItemCard,
+  SelectorConBusqueda,
 } from "@/components/components"
 import {
   useMonitoreoEnCurso,
@@ -28,8 +28,11 @@ import {
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import { Download } from "lucide-react"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
+import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
+import { AUTORIZACIONES } from "@/lib/permisos"
 
 export default function Monitoreo() {
+  const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_MONITOREO)
   const [seccionActiva, setSeccionActiva] = useState<number>(1)
   const { refetch, removeTareaLocal } = useTareasUsuario({ autoFetch: false })
 
@@ -140,6 +143,10 @@ export default function Monitoreo() {
     (t) => `${t.nombre_producto} - ${t.nombre_labor}`
   )
 
+  if (!accesoPermitido) {
+    return null
+  }
+
   return (
     <div className="flex h-full flex-1 flex-col items-center gap-5 p-5">
       <h1 className="text-xl font-bold xl:text-2xl">MONITOREO</h1>
@@ -176,32 +183,36 @@ export default function Monitoreo() {
               FILTRO TAREAS EN CURSO
             </h1>
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="N° OP"
+                searchPlaceholder="Buscar numero de OP..."
                 data={toOptions(curso.filtros.numeros_op)}
                 keyId="id"
                 keyLabel="nombre"
                 values={curso.opSel}
                 onValuesChange={curso.setOpSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="N° PLANO"
+                searchPlaceholder="Buscar numero de plano..."
                 data={toOptions(curso.filtros.numeros_plano)}
                 keyId="id"
                 keyLabel="nombre"
                 values={curso.planoSel}
                 onValuesChange={curso.setPlanoSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="OPERARIO"
+                searchPlaceholder="Buscar operario..."
                 data={toOptions(curso.filtros.operarios)}
                 keyId="id"
                 keyLabel="nombre"
                 values={curso.operarioSel}
                 onValuesChange={curso.setOperarioSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="SECTOR"
+                searchPlaceholder="Buscar sector..."
                 data={toOptions(curso.filtros.sectores)}
                 keyId="id"
                 keyLabel="nombre"
@@ -243,32 +254,36 @@ export default function Monitoreo() {
               onValueChange={finalizadas.setDateRange}
             />
             <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="N° OP"
+                searchPlaceholder="Buscar numero de OP..."
                 data={toOptions(finalizadas.filtros.numeros_op)}
                 keyId="id"
                 keyLabel="nombre"
                 values={finalizadas.opSel}
                 onValuesChange={finalizadas.setOpSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="N° PLANO"
+                searchPlaceholder="Buscar numero de plano..."
                 data={toOptions(finalizadas.filtros.numeros_plano)}
                 keyId="id"
                 keyLabel="nombre"
                 values={finalizadas.planoSel}
                 onValuesChange={finalizadas.setPlanoSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="OPERARIO"
+                searchPlaceholder="Buscar operario..."
                 data={toOptions(finalizadas.filtros.operarios)}
                 keyId="id"
                 keyLabel="nombre"
                 values={finalizadas.operarioSel}
                 onValuesChange={finalizadas.setOperarioSel}
               />
-              <SelectorMultiple
+              <SelectorConBusqueda
                 placeholder="SECTOR"
+                searchPlaceholder="Buscar sector..."
                 data={toOptions(finalizadas.filtros.sectores)}
                 keyId="id"
                 keyLabel="nombre"

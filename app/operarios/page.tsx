@@ -16,8 +16,11 @@ import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { grupos } from "./data"
 import { useUsuarioForm, useUsuarioEditor } from "./funciones"
+import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
+import { AUTORIZACIONES } from "@/lib/permisos"
 
 export default function Operarios() {
+  const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_OPERARIOS)
   const {
     nombre,
     setNombre,
@@ -83,6 +86,10 @@ export default function Operarios() {
       ),
     [usuarios]
   )
+
+  if (!accesoPermitido) {
+    return null
+  }
 
   return (
     <div className="flex h-full w-full flex-col gap-5 p-5">
