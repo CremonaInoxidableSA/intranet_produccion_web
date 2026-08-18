@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm cache clean --force && npm install --prefer-offline --no-audit
 
 COPY . .
 
@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm cache clean --force && npm install --prefer-offline --no-audit
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
