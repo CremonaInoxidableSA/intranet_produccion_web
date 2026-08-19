@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, type ComponentType } from "react"
+import { useMemo, type ComponentType, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   CircleHelp,
   type LucideProps,
@@ -16,30 +17,6 @@ const resolveIcon = (iconName: string) => {
   return lucideIcon ?? fallbackIcon
 }
 
-const toAbsoluteUrl = (path: string) => {
-  const rawPath = path.trim()
-
-  if (!rawPath) {
-    return "#"
-  }
-
-  if (rawPath.startsWith("/")) {
-    return rawPath.replace(/\/{2,}/g, "/")
-  }
-
-  if (/^https?:\/\//i.test(rawPath)) {
-    const [protocolo, ...resto] = rawPath.split("://")
-    const rutaNormalizada = resto.join("://").replace(/\/{2,}/g, "/")
-    return `${protocolo}://${rutaNormalizada}`
-  }
-
-  if (rawPath.includes(".")) {
-    return `https://${rawPath}`.replace(/([^:]\/)\/+?/g, "$1")
-  }
-
-  return `/${rawPath.replace(/^\/+/, "").replace(/\/{2,}/g, "/")}`
-}
-
 const toTitle = (value: string) =>
   value
     .replace(/^SUBMODULO_/, "")
@@ -47,8 +24,10 @@ const toTitle = (value: string) =>
     .toUpperCase()
 
 export default function Home() {
+  const router = useRouter()
   const { user } = useAuth()
   const { tieneAccesoSubmodulo } = useAutorizacion()
+  const [open, setOpen] = useState(true)
 
   const submodulosDisponibles = useMemo(
     () =>
@@ -60,12 +39,17 @@ export default function Home() {
           return {
             nombre,
             titulo: toTitle(nombre),
-            enlace: toAbsoluteUrl(submodulo.path),
+            path: submodulo.path,
             Icon,
           }
         }),
     [tieneAccesoSubmodulo, user?.submodulos_personales]
   )
+
+  const handleNavigation = (path: string) => {
+    router.push(path)
+    setOpen(false)
+  }
 
   return (
     <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
@@ -73,16 +57,16 @@ export default function Home() {
         const Icon = submodulo.Icon
 
         return (
-          <a
+          <button
             key={submodulo.nombre}
-            href={submodulo.enlace}
-            className="flex aspect-square flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
+            onClick={() => handleNavigation(submodulo.path)}
+            className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
           >
             <Icon className="aspect-square size-20" />
             <div className="text-sm font-semibold xl:text-xl">
               {submodulo.titulo}
             </div>
-          </a>
+          </button>
         )
       })}
     </div>
