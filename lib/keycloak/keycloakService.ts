@@ -1,4 +1,5 @@
 import keycloak, { initKeycloakOnce } from "@/lib/keycloak/keycloak"
+
 export async function initKeycloakSession(): Promise<boolean> {
   const authenticated = await initKeycloakOnce({
     onLoad: "check-sso",

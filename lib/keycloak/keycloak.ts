@@ -15,12 +15,36 @@ export function initKeycloakOnce(
   options: Keycloak.KeycloakInitOptions
 ): Promise<boolean> {
   if (!initPromise) {
-    initPromise = keycloak.init(options).catch((error) => {
-      initPromise = null
-      throw error
-    })
+    initPromise = keycloak
+      .init({
+        ...options,
+        adapter: "default",
+        enableLogging: false,
+        // Reutilizar token existente si está disponible
+        token: keycloak.token || undefined,
+        refreshToken: keycloak.refreshToken || undefined,
+      })
+      .then((authenticated) => {
+        // Marcar que Keycloak fue inicializado para evitar reinicializaciones
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("keycloak_init_complete", "true")
+        }
+        return authenticated
+      })
+      .catch((error) => {
+        initPromise = null
+        throw error
+      })
   }
   return initPromise
+}
+
+export function isKeycloakInitialized(): boolean {
+  return initPromise !== null
+}
+
+export function resetKeycloakInit(): void {
+  initPromise = null
 }
 
 export default keycloak

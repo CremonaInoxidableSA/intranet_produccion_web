@@ -202,6 +202,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const initKeycloak = useCallback(async () => {
+    if (user) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -219,7 +224,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [getUserDetails])
+  }, [user, getUserDetails])
 
   useEffect(() => {
     if (!initTriggered.current) {
@@ -228,20 +233,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [initKeycloak])
 
-  // En iOS Safari, al navegar "para atrás" el navegador puede restaurar la
-  // página desde el back-forward cache (bfcache) en el estado congelado en el
-  // que quedó (por ejemplo, mostrando el loader de autenticación para
-  // siempre). Forzamos un reload para que la app se reinicialice de cero.
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
-      if (event.persisted) {
-        window.location.reload()
+      if (event.persisted && user) {
+        setLoading(false)
       }
     }
 
     window.addEventListener("pageshow", handlePageShow)
     return () => window.removeEventListener("pageshow", handlePageShow)
-  }, [])
+  }, [user])
 
   const login = async (): Promise<OperacionResponse> => {
     try {
