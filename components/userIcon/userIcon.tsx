@@ -65,7 +65,7 @@ const UserIcon = () => {
           <Button
             className="w-full cursor-pointer border border-greencremona bg-greencremona/10 hover:bg-greencremona/30"
             onClick={() => {
-              router.push(process.env.GESTION_URL ?? "http://localhost:3000/config_usuarios")
+              router.push("/config_usuarios")
               setOpen(false)
             }}
           >

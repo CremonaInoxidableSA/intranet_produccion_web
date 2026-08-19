@@ -73,7 +73,14 @@ export default function HeaderPrincipal() {
         </p>
 
         {/* Desktop: links + logo */}
-        <div className="hidden w-[30%] justify-end gap-5 xl:flex">
+        <div className="hidden w-[30%] items-center justify-end gap-5 xl:flex">
+          <Link
+            href={urlConfig.intranetUrl}
+            className="text-base opacity-70 transition-opacity hover:opacity-100"
+            rel="noopener noreferrer"
+          >
+            Intranet
+          </Link>
           <Link
             href={urlConfig.externalUrl}
             rel="noopener noreferrer"
@@ -115,6 +122,13 @@ export default function HeaderPrincipal() {
           <div className="flex items-center gap-4">
             <UserIcon />
             <ThemeSwitcher />
+            <Link
+              href={urlConfig.intranetUrl}
+              className="text-base opacity-70 transition-opacity hover:opacity-100"
+              rel="noopener noreferrer"
+            >
+              Intranet
+            </Link>
           </div>
           <button
             onClick={() => setDrawerOpen(false)}
