@@ -6,7 +6,8 @@ ENV npm_config_legacy_peer_deps=true
 
 COPY package*.json ./
 
-RUN npm ci --force
+RUN npm cache clean --force && \
+    npm install --no-audit --no-fund
 
 COPY . .
 
@@ -23,7 +24,8 @@ ENV npm_config_legacy_peer_deps=true
 
 COPY package*.json ./
 
-RUN npm ci --force
+RUN npm cache clean --force && \
+    npm install --no-audit --no-fund --production
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
