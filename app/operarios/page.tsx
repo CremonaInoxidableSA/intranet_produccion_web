@@ -176,7 +176,7 @@ export default function Operarios() {
           tags={
             loadingUsuarios
               ? ["Cargando..."]
-              : usuarios.map((u) => `${u.apellido} ${u.nombre} - ${u.legajo}`)
+              : usuarios.map((u) => `${u.apellido}, ${u.nombre} - ${u.legajo}`)
           }
           extras={(tag) => {
             const grupo_display = tagGrupoMap.get(tag) ?? ""
