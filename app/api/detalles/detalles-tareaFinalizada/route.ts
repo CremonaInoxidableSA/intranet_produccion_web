@@ -19,7 +19,12 @@ export async function GET(request: Request) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/tareas/detalle-tarea-finalizada-general?id_tarea=${id_tarea}`,
-      { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } }
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     )
 
     if (!response.ok) {

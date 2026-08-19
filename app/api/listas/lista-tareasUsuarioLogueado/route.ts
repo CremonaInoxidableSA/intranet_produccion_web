@@ -19,7 +19,12 @@ export async function GET(request: Request) {
   try {
     const response = await fetch(
       `${API_BASE_URL}/tareas/listado-tareas-personal?id_current_user=${id_current_user}`,
-      { headers: { Accept: "application/json", Authorization: `Bearer ${token}` } }
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     )
 
     if (!response.ok) {

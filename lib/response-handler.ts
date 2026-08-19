@@ -41,9 +41,9 @@ export function getErrorMessage(error: unknown): string {
   return "Error desconocido"
 }
 
-/**
- * Extrae un mensaje de éxito legible de cualquier estructura de respuesta
- */
+/*
+  Extrae un mensaje de éxito legible de cualquier estructura de respuesta
+*/
 export function getSuccessMessage(data: unknown): string {
   if (!data) return "Operación completada"
 

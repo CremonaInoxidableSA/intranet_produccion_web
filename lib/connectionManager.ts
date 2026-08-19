@@ -63,9 +63,7 @@ export function getApiSourceFromUrl(
 
   const normalized = value.toLowerCase()
 
-  if (
-    normalized.includes("/api/auth/")
-  ) {
+  if (normalized.includes("/api/auth/")) {
     return "auth"
   }
 
@@ -204,13 +202,11 @@ export async function fetchWithConnectionCheck(
         }
       }
     } else {
-      // Respuesta exitosa - resetear error de conexión
       resetConnectionError()
     }
 
     return response
   } catch (error) {
-    // Error de red (TypeError, NetworkError, etc.)
     if (
       error instanceof TypeError ||
       (error instanceof Error &&

@@ -16,16 +16,28 @@ export async function GET(request: Request) {
   try {
     const [opRes, planoRes, operariosRes, sectoresRes] = await Promise.all([
       fetch(`${API_BASE_URL}/filtros/numeros-op-curso`, {
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }),
       fetch(`${API_BASE_URL}/filtros/numeros-plano-curso`, {
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }),
       fetch(`${API_BASE_URL}/filtros/listado-operarios-curso`, {
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }),
       fetch(`${API_BASE_URL}/filtros/sectores-curso`, {
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }),
     ])
 

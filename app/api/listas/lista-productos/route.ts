@@ -14,12 +14,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/productos/lista-productos-general`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/productos/lista-productos-general`,
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
 
     if (!response.ok) {
       return NextResponse.json(

@@ -1,15 +1,9 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useUser } from "@/context/userContext"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-import type {
-  DetalleTarea,
-  TareaUsuario,
-} from "@/types/types"
+import type { DetalleTarea, TareaUsuario } from "@/types/types"
 
-export type {
-  DetalleTarea,
-  TareaUsuario,
-} from "@/types/types"
+export type { DetalleTarea, TareaUsuario } from "@/types/types"
 
 export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   const { autoFetch = true } = options ?? {}
@@ -17,6 +11,7 @@ export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   const [tareas, setTareas] = useState<TareaUsuario[]>([])
   const [loading, setLoading] = useState(autoFetch)
   const [error, setError] = useState<string | null>(null)
+  const initializedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -40,7 +35,8 @@ export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   }, [])
 
   useEffect(() => {
-    if (!autoFetch) return
+    if (!autoFetch || initializedRef.current) return
+    initializedRef.current = true
     void fetchData()
   }, [autoFetch, fetchData])
 
@@ -73,7 +69,12 @@ export function useDetalleTarea(id_tarea: number | null) {
   }, [id_tarea])
 
   useEffect(() => {
-    fetchDetalle()
+    void (async () => {
+      await fetchDetalle()
+    })()
+    return () => {
+      // cleanup
+    }
   }, [fetchDetalle])
 
   return { detalle, loading, error, refetch: fetchDetalle }
@@ -105,7 +106,12 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
   }, [id_tarea])
 
   useEffect(() => {
-    fetchDetalle()
+    void (async () => {
+      await fetchDetalle()
+    })()
+    return () => {
+      // cleanup
+    }
   }, [fetchDetalle])
 
   return { detalle, loading, error, refetch: fetchDetalle }

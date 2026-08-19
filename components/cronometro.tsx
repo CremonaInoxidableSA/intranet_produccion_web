@@ -84,7 +84,10 @@ export function CronometroEdicion({
   const [displayTime, setDisplayTime] = useState<number>(parseTime(value))
 
   useEffect(() => {
-    setDisplayTime(parseTime(value))
+    void (async () => {
+      const newTime = parseTime(value)
+      setDisplayTime(newTime)
+    })()
   }, [value])
 
   const formatTime = (ms: number): string => {

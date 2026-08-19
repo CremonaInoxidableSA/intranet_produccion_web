@@ -22,25 +22,37 @@ export async function GET(request: Request) {
       fetch(
         `${API_BASE_URL}/filtros/numeros-op-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/numeros-plano-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/listado-operarios-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       ),
       fetch(
         `${API_BASE_URL}/filtros/sectores-finalizadas?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`,
         {
-          headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       ),
     ])

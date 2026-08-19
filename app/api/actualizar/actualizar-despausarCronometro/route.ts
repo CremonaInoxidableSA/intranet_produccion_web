@@ -21,7 +21,10 @@ export async function POST(request: Request) {
       `${API_BASE_URL}/tareas/reanudar-tarea?id_tarea=${id_tarea}`,
       {
         method: "POST",
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
 

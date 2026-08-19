@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useRef } from "react"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 import { useAuth } from "@/context/AuthProvider"
 import type {
@@ -28,13 +28,17 @@ export function useSectores() {
   const [sectores, setSectores] = useState<Sector[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     if (authLoading) return
-    if (!user) {
-      setLoading(false)
-      return
-    }
+    if (!user) return
 
     async function fetchData() {
       try {
@@ -43,14 +47,21 @@ export function useSectores() {
         )
         if (!response.ok) throw new Error("Error al obtener sectores")
         const data: Sector[] = await response.json()
-        setSectores(data)
+        if (mountedRef.current) setSectores(data)
       } catch {
-        setError("No se pudo cargar la lista de sectores")
+        if (mountedRef.current)
+          setError("No se pudo cargar la lista de sectores")
       } finally {
-        setLoading(false)
+        if (mountedRef.current) setLoading(false)
       }
     }
     fetchData()
+  }, [authLoading, user])
+
+  useEffect(() => {
+    if (!authLoading && !user && mountedRef.current) {
+      setLoading(false)
+    }
   }, [authLoading, user])
 
   return { sectores, loading, error }
@@ -89,6 +100,7 @@ export function useProductos() {
   const [productos, setProductos] = useState<Producto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const initializedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -107,13 +119,18 @@ export function useProductos() {
   }, [])
 
   useEffect(() => {
-    if (authLoading) return
+    if (authLoading || initializedRef.current) return
+    initializedRef.current = true
     if (!user) {
-      setLoading(false)
+      void (async () => {
+        setLoading(false)
+      })()
       return
     }
 
-    fetchData()
+    void (async () => {
+      await fetchData()
+    })()
   }, [authLoading, user, fetchData])
 
   return { productos, loading, error, refetch: fetchData }
@@ -128,18 +145,13 @@ export function useLabores(
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (id_sector === null || id_producto === null) {
+    if (id_sector === null || id_producto === null) return
+
+    void (async () => {
       setLabores([])
       setError(null)
-      setLoading(false)
-      return
-    }
+      setLoading(true)
 
-    setLabores([])
-    setError(null)
-    setLoading(true)
-
-    async function fetchData() {
       try {
         const response = await fetchWithConnectionCheck(
           `/api/listas/lista-labores?id_sector=${id_sector}&id_producto=${id_producto}`
@@ -153,8 +165,7 @@ export function useLabores(
       } finally {
         setLoading(false)
       }
-    }
-    fetchData()
+    })()
   }, [id_sector, id_producto])
 
   return { labores, loading, error }
@@ -170,6 +181,7 @@ export function useOperarios() {
   const [operarios, setOperarios] = useState<Operario[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const initializedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -201,13 +213,18 @@ export function useOperarios() {
   }, [])
 
   useEffect(() => {
-    if (authLoading) return
+    if (authLoading || initializedRef.current) return
+    initializedRef.current = true
     if (!user) {
-      setLoading(false)
+      void (async () => {
+        setLoading(false)
+      })()
       return
     }
 
-    fetchData()
+    void (async () => {
+      await fetchData()
+    })()
   }, [authLoading, user, fetchData])
 
   return { operarios, loading, error, refetch: fetchData }
@@ -241,7 +258,10 @@ export function useLaborresProducto(id_producto: number | null) {
   }, [id_producto])
 
   useEffect(() => {
-    fetchData()
+    if (id_produto === null) return
+    void (async () => {
+      await fetchData()
+    })()
   }, [fetchData])
 
   return { labores, loading, error, refetch: fetchData }
@@ -260,13 +280,12 @@ export function useFiltrosEnCurso() {
   const { loading: authLoading, user } = useAuth()
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
+  const initializedRef = useRef(false)
 
   useEffect(() => {
-    if (authLoading) return
-    if (!user) {
-      setLoading(false)
-      return
-    }
+    if (authLoading || initializedRef.current) return
+    initializedRef.current = true
+    if (!user) return
 
     async function fetchData() {
       try {
@@ -293,15 +312,20 @@ export function useFiltrosFinalizadas(
   const { loading: authLoading, user } = useAuth()
   const [filtros, setFiltros] = useState<FiltrosMonitoreo>(FILTROS_EMPTY)
   const [loading, setLoading] = useState(true)
+  const initializedRef = useRef(false)
 
   useEffect(() => {
     if (authLoading) return
     if (!user) {
-      setLoading(false)
+      if (!initializedRef.current) {
+        initializedRef.current = true
+        setLoading(false)
+      }
       return
     }
     if (!fecha_inicio || !fecha_fin) return
 
+    initializedRef.current = true
     async function fetchData() {
       setLoading(true)
       try {

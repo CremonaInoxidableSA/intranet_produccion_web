@@ -15,15 +15,18 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
 
-    const response = await fetch(`${API_BASE_URL}/usuarios-produccion/asignar-grupo`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/usuarios-produccion/asignar-grupo`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }
+    )
 
     const data = await response.json()
 

@@ -301,6 +301,9 @@ export default function CargarTarea() {
         handleCrearTarea
       ),
     [
+      handleCambioSector,
+      laborBloqueada,
+      setProductoSeleccionado,
       productos,
       sectores,
       labores,

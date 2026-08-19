@@ -26,7 +26,10 @@ export async function PUT(request: Request) {
       `${API_BASE_URL}/tareas/actualizar-tiempo-extra?id_tarea=${id_tarea}&tiempo_extra=${encodeURIComponent(tiempo_extra)}`,
       {
         method: "PUT",
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
     const data = await response.json()

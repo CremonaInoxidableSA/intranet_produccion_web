@@ -34,7 +34,7 @@ import {
 import { PencilLine } from "lucide-react"
 import { BotonIcono } from "@/components/components"
 
-import { addDays, format, subMonths, startOfMonth, endOfMonth } from "date-fns"
+import { format, subMonths, startOfMonth, endOfMonth } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 

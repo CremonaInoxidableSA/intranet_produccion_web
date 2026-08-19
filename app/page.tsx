@@ -27,7 +27,7 @@ export default function Home() {
   const router = useRouter()
   const { user } = useAuth()
   const { tieneAccesoSubmodulo } = useAutorizacion()
-  const [open, setOpen] = useState(true)
+  const [, setOpen] = useState(true)
 
   const submodulosDisponibles = useMemo(
     () =>

@@ -34,12 +34,14 @@ export default function Productos() {
   // --- Producto seleccionado (para labores) ---
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null)
+  const initializedRef = useRef(false)
 
   useEffect(() => {
-    if (productos.length > 0 && productoSeleccionado === null) {
+    if (productos.length > 0 && !initializedRef.current) {
+      initializedRef.current = true
       setProductoSeleccionado(productos[0])
     }
-  }, [productos, productoSeleccionado])
+  }, [productos])
 
   const selectedIndex = productoSeleccionado
     ? productos.findIndex(

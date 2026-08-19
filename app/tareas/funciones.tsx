@@ -121,14 +121,18 @@ export function useTareaEditor({
       const isActive = detalle.estado?.toLowerCase() === "activa"
 
       if (isActive) {
-        actualizarTiempoCronometrado(tareaEditando)
+        void (async () => {
+          await actualizarTiempoCronometrado(tareaEditando)
+        })()
 
         intervalRef.current = setInterval(() => {
           if (
             tareaEditando !== null &&
             detalle?.estado?.toLowerCase() === "activa"
           ) {
-            actualizarTiempoCronometrado(tareaEditando)
+            void (async () => {
+              await actualizarTiempoCronometrado(tareaEditando)
+            })()
           } else {
             if (intervalRef.current) {
               clearInterval(intervalRef.current)
@@ -137,7 +141,9 @@ export function useTareaEditor({
           }
         }, 5000)
       } else {
-        actualizarTiempoCronometrado(tareaEditando)
+        void (async () => {
+          await actualizarTiempoCronometrado(tareaEditando)
+        })()
       }
     }
 

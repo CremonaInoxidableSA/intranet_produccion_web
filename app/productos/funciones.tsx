@@ -27,9 +27,11 @@ export function useTareaEditor({
   } = useDetalleTarea(tareaEditando)
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const detaileSyncRef = useRef<typeof detalle | null>(null)
 
   useEffect(() => {
-    if (detalle) {
+    if (detalle && detaileSyncRef.current !== detalle) {
+      detaileSyncRef.current = detalle
       setDescripcionEdit(detalle.descripcion || "")
       setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
       setDirty(false)
@@ -37,13 +39,16 @@ export function useTareaEditor({
   }, [detalle])
 
   useEffect(() => {
-    if (detalle) {
-      const descChanged = descripcionEdit !== (detalle.descripcion || "")
+    void (async () => {
+      const descChanged = descripcionEdit !== (detalle?.descripcion || "")
       const tiempoChanged =
-        tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-      setDirty(descChanged || tiempoChanged)
-    }
-  }, [descripcionEdit, tiempoExtraEdit, detalle])
+        tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
+      const shouldBeDirty = descChanged || tiempoChanged
+      if (dirty !== shouldBeDirty) {
+        setDirty(shouldBeDirty)
+      }
+    })()
+  }, [descripcionEdit, tiempoExtraEdit, detalle, dirty])
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
@@ -78,7 +83,9 @@ export function useTareaEditor({
 
     const isActive = detalle.estado?.toLowerCase() === "activa"
 
-    fetchTiempoCronometrado(tareaEditando)
+    void (async () => {
+      await fetchTiempoCronometrado(tareaEditando)
+    })()
 
     if (isActive) {
       intervalRef.current = setInterval(() => {
@@ -86,7 +93,9 @@ export function useTareaEditor({
           tareaEditando !== null &&
           detalle?.estado?.toLowerCase() === "activa"
         ) {
-          fetchTiempoCronometrado(tareaEditando)
+          void (async () => {
+            await fetchTiempoCronometrado(tareaEditando)
+          })()
         } else {
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
@@ -102,7 +111,7 @@ export function useTareaEditor({
         intervalRef.current = null
       }
     }
-  }, [tareaEditando, detalle?.estado, fetchTiempoCronometrado])
+  }, [tareaEditando, detalle, fetchTiempoCronometrado])
 
   const handleEliminar = useCallback(async () => {
     const id = filaEliminando

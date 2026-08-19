@@ -6,8 +6,8 @@ import LayoutClient from "./layout-client"
 import { cn } from "@/lib/utils"
 import { UserProvider } from "@/context/userContext"
 import { ConnectionProvider } from "@/context/connectionContext"
-import { Metadata } from "next";
-import { AuthProvider } from "@/context/AuthProvider";
+import { Metadata } from "next"
+import { AuthProvider } from "@/context/AuthProvider"
 
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" })
 

@@ -21,7 +21,10 @@ export async function DELETE(request: Request) {
       `${API_BASE_URL}/tareas/eliminar-tarea?id_tarea=${id_tarea}`,
       {
         method: "DELETE",
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
 

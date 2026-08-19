@@ -12,10 +12,7 @@ import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-import type {
-  MonitoreoTareaEditorProps,
-  Tarea
-} from "@/types/types"
+import type { MonitoreoTareaEditorProps, Tarea } from "@/types/types"
 
 export function toOptions(items: (string | number)[]) {
   return items.map((item) => ({ id: String(item), nombre: String(item) }))
@@ -42,7 +39,7 @@ export function useMonitoreoEnCurso() {
   const [planoSel, setPlanoSel] = useState<string[]>([])
   const [operarioSel, setOperarioSel] = useState<string[]>([])
   const [sectorSel, setSectorSel] = useState<string[]>([])
-  const [initialized, setInitialized] = useState(false)
+  const initializedRef = useRef(false)
 
   const [tareas, setTareas] = useState<Tarea[]>([])
   const [loading, setLoading] = useState(false)
@@ -83,10 +80,10 @@ export function useMonitoreoEnCurso() {
   )
 
   useEffect(() => {
-    if (loadingFiltros || initialized) return
-    setInitialized(true)
+    if (loadingFiltros || initializedRef.current) return
+    initializedRef.current = true
     fetchTareas([], [], [], [])
-  }, [loadingFiltros, initialized, fetchTareas])
+  }, [loadingFiltros, fetchTareas])
 
   const aplicarFiltros = useCallback(() => {
     return fetchTareas(opSel, planoSel, operarioSel, sectorSel)
@@ -133,7 +130,7 @@ export function useMonitoreoFinalizadas() {
   const [planoSel, setPlanoSel] = useState<string[]>([])
   const [operarioSel, setOperarioSel] = useState<string[]>([])
   const [sectorSel, setSectorSel] = useState<string[]>([])
-  const [initialized, setInitialized] = useState(false)
+  const initializedRef = useRef(false)
 
   const [tareas, setTareas] = useState<Tarea[]>([])
   const [loading, setLoading] = useState(false)
@@ -186,16 +183,18 @@ export function useMonitoreoFinalizadas() {
   }, [])
 
   useEffect(() => {
-    if (loadingFiltros || initialized) return
-    setInitialized(true)
+    if (loadingFiltros || initializedRef.current) return
+    initializedRef.current = true
     void aplicarFiltros()
-  }, [loadingFiltros, initialized, aplicarFiltros])
+  }, [loadingFiltros, aplicarFiltros])
 
   useEffect(() => {
-    setOpSel([])
-    setPlanoSel([])
-    setOperarioSel([])
-    setSectorSel([])
+    void (async () => {
+      setOpSel([])
+      setPlanoSel([])
+      setOperarioSel([])
+      setSectorSel([])
+    })()
   }, [dateRange])
 
   const descargarExcel = useCallback(async () => {
@@ -287,9 +286,11 @@ export function useTareaEditor({
   } = useDetalleTarea(tareaEditando)
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const detaileSyncRef = useRef<typeof detalle | null>(null)
 
   useEffect(() => {
-    if (detalle) {
+    if (detalle && detaileSyncRef.current !== detalle) {
+      detaileSyncRef.current = detalle
       setDescripcionEdit(detalle.descripcion || "")
       setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
       setDirty(false)
@@ -297,13 +298,16 @@ export function useTareaEditor({
   }, [detalle])
 
   useEffect(() => {
-    if (detalle) {
-      const descChanged = descripcionEdit !== (detalle.descripcion || "")
+    void (async () => {
+      const descChanged = descripcionEdit !== (detalle?.descripcion || "")
       const tiempoChanged =
-        tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-      setDirty(descChanged || tiempoChanged)
-    }
-  }, [descripcionEdit, tiempoExtraEdit, detalle])
+        tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
+      const shouldBeDirty = descChanged || tiempoChanged
+      if (dirty !== shouldBeDirty) {
+        setDirty(shouldBeDirty)
+      }
+    })()
+  }, [descripcionEdit, tiempoExtraEdit, detalle, dirty])
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
@@ -338,7 +342,10 @@ export function useTareaEditor({
 
     const isActive = detalle.estado?.toLowerCase() === "activa"
 
-    fetchTiempoCronometrado(tareaEditando)
+    const loadTiempo = async () => {
+      await fetchTiempoCronometrado(tareaEditando)
+    }
+    void loadTiempo()
 
     if (isActive) {
       intervalRef.current = setInterval(() => {
@@ -346,7 +353,9 @@ export function useTareaEditor({
           tareaEditando !== null &&
           detalle?.estado?.toLowerCase() === "activa"
         ) {
-          fetchTiempoCronometrado(tareaEditando)
+          void (async () => {
+            await fetchTiempoCronometrado(tareaEditando)
+          })()
         } else {
           if (intervalRef.current) {
             clearInterval(intervalRef.current)
@@ -362,7 +371,7 @@ export function useTareaEditor({
         intervalRef.current = null
       }
     }
-  }, [tareaEditando, detalle?.estado, fetchTiempoCronometrado])
+  }, [tareaEditando, detalle, fetchTiempoCronometrado])
 
   const handleEliminar = useCallback(async () => {
     const id = filaEliminando

@@ -26,7 +26,10 @@ export async function PUT(request: Request) {
       `${API_BASE_URL}/tareas/actualizar-descripcion?id_tarea=${id_tarea}&descripcion=${encodeURIComponent(descripcion)}`,
       {
         method: "PUT",
-        headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
     const data = await response.json()
