@@ -18,7 +18,7 @@ export default function HeaderPrincipal() {
       href: urlConfig.homeUrl,
       onClick: () => setDrawerOpen(false),
     },
-    { label: "Nueva Tarea", href: "/cargar-tarea", ocultar: "xl:hidden" },
+    { label: "Nueva Tarea", href: "/tareas", ocultar: "xl:hidden" },
     { label: "Operarios", href: "/operarios", ocultar: "xl:hidden" },
     { label: "Productos", href: "/productos", ocultar: "xl:hidden" },
     { label: "Monitoreo", href: "/monitoreo", ocultar: "xl:hidden" },
