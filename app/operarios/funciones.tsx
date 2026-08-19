@@ -271,7 +271,7 @@ export function useUsuarioEditor({
         const res = await fetchWithConnectionCheck(
           `/api/auth/detalles-usuarioProduccion?user_id=${usuario.id}`
         )
-        const data = await handleApiResponse<Operario>(res, "")
+        const data = await handleApiResponse<Operario>(res, () => "")
         aplicarValoresEdicion({ ...usuario, ...data })
       } catch (error) {
         toast.error(getErrorMessage(error))

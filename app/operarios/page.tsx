@@ -155,6 +155,11 @@ export default function Operarios() {
                 onValueChange={setGrupoId}
                 disabled={loading}
               />
+              <p className="text-sm opacity-40">
+                Se registrará el usuario en el sistema con la contraseña
+                “12345678”. Obligatoriamente el usuario deberá iniciar sesión
+                con su correo y modificarla.
+              </p>
               <Button
                 className="w-full bg-bluecremona hover:bg-bluecremona/80"
                 disabled={!formularioCompleto || loading}

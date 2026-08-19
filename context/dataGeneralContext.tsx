@@ -258,11 +258,11 @@ export function useLaborresProducto(id_producto: number | null) {
   }, [id_producto])
 
   useEffect(() => {
-    if (id_produto === null) return
+    if (id_producto === null) return
     void (async () => {
       await fetchData()
     })()
-  }, [fetchData])
+  }, [fetchData, id_producto])
 
   return { labores, loading, error, refetch: fetchData }
 }
