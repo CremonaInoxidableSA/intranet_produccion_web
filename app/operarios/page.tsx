@@ -217,7 +217,7 @@ export default function Operarios() {
         onOpenChange={(open) => {
           if (!open) cerrarEdicion()
         }}
-        title={`Editar usuario: ${usuarioEditando ? `${usuarioEditando.apellido} ${usuarioEditando.nombre} - ${usuarioEditando.legajo}` : ""}`}
+        title={`Editar usuario: ${usuarioEditando ? `${usuarioEditando.apellido}, ${usuarioEditando.nombre} - ${usuarioEditando.legajo}` : ""}`}
         description="Modificá los datos del operario."
         fields={
           <div className="flex flex-col gap-3">
