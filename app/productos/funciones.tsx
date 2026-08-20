@@ -13,7 +13,6 @@ export function useTareaEditor({
   const [filaEliminando, setFilaEliminando] = useState<number | null>(null)
   const [descripcionEdit, setDescripcionEdit] = useState("")
   const [tiempoExtraEdit, setTiempoExtraEdit] = useState("00:00:00")
-  const [dirty, setDirty] = useState(false)
   const [cronometroKey, setCronometroKey] = useState(0)
   const [showCloseConfirm, setShowCloseConfirm] = useState(false)
   const [showReiniciarConfirm, setShowReiniciarConfirm] = useState(false)
@@ -34,21 +33,12 @@ export function useTareaEditor({
       detaileSyncRef.current = detalle
       setDescripcionEdit(detalle.descripcion || "")
       setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
-      setDirty(false)
     }
   }, [detalle])
 
-  useEffect(() => {
-    void (async () => {
-      const descChanged = descripcionEdit !== (detalle?.descripcion || "")
-      const tiempoChanged =
-        tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
-      const shouldBeDirty = descChanged || tiempoChanged
-      if (dirty !== shouldBeDirty) {
-        setDirty(shouldBeDirty)
-      }
-    })()
-  }, [descripcionEdit, tiempoExtraEdit, detalle, dirty])
+  const isDirty =
+    descripcionEdit !== (detalle?.descripcion || "") ||
+    tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
@@ -273,7 +263,7 @@ export function useTareaEditor({
     setDescripcionEdit,
     tiempoExtraEdit,
     setTiempoExtraEdit,
-    dirty,
+    dirty: isDirty,
     cronometroKey,
     showCloseConfirm,
     setShowCloseConfirm,
