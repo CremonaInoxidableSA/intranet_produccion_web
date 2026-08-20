@@ -292,11 +292,10 @@ export function useTareaEditor({
       detaileSyncRef.current = detalle
       setDescripcionEdit(detalle.descripcion || "")
       setTiempoExtraEdit(detalle.tiempo_extra || "00:00:00")
-      setDirty(false)
     }
   }, [detalle])
 
-  const isDirty = 
+  const isDirty =
     descripcionEdit !== (detalle?.descripcion || "") ||
     tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
 
@@ -433,12 +432,19 @@ export function useTareaEditor({
         await handleApiResponse(res)
       }
 
-      setDirty(false)
+      await refetchDetalle()
       refetch()
     } catch (error) {
       console.error("Error en handleGuardar:", error)
     }
-  }, [tareaEditando, detalle, descripcionEdit, tiempoExtraEdit, refetch])
+  }, [
+    tareaEditando,
+    detalle,
+    descripcionEdit,
+    tiempoExtraEdit,
+    refetch,
+    refetchDetalle,
+  ])
 
   const handleReiniciarCronometro = useCallback(async () => {
     const id = tareaEditando
@@ -465,7 +471,6 @@ export function useTareaEditor({
 
   const resetEditor = useCallback(() => {
     setTareaEditando(null)
-    setDirty(false)
   }, [])
 
   const handlePausarTarea = useCallback(async () => {

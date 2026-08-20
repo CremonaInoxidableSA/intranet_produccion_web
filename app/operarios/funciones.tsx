@@ -7,6 +7,7 @@ import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 import {
   CrearUsuarioResponse,
   getGrupoById,
+  getGrupoDisplay,
   grupos,
   isCreateUserCodeExisteGeneral,
   isCreateUserCodeExisteProduccion,
@@ -32,12 +33,17 @@ export function useUsuarioForm() {
 
   const usuarios = useMemo(
     () =>
-      [...operarios].sort((a, b) =>
-        `${a.apellido} ${a.nombre}`.localeCompare(
-          `${b.apellido} ${b.nombre}`,
-          "es"
-        )
-      ),
+      [...operarios]
+        .map((u) => ({
+          ...u,
+          grupo_display: getGrupoDisplay(u.grupo),
+        }))
+        .sort((a, b) =>
+          `${a.apellido}, ${a.nombre}`.localeCompare(
+            `${b.apellido}, ${b.nombre}`,
+            "es"
+          )
+        ),
     [operarios]
   )
 

@@ -123,8 +123,7 @@ export default function Monitoreo() {
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(blobUrl)
-    } catch {
-    }
+    } catch {}
   }, [])
 
   const etiquetasEnCurso = curso.tareas.map(

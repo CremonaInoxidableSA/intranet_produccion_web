@@ -79,8 +79,7 @@ export function useDetalleTarea(id_tarea: number | null) {
     void (async () => {
       await fetchDetalle()
     })()
-    return () => {
-    }
+    return () => {}
   }, [fetchDetalle])
 
   return { detalle, loading, error, refetch: fetchDetalle }
@@ -115,8 +114,7 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
     void (async () => {
       await fetchDetalle()
     })()
-    return () => {
-    }
+    return () => {}
   }, [fetchDetalle])
 
   return { detalle, loading, error, refetch: fetchDetalle }

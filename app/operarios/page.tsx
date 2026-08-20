@@ -77,7 +77,7 @@ export default function Operarios() {
   const tagOperarioMap = useMemo(
     () =>
       new Map(
-        usuarios.map((u) => [`${u.apellido} ${u.nombre} - ${u.legajo}`, u])
+        usuarios.map((u) => [`${u.apellido}, ${u.nombre} - ${u.legajo}`, u])
       ),
     [usuarios]
   )
@@ -86,7 +86,7 @@ export default function Operarios() {
     () =>
       new Map(
         usuarios.map((u) => [
-          `${u.apellido} ${u.nombre} - ${u.legajo}`,
+          `${u.apellido}, ${u.nombre} - ${u.legajo}`,
           u.grupo_display,
         ])
       ),

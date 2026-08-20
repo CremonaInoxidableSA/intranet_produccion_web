@@ -48,3 +48,15 @@ export function isCreateUserCodeExisteProduccion(code?: string) {
     code === CREATE_USER_CODE_EXISTE_PRODUCCION_ALIAS
   )
 }
+
+export function getGrupoDisplay(grupo?: string): string {
+  if (!grupo) return ""
+  switch (grupo.trim().toUpperCase()) {
+    case "GRUPO_ENCARGADOS_PRODUCCION":
+      return "ENCARGADO"
+    case "GRUPO_OPERARIOS_PRODUCCION":
+      return "OPERARIO"
+    default:
+      return grupo
+  }
+}
