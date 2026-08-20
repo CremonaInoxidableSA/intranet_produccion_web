@@ -104,7 +104,6 @@ export default function Operarios() {
       </h1>
 
       <div className="flex w-full flex-col items-center justify-center gap-5 md:flex-row md:items-start">
-        {/* Panel izquierdo - Cargar usuario */}
         <div className="w-full rounded bg-background2 p-5 md:w-1/4">
           <div className="flex flex-col gap-2 bg-background2">
             <h1 className="flex w-full items-center text-xl font-bold">
@@ -171,7 +170,6 @@ export default function Operarios() {
           </div>
         </div>
 
-        {/* Panel derecho - Listado */}
         <TextScrollArea
           tags={
             loadingUsuarios
@@ -211,7 +209,6 @@ export default function Operarios() {
         />
       </div>
 
-      {/* Dialog edición */}
       <DialogTemplate
         open={usuarioEditando !== null}
         onOpenChange={(open) => {

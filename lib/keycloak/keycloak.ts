@@ -20,12 +20,10 @@ export function initKeycloakOnce(
         ...options,
         adapter: "default",
         enableLogging: false,
-        // Reutilizar token existente si está disponible
         token: keycloak.token || undefined,
         refreshToken: keycloak.refreshToken || undefined,
       })
       .then((authenticated) => {
-        // Marcar que Keycloak fue inicializado para evitar reinicializaciones
         if (typeof window !== "undefined") {
           sessionStorage.setItem("keycloak_init_complete", "true")
         }

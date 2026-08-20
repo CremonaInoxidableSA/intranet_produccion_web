@@ -11,13 +11,13 @@ export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   const [tareas, setTareas] = useState<TareaUsuario[]>([])
   const [loading, setLoading] = useState(autoFetch)
   const [error, setError] = useState<string | null>(null)
-  const initializedRef = useRef(false)
+  const isMountedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       const response = await fetchWithConnectionCheck(
-        `/api/listas/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}&_=${Date.now()}`,
+        `/api/listas/lista-tareasUsuarioLogueado?id_current_user=${id_current_user}`,
         { cache: "no-store" }
       )
       if (!response.ok) throw new Error()
@@ -35,9 +35,16 @@ export function useTareasUsuario(options?: { autoFetch?: boolean }) {
   }, [])
 
   useEffect(() => {
-    if (!autoFetch || initializedRef.current) return
-    initializedRef.current = true
-    void fetchData()
+    if (!autoFetch) return
+
+    if (!isMountedRef.current) {
+      isMountedRef.current = true
+      void fetchData()
+    }
+
+    return () => {
+      isMountedRef.current = false
+    }
   }, [autoFetch, fetchData])
 
   return { tareas, loading, error, refetch: fetchData, removeTareaLocal }
@@ -73,7 +80,6 @@ export function useDetalleTarea(id_tarea: number | null) {
       await fetchDetalle()
     })()
     return () => {
-      // cleanup
     }
   }, [fetchDetalle])
 
@@ -110,7 +116,6 @@ export function useDetalleTareaFinalizada(id_tarea: number | null) {
       await fetchDetalle()
     })()
     return () => {
-      // cleanup
     }
   }, [fetchDetalle])
 

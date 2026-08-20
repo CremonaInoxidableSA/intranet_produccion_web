@@ -124,7 +124,6 @@ export default function Monitoreo() {
       document.body.removeChild(a)
       URL.revokeObjectURL(blobUrl)
     } catch {
-      // Mantener comportamiento silencioso para no interrumpir el flujo del dialog.
     }
   }, [])
 
@@ -151,7 +150,6 @@ export default function Monitoreo() {
     <div className="flex h-full flex-1 flex-col items-center gap-5 p-5">
       <h1 className="text-xl font-bold xl:text-2xl">MONITOREO</h1>
 
-      {/* Botones de sección — solo visibles en mobile */}
       <div className="flex w-full flex-row items-center justify-center gap-5 xl:hidden">
         {secciones.map(({ id, nombre, extraClasses }) => {
           const isActive = seccionActiva === id
@@ -172,7 +170,6 @@ export default function Monitoreo() {
       </div>
 
       <div className="flex w-full flex-1 flex-col gap-5 xl:flex-row">
-        {/* Columna EN CURSO */}
         <div
           className={`${
             seccionActiva === 1 ? "flex" : "hidden"
@@ -239,7 +236,6 @@ export default function Monitoreo() {
           />
         </div>
 
-        {/* Columna FINALIZADAS */}
         <div
           className={`${
             seccionActiva === 2 ? "flex" : "hidden"

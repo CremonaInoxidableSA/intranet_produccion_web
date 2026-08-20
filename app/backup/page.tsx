@@ -19,19 +19,15 @@ export default function BackUp() {
       if (!res.ok) throw new Error(`Error ${res.status}`)
 
       const blob = await res.blob()
-      // Obtener nombre del Content-Disposition
       const contentDisposition = res.headers.get("content-disposition")
       let nombreArchivo = nombrePorDefecto
       if (contentDisposition) {
-        // Busca filename* (para UTF-8) o filename
         const match = contentDisposition.match(/filename\*?=([^;]+)/i)
         if (match) {
           let raw = match[1].trim()
-          // Quitar comillas si existen
           if (raw.startsWith('"') && raw.endsWith('"')) {
             raw = raw.slice(1, -1)
           }
-          // Si tiene formato UTF-8''...
           if (raw.includes("UTF-8''")) {
             const parts = raw.split("''")
             if (parts.length === 2) {

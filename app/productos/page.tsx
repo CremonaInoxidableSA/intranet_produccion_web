@@ -31,7 +31,6 @@ export default function Productos() {
   const { sectores } = useSectores()
   const { productos, refetch: refetchProductos } = useProductos()
 
-  // --- Producto seleccionado (para labores) ---
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null)
   const initializedRef = useRef(false)
@@ -49,7 +48,6 @@ export default function Productos() {
       )
     : -1
 
-  // --- Labores del producto seleccionado ---
   const { labores, refetch: refetchLabores } = useLaborresProducto(
     productoSeleccionado?.id_producto ?? null
   )
@@ -57,7 +55,6 @@ export default function Productos() {
   const laboresNombres = labores.map((l) => l.nombre)
   const laboresSectores = labores.map((l) => l.sector)
 
-  // --- Eliminar producto ---
   const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
 
   const handleEliminarProducto = async () => {
@@ -80,7 +77,6 @@ export default function Productos() {
     } catch {}
   }
 
-  // --- Eliminar labor ---
   const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
 
   const handleEliminarLabor = async () => {
@@ -100,7 +96,6 @@ export default function Productos() {
     } catch {}
   }
 
-  // --- Crear labor ---
   const [nombreLabor, setNombreLabor] = useState("")
   const [sectorLabor, setSectorLabor] = useState("")
 
@@ -130,7 +125,6 @@ export default function Productos() {
     } catch {}
   }
 
-  // --- Crear producto ---
   const [nombreProducto, setNombreProducto] = useState("")
   const [sectoresProducto, setSectoresProducto] = useState<string[]>([])
 
@@ -155,7 +149,6 @@ export default function Productos() {
     } catch {}
   }
 
-  // --- Editar producto (dialog) ---
   const [productoEditando, setProductoEditando] = useState<Producto | null>(
     null
   )
@@ -185,6 +178,11 @@ export default function Productos() {
         }
       )
       await handleApiResponse(res)
+
+      setProductoSeleccionado((prev) =>
+        prev ? { ...prev, nombre: nombreEdit.trim() } : null
+      )
+
       setProductoEditando(null)
       await refetchProductos()
     } catch {}
@@ -204,7 +202,6 @@ export default function Productos() {
       </h1>
 
       <div className="flex min-h-0 w-full flex-1 flex-col gap-5 xl:h-[76vh] xl:w-6/7 xl:flex-row">
-        {/* Columna 1 - Productos */}
         <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={productoNombres}
@@ -258,7 +255,6 @@ export default function Productos() {
           </div>
         </div>
 
-        {/* Columna 2 - Labores */}
         <div className="flex min-h-0 flex-1 flex-col gap-2 rounded bg-background2 p-5 xl:w-1/3">
           <TextScrollArea
             tags={laboresNombres}
@@ -307,13 +303,13 @@ export default function Productos() {
         </div>
       </div>
 
-      {/* Dialog editar producto */}
       <DialogTemplate
         open={productoEditando !== null}
         onOpenChange={(open) => {
           if (!open) setProductoEditando(null)
         }}
-        title="EDITAR PRODUCTO"
+        title="EDITAR NOMBRE DEL PRODUCTO"
+        description="Edita el nombre del producto. El nombre no puede quedar vacio"
         fields={
           <div className="flex flex-col gap-4">
             <Inputs
@@ -346,7 +342,6 @@ export default function Productos() {
         }
       />
 
-      {/* Confirm eliminar producto */}
       <AlertDialogTemplate
         open={productoEliminar !== null}
         onOpenChange={(open) => {
@@ -357,7 +352,6 @@ export default function Productos() {
         onConfirm={handleEliminarProducto}
       />
 
-      {/* Confirm eliminar labor */}
       <AlertDialogTemplate
         open={laborEliminar !== null}
         onOpenChange={(open) => {

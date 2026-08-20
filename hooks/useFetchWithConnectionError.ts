@@ -6,10 +6,6 @@ import {
 } from "@/lib/connectionManager"
 import { handleApiResponse } from "@/lib/response-handler"
 
-/**
- * Hook para hacer fetch con detección automática de errores de conexión
- * Uso: const { fetchWithErrorHandling } = useFetchWithConnectionError()
- */
 export function useFetchWithConnectionError() {
   const fetchWithErrorHandling = async <T = unknown>(
     url: string,
@@ -20,7 +16,6 @@ export function useFetchWithConnectionError() {
       const response = await fetch(url, options)
       return await handleApiResponse(response, successMessage)
     } catch (error) {
-      // Detectar errores de conexión (TypeError, NetworkError, etc.)
       if (
         error instanceof TypeError ||
         (error instanceof Error &&
