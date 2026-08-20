@@ -214,22 +214,29 @@ export default function Productos() {
               setProductoSeleccionado(productos[index])
               setSectorLabor("")
             }}
-            extras={(_, index) => (
-              <div className="flex items-center gap-1">
-                <BotonIcono
-                  icono={PencilLine}
-                  iconClass="size-5 opacity-50 hover:opacity-100"
-                  onClick={() => abrirDialogEditar(productos[index])}
-                />
-                <BotonIcono
-                  icono={Trash2}
-                  iconClass="size-5 text-red-500"
-                  onClick={() =>
-                    setProductoEliminar(productos[index].id_producto)
-                  }
-                />
-              </div>
-            )}
+            extras={(_, index) => {
+              const isOtro = productos[index].nombre === "Otro"
+              return (
+                <div className="flex items-center gap-1">
+                  {!isOtro && (
+                    <>
+                      <BotonIcono
+                        icono={PencilLine}
+                        iconClass="size-5 opacity-50 hover:opacity-100"
+                        onClick={() => abrirDialogEditar(productos[index])}
+                      />
+                      <BotonIcono
+                        icono={Trash2}
+                        iconClass="size-5 text-red-500"
+                        onClick={() =>
+                          setProductoEliminar(productos[index].id_producto)
+                        }
+                      />
+                    </>
+                  )}
+                </div>
+              )
+            }}
           />
           <h1 className="flex w-full shrink-0 items-center text-xl font-bold">
             CARGAR NUEVO PRODUCTO
