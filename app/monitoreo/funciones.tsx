@@ -298,16 +298,14 @@ export function useTareaEditor({
   }, [detalle])
 
   useEffect(() => {
-    void (async () => {
-      const descChanged = descripcionEdit !== (detalle?.descripcion || "")
-      const tiempoChanged =
-        tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
-      const shouldBeDirty = descChanged || tiempoChanged
-      if (dirty !== shouldBeDirty) {
-        setDirty(shouldBeDirty)
-      }
-    })()
-  }, [descripcionEdit, tiempoExtraEdit, detalle, dirty])
+    const descChanged = descripcionEdit !== (detalle?.descripcion || "")
+    const tiempoChanged =
+      tiempoExtraEdit !== (detalle?.tiempo_extra || "00:00:00")
+    const shouldBeDirty = descChanged || tiempoChanged
+    if (dirty !== shouldBeDirty) {
+      setDirty(shouldBeDirty)
+    }
+  }, [descripcionEdit, tiempoExtraEdit, detalle])
 
   const fetchTiempoCronometrado = useCallback(async (id: number) => {
     try {
