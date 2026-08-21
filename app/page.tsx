@@ -2,26 +2,12 @@
 
 import { useMemo, type ComponentType, useState } from "react"
 import { useRouter } from "next/navigation"
-import {
-  CircleHelp,
-  type LucideProps,
-  icons as lucideIcons,
-} from "lucide-react"
+import { CircleHelp, type LucideProps } from "lucide-react"
 import { useAuth } from "@/context/AuthProvider"
 import { useAutorizacion } from "@/context/useAutorizacion"
+import { getUnifiedSubmodulos } from "@/lib/submodulosUtils"
 
 const fallbackIcon: ComponentType<LucideProps> = CircleHelp
-
-const resolveIcon = (iconName: string) => {
-  const lucideIcon = lucideIcons[iconName as keyof typeof lucideIcons]
-  return lucideIcon ?? fallbackIcon
-}
-
-const toTitle = (value: string) =>
-  value
-    .replace(/^SUBMODULO_/, "")
-    .replace(/_/g, " ")
-    .toUpperCase()
 
 export default function Home() {
   const router = useRouter()
@@ -29,20 +15,14 @@ export default function Home() {
   const { tieneAccesoSubmodulo } = useAutorizacion()
   const [, setOpen] = useState(true)
 
-  const submodulosDisponibles = useMemo(
+  const submodulosUnificados = useMemo(
     () =>
-      Object.entries(user?.submodulos_personales ?? {})
-        .filter(([nombre]) => tieneAccesoSubmodulo(nombre))
-        .map(([nombre, submodulo]) => {
-          const Icon = resolveIcon(submodulo.icono)
-
-          return {
-            nombre,
-            titulo: toTitle(nombre),
-            path: submodulo.path,
-            Icon,
-          }
-        }),
+      getUnifiedSubmodulos(
+        user?.submodulos_personales ?? {},
+        tieneAccesoSubmodulo,
+        true,
+        false
+      ),
     [tieneAccesoSubmodulo, user?.submodulos_personales]
   )
 
@@ -53,8 +33,8 @@ export default function Home() {
 
   return (
     <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
-      {submodulosDisponibles.map((submodulo) => {
-        const Icon = submodulo.Icon
+      {submodulosUnificados.map((submodulo) => {
+        const Icon = submodulo.Icon || fallbackIcon
 
         return (
           <button
