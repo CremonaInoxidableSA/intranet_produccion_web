@@ -15,6 +15,7 @@ const toTitle = (value: string) =>
   value
     .replace(/^SUBMODULO_/, "")
     .replace(/_/g, " ")
+    .replace(/_PRODUCCION$/, "")
     .toUpperCase()
 
 export interface SubmoduloItem {
