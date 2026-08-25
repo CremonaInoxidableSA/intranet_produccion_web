@@ -208,12 +208,10 @@ export interface DetalleTarea {
   descripcion: string
   tiempo_extra: string
   estado: string
-
-  //-Finalizada-//
   fecha_inicio?: Date
-  fecha_fin?: Date
   apellido_creador?: string
   nombre_creador?: string
+  fecha_fin?: Date
   tiempo_cronometrado?: string
   tiempo_total?: string
   eventos?: EventoTareaFinalizada[]

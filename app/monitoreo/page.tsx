@@ -372,6 +372,20 @@ export default function Monitoreo() {
                 variant="outline"
                 size="sm"
                 className="p-3"
+                title="FECHA INICIO"
+                description={`${detalle.fecha_inicio || "—"}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="CREADOR"
+                description={`${detalle.apellido_creador || "—"} ${detalle.nombre_creador || "—"}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
                 title="DESCRIPCION"
                 description={
                   <Textarea
