@@ -48,7 +48,7 @@ export function getOpcionesNuevaTarea(
   tiempoExtra: string,
   setTiempoExtra: (v: string) => void,
   cantidad: number,
-  setCantidad: (v: number ) => void,
+  setCantidad: (v: number) => void,
   formularioCompleto: boolean,
   onCrearTarea: () => Promise<void>
 ) {

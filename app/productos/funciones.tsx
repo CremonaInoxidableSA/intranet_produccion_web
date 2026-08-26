@@ -3,7 +3,9 @@ import { toast } from "sonner"
 import { useDetalleTarea } from "@/context/dataUserContext"
 import { handleApiResponse } from "@/lib/response-handler"
 import { fetchWithConnectionCheck } from "@/lib/connectionManager"
-import type { TareaEditorProps } from "@/types/types"
+import type { Labor, Producto, TareaEditorProps } from "@/types/types"
+
+type LaborConSector = Labor & { sector?: string }
 
 export function useTareaEditor({
   refetch,
@@ -290,15 +292,20 @@ export function useTareaEditor({
 export function useProductosManager() {
   const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
   const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
-  const [laborEditando, setLaborEditando] = useState<any>(null)
+  const [laborEditando, setLaborEditando] = useState<LaborConSector | null>(
+    null
+  )
   const [nombreLaborEdit, setNombreLaborEdit] = useState("")
   const [nombreLabor, setNombreLabor] = useState("")
   const [sectorLabor, setSectorLabor] = useState("")
   const [nombreProducto, setNombreProducto] = useState("")
   const [sectoresProducto, setSectoresProducto] = useState<string[]>([])
-  const [productoEditando, setProductoEditando] = useState<any>(null)
+  const [productoEditando, setProductoEditando] = useState<Producto | null>(
+    null
+  )
   const [nombreEdit, setNombreEdit] = useState("")
-  const [productoSeleccionado, setProductoSeleccionado] = useState<any>(null)
+  const [productoSeleccionado, setProductoSeleccionado] =
+    useState<Producto | null>(null)
 
   const handleEliminarProducto = useCallback(
     async (
@@ -345,7 +352,7 @@ export function useProductosManager() {
   )
 
   const handleCrearLabor = useCallback(
-    async (producto: any, refetchLabores: () => Promise<void>) => {
+    async (producto: Producto | null, refetchLabores: () => Promise<void>) => {
       if (!nombreLabor.trim() || !sectorLabor || !producto) {
         toast.error("Completá todos los campos")
         return
@@ -397,8 +404,11 @@ export function useProductosManager() {
   )
 
   const handleGuardarNombre = useCallback(
-    async (producto: any, refetchProductos: () => Promise<void>) => {
-      if (!productoEditando) return
+    async (
+      producto: Producto | null,
+      refetchProductos: () => Promise<void>
+    ) => {
+      if (!producto) return
       if (!nombreEdit.trim()) {
         toast.error("El nombre no puede estar vacío")
         return
@@ -410,14 +420,14 @@ export function useProductosManager() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              id_producto: productoEditando.id_producto,
+              id_producto: producto.id_producto,
               nombre: nombreEdit.trim(),
             }),
           }
         )
         await handleApiResponse(res)
 
-        setProductoSeleccionado((prev: any) =>
+        setProductoSeleccionado((prev) =>
           prev ? { ...prev, nombre: nombreEdit.trim() } : null
         )
 
@@ -425,7 +435,7 @@ export function useProductosManager() {
         await refetchProductos()
       } catch {}
     },
-    [productoEditando, nombreEdit]
+    [nombreEdit]
   )
 
   const handleDuplicarProducto = useCallback(
@@ -451,8 +461,11 @@ export function useProductosManager() {
   )
 
   const handleGuardarNombreLabor = useCallback(
-    async (labor: any, refetchLabores: () => Promise<void>) => {
-      if (!laborEditando) return
+    async (
+      labor: LaborConSector | null,
+      refetchLabores: () => Promise<void>
+    ) => {
+      if (!labor) return
       if (!nombreLaborEdit.trim()) {
         toast.error("El nombre no puede estar vacío")
         return
@@ -464,7 +477,7 @@ export function useProductosManager() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              id_labor: laborEditando.id_labor,
+              id_labor: labor.id_labor,
               nombre: nombreLaborEdit.trim(),
             }),
           }
@@ -476,7 +489,7 @@ export function useProductosManager() {
         await refetchLabores()
       } catch {}
     },
-    [laborEditando, nombreLaborEdit]
+    [nombreLaborEdit]
   )
 
   return {

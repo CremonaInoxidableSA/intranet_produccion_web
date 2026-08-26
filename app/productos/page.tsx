@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { PencilLine, Trash2 } from "lucide-react"
 import {
   DialogTemplate,
   AlertDialogTemplate,
@@ -12,14 +11,13 @@ import {
   Selector,
   SelectorMultiple,
   Boton,
-  BotonIcono,
 } from "@/components/components"
 import {
   useSectores,
   useProductos,
   useLaborresProducto,
 } from "@/context/dataGeneralContext"
-import type { Labor, Producto } from "@/types/types"
+import type { Labor, Producto, Sector } from "@/types/types"
 import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
 import { AUTORIZACIONES } from "@/lib/permisos"
 import { useProductosManager } from "./funciones"
@@ -84,7 +82,7 @@ export default function Productos() {
   const laboresNombres = labores.map((l) => l.nombre)
   const laboresSectores = labores.map((l) => l.sector)
 
-  const sectoresDelProducto = sectores.filter((s: any) =>
+  const sectoresDelProducto = sectores.filter((s: Sector) =>
     productoSeleccionado?.sectores.includes(s.nombre)
   )
 
@@ -126,7 +124,7 @@ export default function Productos() {
   const onGuardarNombre = async () => {
     await handleGuardarNombre(productoEditando, refetchProductos)
     // Actualizar el nombre en el estado local para que se refleje inmediatamente
-    setProductoSeleccionado((prev: any) =>
+    setProductoSeleccionado((prev) =>
       prev && prev.id_producto === productoEditando?.id_producto
         ? { ...prev, nombre: nombreEdit }
         : prev

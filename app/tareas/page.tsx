@@ -12,7 +12,6 @@ import {
   TextScrollArea,
   Boton,
   ItemCard,
-  Inputs,
 } from "@/components/components"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
@@ -267,6 +266,7 @@ export default function CargarTarea() {
     numeroOp,
     numeroPlano,
     productoSeleccionado,
+    cantidad,
     laborNombre,
     descripcion,
     tiempoExtra,

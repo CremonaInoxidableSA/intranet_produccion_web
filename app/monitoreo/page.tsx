@@ -14,7 +14,6 @@ import {
   Textarea,
   ItemCard,
   SelectorConBusqueda,
-  Inputs,
 } from "@/components/components"
 import {
   useMonitoreoEnCurso,

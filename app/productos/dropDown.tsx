@@ -106,8 +106,7 @@ export function MenuAccionesLabor({
   const puedeEditarLabor = autorizacion.productos.editar
   const puedeEliminarLabor = autorizacion.productos.eliminar
 
-  const puedeGestionarLabor =
-    puedeEditarLabor || puedeEliminarLabor
+  const puedeGestionarLabor = puedeEditarLabor || puedeEliminarLabor
 
   if (!puedeGestionarLabor) {
     return null
