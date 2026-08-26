@@ -47,8 +47,8 @@ export function getOpcionesNuevaTarea(
   setDescripcion: (v: string) => void,
   tiempoExtra: string,
   setTiempoExtra: (v: string) => void,
-  cantidad: number,
-  setCantidad: (v: number) => void,
+  cantidad: number | null,
+  setCantidad: (v: number | null) => void,
   formularioCompleto: boolean,
   onCrearTarea: () => Promise<void>
 ) {
@@ -122,7 +122,10 @@ export function getOpcionesNuevaTarea(
               placeholder="CANTIDAD"
               type="number"
               value={cantidad !== null ? String(cantidad) : ""}
-              onChange={(e) => setCantidad(Number(e.target.value))}
+              onChange={(e) => {
+                const value = e.target.value
+                setCantidad(value === "" ? null : Number(value))
+              }}
             />
             {mostrarInputLabor ? (
               <Inputs

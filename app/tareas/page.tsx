@@ -50,7 +50,7 @@ export default function CargarTarea() {
   const [numeroPlano, setNumeroPlano] = useState<string | null>(null)
   const [descripcion, setDescripcion] = useState("")
   const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
-  const [cantidad, setCantidad] = useState<number>(1)
+  const [cantidad, setCantidad] = useState<number | null>(null)
 
   const { tareas, refetch, removeTareaLocal } = useTareasUsuario()
 
@@ -191,7 +191,7 @@ export default function CargarTarea() {
     setProductoSeleccionadoState(null)
     setOperarioSeleccionado(null)
     setLaborSeleccionada(null)
-    setCantidad(1)
+    setCantidad(null)
     setLaborManual("")
     setNumeroOp(null)
     setNumeroPlano("")
