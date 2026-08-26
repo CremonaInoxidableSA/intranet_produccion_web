@@ -14,6 +14,7 @@ import {
   Textarea,
   ItemCard,
   SelectorConBusqueda,
+  Inputs,
 } from "@/components/components"
 import {
   useMonitoreoEnCurso,
@@ -365,6 +366,13 @@ export default function Monitoreo() {
                 variant="outline"
                 size="sm"
                 className="p-3"
+                title="CANTIDAD"
+                description={`${detalle.cantidad}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
                 title="LABOR"
                 description={`${detalle.nombre_labor}`}
               />
@@ -502,6 +510,13 @@ export default function Monitoreo() {
                 className="p-3"
                 title="PRODUCTO"
                 description={`${detalleF.nombre_producto}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="CANTIDAD"
+                description={`${detalleF.cantidad}`}
               />
               <ItemCard
                 variant="outline"

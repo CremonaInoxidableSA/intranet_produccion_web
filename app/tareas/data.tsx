@@ -47,6 +47,8 @@ export function getOpcionesNuevaTarea(
   setDescripcion: (v: string) => void,
   tiempoExtra: string,
   setTiempoExtra: (v: string) => void,
+  cantidad: number,
+  setCantidad: (v: number ) => void,
   formularioCompleto: boolean,
   onCrearTarea: () => Promise<void>
 ) {
@@ -115,6 +117,12 @@ export function getOpcionesNuevaTarea(
                   : ""
               }
               onValueChange={(value) => setProductoSeleccionado(Number(value))}
+            />
+            <Inputs
+              placeholder="CANTIDAD"
+              type="number"
+              value={cantidad !== null ? String(cantidad) : "1"}
+              onChange={(e) => setCantidad(Number(e.target.value))}
             />
             {mostrarInputLabor ? (
               <Inputs

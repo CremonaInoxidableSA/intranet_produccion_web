@@ -194,6 +194,7 @@ export interface TareaUsuario {
   nombre_producto: string
   nombre_labor: string
   estado: string
+  cantidad: number
 }
 
 export interface DetalleTarea {
@@ -214,6 +215,7 @@ export interface DetalleTarea {
   fecha_fin?: Date
   tiempo_cronometrado?: string
   tiempo_total?: string
+  cantidad: number
   eventos?: EventoTareaFinalizada[]
 }
 
@@ -228,6 +230,7 @@ export interface Tarea {
   apellido_operario_seleccionado: string
   nombre_producto: string
   nombre_labor: string
+  cantidad: number
   estado: string
 }
 
@@ -277,12 +280,13 @@ export interface MonitoreoTareaEditorProps extends TareaEditorProps {
 export interface FormState {
   descripcion: string
   tiempoExtra: string
+  cantidad: number
   dirty: boolean
 }
 
 export interface SetFormAction {
   type: "SET_FORM"
-  payload: { descripcion: string; tiempoExtra: string }
+  payload: { descripcion: string; tiempoExtra: string; cantidad: number }
 }
 
 export interface UpdateDescripcionAction {
@@ -293,6 +297,11 @@ export interface UpdateDescripcionAction {
 export interface UpdateTiempoExtraAction {
   type: "UPDATE_TIEMPO_EXTRA"
   payload: string
+}
+
+export interface UpdateCantidadAction {
+  type: "UPDATE_CANTIDAD"
+  payload: number
 }
 
 export interface ResetDirtyAction {
@@ -307,6 +316,7 @@ export type FormAction =
   | SetFormAction
   | UpdateDescripcionAction
   | UpdateTiempoExtraAction
+  | UpdateCantidadAction
   | ResetDirtyAction
   | SetDirtyAction
 

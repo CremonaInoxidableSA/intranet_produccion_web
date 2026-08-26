@@ -12,6 +12,7 @@ import {
   TextScrollArea,
   Boton,
   ItemCard,
+  Inputs,
 } from "@/components/components"
 import { CronometroEdicion, DuracionInput } from "@/components/cronometro"
 import {
@@ -50,6 +51,7 @@ export default function CargarTarea() {
   const [numeroPlano, setNumeroPlano] = useState<string | null>(null)
   const [descripcion, setDescripcion] = useState("")
   const [tiempoExtra, setTiempoExtra] = useState("00:00:00")
+  const [cantidad, setCantidad] = useState<number>(1)
 
   const { tareas, refetch, removeTareaLocal } = useTareasUsuario()
 
@@ -190,6 +192,7 @@ export default function CargarTarea() {
     setProductoSeleccionadoState(null)
     setOperarioSeleccionado(null)
     setLaborSeleccionada(null)
+    setCantidad(1)
     setLaborManual("")
     setNumeroOp(null)
     setNumeroPlano("")
@@ -229,6 +232,7 @@ export default function CargarTarea() {
       numero_op: numeroOp,
       numero_plano: numeroPlano,
       id_producto: productoSeleccionado,
+      cantidad: cantidad,
       nombre_labor: laborNombre,
       descripcion: descripcion.trim(),
       tiempo_extra: tiempoExtra,
@@ -297,6 +301,8 @@ export default function CargarTarea() {
         setDescripcion,
         tiempoExtra,
         setTiempoExtra,
+        cantidad,
+        setCantidad,
         formularioCompleto,
         handleCrearTarea
       ),
@@ -319,6 +325,8 @@ export default function CargarTarea() {
       numeroPlano,
       descripcion,
       tiempoExtra,
+      cantidad,
+      setCantidad,
       formularioCompleto,
       handleCrearTarea,
     ]
@@ -461,6 +469,13 @@ export default function CargarTarea() {
                 variant="outline"
                 size="sm"
                 className="p-3"
+                title="CANTIDAD"
+                description={`${detalle.cantidad}`}
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
                 title="LABOR"
                 description={`${detalle.nombre_labor}`}
               />
@@ -476,6 +491,13 @@ export default function CargarTarea() {
                     onChange={(e) => setDescripcionEdit(e.target.value)}
                   />
                 }
+              />
+              <ItemCard
+                variant="outline"
+                size="sm"
+                className="p-3"
+                title="CANTIDAD"
+                description={`${detalle.cantidad}`}
               />
               <ItemCard
                 variant="outline"
