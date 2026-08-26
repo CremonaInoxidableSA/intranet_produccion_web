@@ -121,7 +121,7 @@ export function getOpcionesNuevaTarea(
             <Inputs
               placeholder="CANTIDAD"
               type="number"
-              value={cantidad !== null ? String(cantidad) : "1"}
+              value={cantidad !== null ? String(cantidad) : ""}
               onChange={(e) => setCantidad(Number(e.target.value))}
             />
             {mostrarInputLabor ? (
