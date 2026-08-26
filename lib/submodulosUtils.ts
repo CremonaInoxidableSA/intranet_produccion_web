@@ -23,7 +23,7 @@ export interface SubmoduloItem {
   titulo: string
   path: string
   Icon?: ComponentType<LucideProps>
-  isSpecial?: boolean // Para Home y Tickets
+  isSpecial?: boolean
 }
 
 export const getUnifiedSubmodulos = (
@@ -34,7 +34,6 @@ export const getUnifiedSubmodulos = (
 ): SubmoduloItem[] => {
   const items: SubmoduloItem[] = []
 
-  // Agregar Home al inicio si se especifica
   if (includeSpecial) {
     items.push({
       nombre: "HOME",
@@ -45,7 +44,6 @@ export const getUnifiedSubmodulos = (
     })
   }
 
-  // Agregar submodulos del usuario, filtrados y ordenados alfabéticamente
   const usuarioSubmodulos = Object.entries(userSubmodulos ?? {})
     .filter(([nombre]) => tieneAcceso(nombre))
     .map(([nombre, submodulo]) => ({
@@ -59,7 +57,6 @@ export const getUnifiedSubmodulos = (
 
   items.push(...usuarioSubmodulos)
 
-  // Agregar Tickets Soporte al final si se especifica
   if (includeSpecial) {
     items.push({
       nombre: "TICKETS_SOPORTE",

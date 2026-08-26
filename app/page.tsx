@@ -32,23 +32,35 @@ export default function Home() {
   }
 
   return (
-    <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
-      {submodulosUnificados.map((submodulo) => {
-        const Icon = submodulo.Icon || fallbackIcon
+    <div className="flex w-full flex-col items-center gap-5 p-5 text-center font-medium">
+      <p className="max-w-3xl text-base leading-7">
+        Hola, bienvenido a la Sistema de Producción de Cremona Inoxidable S.A.
+        Desde acá podés acceder a los siguientes sistemas:
+      </p>
+      {submodulosUnificados.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          No tenes modulos personales asignados.
+        </p>
+      ) : (
+        <div className="grid h-full w-full grid-cols-2 content-start justify-center gap-5 p-5 md:px-50 md:py-20 xl:flex xl:flex-1 xl:flex-wrap">
+          {submodulosUnificados.map((submodulo) => {
+            const Icon = submodulo.Icon || fallbackIcon
 
-        return (
-          <button
-            key={submodulo.nombre}
-            onClick={() => handleNavigation(submodulo.path)}
-            className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
-          >
-            <Icon className="aspect-square size-20" />
-            <div className="text-sm font-semibold xl:text-xl">
-              {submodulo.titulo}
-            </div>
-          </button>
-        )
-      })}
+            return (
+              <button
+                key={submodulo.nombre}
+                onClick={() => handleNavigation(submodulo.path)}
+                className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded bg-background2 p-5 text-center transition hover:bg-background4 xl:w-1/6"
+              >
+                <Icon className="aspect-square size-20" />
+                <div className="text-sm font-semibold xl:text-xl">
+                  {submodulo.titulo}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

@@ -19,10 +19,11 @@ import {
   useProductos,
   useLaborresProducto,
 } from "@/context/dataGeneralContext"
-import type { Producto } from "@/types/types"
+import type { Labor, Producto } from "@/types/types"
 import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
 import { AUTORIZACIONES } from "@/lib/permisos"
 import { useProductosManager } from "./funciones"
+import { MenuAccionesProducto, MenuAccionesLabor } from "./dropDown"
 
 export default function Productos() {
   const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_PRODUCTOS)
@@ -38,6 +39,10 @@ export default function Productos() {
     setProductoEliminar,
     laborEliminar,
     setLaborEliminar,
+    laborEditando,
+    setLaborEditando,
+    nombreLaborEdit,
+    setNombreLaborEdit,
     nombreLabor,
     setNombreLabor,
     sectorLabor,
@@ -55,6 +60,7 @@ export default function Productos() {
     handleCrearLabor,
     handleCrearProducto,
     handleGuardarNombre,
+    handleGuardarNombreLabor,
     handleDuplicarProducto,
   } = useProductosManager()
 
@@ -87,12 +93,18 @@ export default function Productos() {
     setNombreEdit(p.nombre)
   }
 
+  const abrirDialogEditarLabor = (l: Labor) => {
+    setLaborEditando(l)
+    setNombreLaborEdit(l.nombre)
+  }
+
   const onEliminarProducto = async () => {
     await handleEliminarProducto(
       productoEliminar!,
       () => {
         if (productoSeleccionado?.id_producto === productoEliminar) {
           setProductoSeleccionado(null)
+          setSectorLabor("")
         }
       },
       refetchProductos
@@ -113,6 +125,20 @@ export default function Productos() {
 
   const onGuardarNombre = async () => {
     await handleGuardarNombre(productoEditando, refetchProductos)
+    // Actualizar el nombre en el estado local para que se refleje inmediatamente
+    setProductoSeleccionado((prev: any) =>
+      prev && prev.id_producto === productoEditando?.id_producto
+        ? { ...prev, nombre: nombreEdit }
+        : prev
+    )
+  }
+
+  const onGuardarNombreLabor = async () => {
+    await handleGuardarNombreLabor(laborEditando, refetchLabores)
+  }
+
+  const onDuplicarProducto = async (id_producto: number) => {
+    await handleDuplicarProducto(id_producto, refetchProductos)
   }
 
   const productoNombres = productos.map((p) => p.nombre)
@@ -142,26 +168,13 @@ export default function Productos() {
               setSectorLabor("")
             }}
             extras={(_, index) => {
-              const isOtro = productos[index].nombre === "Otro"
               return (
-                <div className="flex items-center gap-1">
-                  {!isOtro && (
-                    <>
-                      <BotonIcono
-                        icono={PencilLine}
-                        iconClass="size-5 opacity-50 hover:opacity-100"
-                        onClick={() => abrirDialogEditar(productos[index])}
-                      />
-                      <BotonIcono
-                        icono={Trash2}
-                        iconClass="size-5 text-red-500"
-                        onClick={() =>
-                          setProductoEliminar(productos[index].id_producto)
-                        }
-                      />
-                    </>
-                  )}
-                </div>
+                <MenuAccionesProducto
+                  producto={productos[index]}
+                  onEditar={abrirDialogEditar}
+                  onEliminar={setProductoEliminar}
+                  onDuplicar={onDuplicarProducto}
+                />
               )
             }}
           />
@@ -197,10 +210,10 @@ export default function Productos() {
             extraClass="flex-1 min-h-0 p-5 border"
             placeholderExtraClass="md:text-xl text-md"
             extras={(_, index) => (
-              <BotonIcono
-                icono={Trash2}
-                iconClass="size-5 text-red-500"
-                onClick={() => setLaborEliminar(labores[index].id_labor)}
+              <MenuAccionesLabor
+                labor={labores[index]}
+                onEditar={abrirDialogEditarLabor}
+                onEliminar={setLaborEliminar}
               />
             )}
           />
@@ -272,6 +285,36 @@ export default function Productos() {
           </div>
         }
         dialogFooter={<Boton placeholder="GUARDAR" onClick={onGuardarNombre} />}
+      />
+
+      <DialogTemplate
+        open={laborEditando !== null}
+        onOpenChange={(open) => {
+          if (!open) setLaborEditando(null)
+        }}
+        title="EDITAR NOMBRE DEL LABOR"
+        description="Edita el nombre del labor. El nombre no puede quedar vacio"
+        fields={
+          <div className="flex flex-col gap-4">
+            <Inputs
+              placeholder="NOMBRE"
+              type="text"
+              value={nombreLaborEdit}
+              onChange={(e) => setNombreLaborEdit(e.target.value)}
+            />
+            {laborEditando && (
+              <div className="flex flex-col gap-1">
+                <p className="text-xs font-semibold opacity-60">SECTOR</p>
+                <span className="rounded border border-foreground/20 bg-background3 px-2 py-1 text-xs">
+                  {laborEditando.sector}
+                </span>
+              </div>
+            )}
+          </div>
+        }
+        dialogFooter={
+          <Boton placeholder="GUARDAR" onClick={onGuardarNombreLabor} />
+        }
       />
 
       <AlertDialogTemplate

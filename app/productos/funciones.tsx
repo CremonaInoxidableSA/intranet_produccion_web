@@ -290,6 +290,8 @@ export function useTareaEditor({
 export function useProductosManager() {
   const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
   const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
+  const [laborEditando, setLaborEditando] = useState<any>(null)
+  const [nombreLaborEdit, setNombreLaborEdit] = useState("")
   const [nombreLabor, setNombreLabor] = useState("")
   const [sectorLabor, setSectorLabor] = useState("")
   const [nombreProducto, setNombreProducto] = useState("")
@@ -428,17 +430,17 @@ export function useProductosManager() {
 
   const handleDuplicarProducto = useCallback(
     async (
-      nombreProductoDuplicar: string,
+      id_productoDuplicar: number,
       refetchProductos: () => Promise<void>
     ) => {
-      if (!nombreProductoDuplicar) return
+      if (!id_productoDuplicar) return
       try {
         const res = await fetchWithConnectionCheck(
           "/api/crear/duplicar-producto",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nombre: nombreProductoDuplicar }),
+            body: JSON.stringify({ id_producto: id_productoDuplicar }),
           }
         )
         await handleApiResponse(res)
@@ -448,12 +450,45 @@ export function useProductosManager() {
     []
   )
 
+  const handleGuardarNombreLabor = useCallback(
+    async (labor: any, refetchLabores: () => Promise<void>) => {
+      if (!laborEditando) return
+      if (!nombreLaborEdit.trim()) {
+        toast.error("El nombre no puede estar vacío")
+        return
+      }
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/actualizar/actualizar-nombre-labor",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id_labor: laborEditando.id_labor,
+              nombre: nombreLaborEdit.trim(),
+            }),
+          }
+        )
+        await handleApiResponse(res)
+
+        setLaborEditando(null)
+        setNombreLaborEdit("")
+        await refetchLabores()
+      } catch {}
+    },
+    [laborEditando, nombreLaborEdit]
+  )
+
   return {
     // Estados
     productoEliminar,
     setProductoEliminar,
     laborEliminar,
     setLaborEliminar,
+    laborEditando,
+    setLaborEditando,
+    nombreLaborEdit,
+    setNombreLaborEdit,
     nombreLabor,
     setNombreLabor,
     sectorLabor,
@@ -474,6 +509,7 @@ export function useProductosManager() {
     handleCrearLabor,
     handleCrearProducto,
     handleGuardarNombre,
+    handleGuardarNombreLabor,
     handleDuplicarProducto,
   }
 }

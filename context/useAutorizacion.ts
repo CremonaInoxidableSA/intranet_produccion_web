@@ -95,6 +95,11 @@ export function useAutorizacion() {
         monitoreo: tienePermiso(AUTORIZACIONES.SUBMODULO_MONITOREO),
         backup: tienePermiso(AUTORIZACIONES.SUBMODULO_BACKUP),
       },
+      productos: {
+        editar: tienePermiso(AUTORIZACIONES.PRODUCTOS_EDITAR),
+        eliminar: tienePermiso(AUTORIZACIONES.PRODUCTOS_ELIMINAR),
+        duplicar: tienePermiso(AUTORIZACIONES.PRODUCTOS_DUPLICAR),
+      },
     }),
     [tienePermiso]
   )
