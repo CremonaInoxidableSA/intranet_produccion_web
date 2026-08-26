@@ -299,11 +299,6 @@ export interface UpdateTiempoExtraAction {
   payload: string
 }
 
-export interface UpdateCantidadAction {
-  type: "UPDATE_CANTIDAD"
-  payload: number
-}
-
 export interface ResetDirtyAction {
   type: "RESET_DIRTY"
 }
@@ -316,7 +311,6 @@ export type FormAction =
   | SetFormAction
   | UpdateDescripcionAction
   | UpdateTiempoExtraAction
-  | UpdateCantidadAction
   | ResetDirtyAction
   | SetDirtyAction
 

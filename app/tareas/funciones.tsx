@@ -72,7 +72,6 @@ export function useTareaEditor({
 
   const descripcionEdit = formState.descripcion
   const tiempoExtraEdit = formState.tiempoExtra
-  const cantidadEdit = formState.cantidad
   const dirty = formState.dirty
 
   useEffect(() => {
@@ -191,9 +190,8 @@ export function useTareaEditor({
     const descChanged = descripcionEdit !== (detalle.descripcion || "")
     const tiempoChanged =
       tiempoExtraEdit !== (detalle.tiempo_extra || "00:00:00")
-    const cantidadChanged = cantidadEdit !== (detalle.cantidad || 1)
 
-    if (!descChanged && !tiempoChanged && !cantidadChanged) {
+    if (!descChanged && !tiempoChanged) {
       toast.info("No hay cambios para guardar")
       return
     }
@@ -225,20 +223,6 @@ export function useTareaEditor({
       )
     }
 
-    if (cantidadChanged) {
-      if (cantidadEdit <= 0) {
-        toast.error("La cantidad debe ser mayor a 0")
-        return
-      }
-      promises.push(
-        fetchWithConnectionCheck("/api/actualizar/actualizar-cantidad", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_tarea: id, cantidad: cantidadEdit }),
-        })
-      )
-    }
-
     try {
       const responses = await Promise.all(promises)
 
@@ -257,7 +241,6 @@ export function useTareaEditor({
     detalle,
     descripcionEdit,
     tiempoExtraEdit,
-    cantidadEdit,
     refetch,
     refetchDetalle,
   ])
