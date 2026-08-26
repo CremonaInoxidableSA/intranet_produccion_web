@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { toast } from "sonner"
 import { PencilLine, Trash2 } from "lucide-react"
 import {
   DialogTemplate,
@@ -21,10 +20,9 @@ import {
   useLaborresProducto,
 } from "@/context/dataGeneralContext"
 import type { Producto } from "@/types/types"
-import { handleApiResponse } from "@/lib/response-handler"
-import { fetchWithConnectionCheck } from "@/lib/connectionManager"
 import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
 import { AUTORIZACIONES } from "@/lib/permisos"
+import { useProductosManager } from "./funciones"
 
 export default function Productos() {
   const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_PRODUCTOS)
@@ -34,6 +32,31 @@ export default function Productos() {
   const [productoSeleccionado, setProductoSeleccionado] =
     useState<Producto | null>(null)
   const initializedRef = useRef(false)
+
+  const {
+    productoEliminar,
+    setProductoEliminar,
+    laborEliminar,
+    setLaborEliminar,
+    nombreLabor,
+    setNombreLabor,
+    sectorLabor,
+    setSectorLabor,
+    nombreProducto,
+    setNombreProducto,
+    sectoresProducto,
+    setSectoresProducto,
+    productoEditando,
+    setProductoEditando,
+    nombreEdit,
+    setNombreEdit,
+    handleEliminarProducto,
+    handleEliminarLabor,
+    handleCrearLabor,
+    handleCrearProducto,
+    handleGuardarNombre,
+    handleDuplicarProducto,
+  } = useProductosManager()
 
   useEffect(() => {
     if (productos.length > 0 && !initializedRef.current) {
@@ -55,137 +78,41 @@ export default function Productos() {
   const laboresNombres = labores.map((l) => l.nombre)
   const laboresSectores = labores.map((l) => l.sector)
 
-  const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
-
-  const handleEliminarProducto = async () => {
-    if (productoEliminar === null) return
-    try {
-      const res = await fetchWithConnectionCheck(
-        "/api/eliminar/eliminar-producto",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_producto: productoEliminar }),
-        }
-      )
-      await handleApiResponse(res)
-      setProductoEliminar(null)
-      if (productoSeleccionado?.id_producto === productoEliminar) {
-        setProductoSeleccionado(null)
-      }
-      await refetchProductos()
-    } catch {}
-  }
-
-  const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
-
-  const handleEliminarLabor = async () => {
-    if (laborEliminar === null) return
-    try {
-      const res = await fetchWithConnectionCheck(
-        "/api/eliminar/eliminar-labor",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id_labor: laborEliminar }),
-        }
-      )
-      await handleApiResponse(res)
-      setLaborEliminar(null)
-      await refetchLabores()
-    } catch {}
-  }
-
-  const [nombreLabor, setNombreLabor] = useState("")
-  const [sectorLabor, setSectorLabor] = useState("")
-
-  const sectoresDelProducto = sectores.filter((s) =>
+  const sectoresDelProducto = sectores.filter((s: any) =>
     productoSeleccionado?.sectores.includes(s.nombre)
   )
-
-  const handleCrearLabor = async () => {
-    if (!nombreLabor.trim() || !sectorLabor || !productoSeleccionado) {
-      toast.error("Completá todos los campos")
-      return
-    }
-    try {
-      const res = await fetchWithConnectionCheck("/api/crear/crear-labor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: nombreLabor.trim(),
-          id_sector: Number(sectorLabor),
-          id_producto: productoSeleccionado.id_producto,
-        }),
-      })
-      await handleApiResponse(res)
-      setNombreLabor("")
-      setSectorLabor("")
-      await refetchLabores()
-    } catch {}
-  }
-
-  const [nombreProducto, setNombreProducto] = useState("")
-  const [sectoresProducto, setSectoresProducto] = useState<string[]>([])
-
-  const handleCrearProducto = async () => {
-    if (!nombreProducto.trim() || sectoresProducto.length === 0) {
-      toast.error("Completá el nombre y seleccioná al menos un sector")
-      return
-    }
-    try {
-      const res = await fetchWithConnectionCheck("/api/crear/crear-producto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: nombreProducto.trim(),
-          id_sectores: sectoresProducto.map(Number),
-        }),
-      })
-      await handleApiResponse(res)
-      setNombreProducto("")
-      setSectoresProducto([])
-      await refetchProductos()
-    } catch {}
-  }
-
-  const [productoEditando, setProductoEditando] = useState<Producto | null>(
-    null
-  )
-  const [nombreEdit, setNombreEdit] = useState("")
 
   const abrirDialogEditar = (p: Producto) => {
     setProductoEditando(p)
     setNombreEdit(p.nombre)
   }
 
-  const handleGuardarNombre = async () => {
-    if (!productoEditando) return
-    if (!nombreEdit.trim()) {
-      toast.error("El nombre no puede estar vacío")
-      return
-    }
-    try {
-      const res = await fetchWithConnectionCheck(
-        "/api/actualizar/actualizar-nombre-producto",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id_producto: productoEditando.id_producto,
-            nombre: nombreEdit.trim(),
-          }),
+  const onEliminarProducto = async () => {
+    await handleEliminarProducto(
+      productoEliminar!,
+      () => {
+        if (productoSeleccionado?.id_producto === productoEliminar) {
+          setProductoSeleccionado(null)
         }
-      )
-      await handleApiResponse(res)
+      },
+      refetchProductos
+    )
+  }
 
-      setProductoSeleccionado((prev) =>
-        prev ? { ...prev, nombre: nombreEdit.trim() } : null
-      )
+  const onEliminarLabor = async () => {
+    await handleEliminarLabor(refetchLabores)
+  }
 
-      setProductoEditando(null)
-      await refetchProductos()
-    } catch {}
+  const onCrearLabor = async () => {
+    await handleCrearLabor(productoSeleccionado, refetchLabores)
+  }
+
+  const onCrearProducto = async () => {
+    await handleCrearProducto(refetchProductos)
+  }
+
+  const onGuardarNombre = async () => {
+    await handleGuardarNombre(productoEditando, refetchProductos)
   }
 
   const productoNombres = productos.map((p) => p.nombre)
@@ -257,7 +184,7 @@ export default function Productos() {
             />
             <Boton
               placeholder="CREAR NUEVO PRODUCTO"
-              onClick={handleCrearProducto}
+              onClick={onCrearProducto}
             />
           </div>
         </div>
@@ -303,7 +230,7 @@ export default function Productos() {
             />
             <Boton
               placeholder="CREAR NUEVO LABOR"
-              onClick={handleCrearLabor}
+              onClick={onCrearLabor}
               disabled={!productoSeleccionado}
             />
           </div>
@@ -331,7 +258,7 @@ export default function Productos() {
                   SECTORES ASOCIADOS
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {productoEditando.sectores.map((s) => (
+                  {productoEditando.sectores.map((s: string) => (
                     <span
                       key={s}
                       className="rounded border border-foreground/20 bg-background3 px-2 py-1 text-xs"
@@ -344,9 +271,7 @@ export default function Productos() {
             )}
           </div>
         }
-        dialogFooter={
-          <Boton placeholder="GUARDAR" onClick={handleGuardarNombre} />
-        }
+        dialogFooter={<Boton placeholder="GUARDAR" onClick={onGuardarNombre} />}
       />
 
       <AlertDialogTemplate
@@ -356,7 +281,7 @@ export default function Productos() {
         }}
         title="¿Eliminar producto?"
         description="Esta acción no se puede deshacer."
-        onConfirm={handleEliminarProducto}
+        onConfirm={onEliminarProducto}
       />
 
       <AlertDialogTemplate
@@ -366,7 +291,7 @@ export default function Productos() {
         }}
         title="¿Eliminar labor?"
         description="Esta acción no se puede deshacer."
-        onConfirm={handleEliminarLabor}
+        onConfirm={onEliminarLabor}
       />
     </div>
   )

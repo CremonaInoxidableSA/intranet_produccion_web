@@ -13,9 +13,9 @@ const resolveIcon = (iconName: string) => {
 
 const toTitle = (value: string) =>
   value
-    .replace(/^SUBMODULO_/, "")
+    .replace(/^SUBMODULO/, "")
     .replace(/_/g, " ")
-    .replace(/_PRODUCCION$/, "")
+    .replace(/PRODUCCION$/, "")
     .toUpperCase()
 
 export interface SubmoduloItem {

@@ -286,3 +286,194 @@ export function useTareaEditor({
     handleFinalizar,
   }
 }
+
+export function useProductosManager() {
+  const [productoEliminar, setProductoEliminar] = useState<number | null>(null)
+  const [laborEliminar, setLaborEliminar] = useState<number | null>(null)
+  const [nombreLabor, setNombreLabor] = useState("")
+  const [sectorLabor, setSectorLabor] = useState("")
+  const [nombreProducto, setNombreProducto] = useState("")
+  const [sectoresProducto, setSectoresProducto] = useState<string[]>([])
+  const [productoEditando, setProductoEditando] = useState<any>(null)
+  const [nombreEdit, setNombreEdit] = useState("")
+  const [productoSeleccionado, setProductoSeleccionado] = useState<any>(null)
+
+  const handleEliminarProducto = useCallback(
+    async (
+      productoDuplicarId: number,
+      onSuccess: () => void,
+      refetchProductos: () => Promise<void>
+    ) => {
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/eliminar/eliminar-producto",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_producto: productoDuplicarId }),
+          }
+        )
+        await handleApiResponse(res)
+        setProductoEliminar(null)
+        onSuccess()
+        await refetchProductos()
+      } catch {}
+    },
+    []
+  )
+
+  const handleEliminarLabor = useCallback(
+    async (refetchLabores: () => Promise<void>) => {
+      if (laborEliminar === null) return
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/eliminar/eliminar-labor",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_labor: laborEliminar }),
+          }
+        )
+        await handleApiResponse(res)
+        setLaborEliminar(null)
+        await refetchLabores()
+      } catch {}
+    },
+    [laborEliminar]
+  )
+
+  const handleCrearLabor = useCallback(
+    async (producto: any, refetchLabores: () => Promise<void>) => {
+      if (!nombreLabor.trim() || !sectorLabor || !producto) {
+        toast.error("Completá todos los campos")
+        return
+      }
+      try {
+        const res = await fetchWithConnectionCheck("/api/crear/crear-labor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre: nombreLabor.trim(),
+            id_sector: Number(sectorLabor),
+            id_producto: producto.id_producto,
+          }),
+        })
+        await handleApiResponse(res)
+        setNombreLabor("")
+        setSectorLabor("")
+        await refetchLabores()
+      } catch {}
+    },
+    [nombreLabor, sectorLabor]
+  )
+
+  const handleCrearProducto = useCallback(
+    async (refetchProductos: () => Promise<void>) => {
+      if (!nombreProducto.trim() || sectoresProducto.length === 0) {
+        toast.error("Completá el nombre y seleccioná al menos un sector")
+        return
+      }
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/crear/crear-producto",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nombre: nombreProducto.trim(),
+              id_sectores: sectoresProducto.map(Number),
+            }),
+          }
+        )
+        await handleApiResponse(res)
+        setNombreProducto("")
+        setSectoresProducto([])
+        await refetchProductos()
+      } catch {}
+    },
+    [nombreProducto, sectoresProducto]
+  )
+
+  const handleGuardarNombre = useCallback(
+    async (producto: any, refetchProductos: () => Promise<void>) => {
+      if (!productoEditando) return
+      if (!nombreEdit.trim()) {
+        toast.error("El nombre no puede estar vacío")
+        return
+      }
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/actualizar/actualizar-nombre-producto",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id_producto: productoEditando.id_producto,
+              nombre: nombreEdit.trim(),
+            }),
+          }
+        )
+        await handleApiResponse(res)
+
+        setProductoSeleccionado((prev: any) =>
+          prev ? { ...prev, nombre: nombreEdit.trim() } : null
+        )
+
+        setProductoEditando(null)
+        await refetchProductos()
+      } catch {}
+    },
+    [productoEditando, nombreEdit]
+  )
+
+  const handleDuplicarProducto = useCallback(
+    async (
+      nombreProductoDuplicar: string,
+      refetchProductos: () => Promise<void>
+    ) => {
+      if (!nombreProductoDuplicar) return
+      try {
+        const res = await fetchWithConnectionCheck(
+          "/api/crear/duplicar-producto",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre: nombreProductoDuplicar }),
+          }
+        )
+        await handleApiResponse(res)
+        await refetchProductos()
+      } catch {}
+    },
+    []
+  )
+
+  return {
+    // Estados
+    productoEliminar,
+    setProductoEliminar,
+    laborEliminar,
+    setLaborEliminar,
+    nombreLabor,
+    setNombreLabor,
+    sectorLabor,
+    setSectorLabor,
+    nombreProducto,
+    setNombreProducto,
+    sectoresProducto,
+    setSectoresProducto,
+    productoEditando,
+    setProductoEditando,
+    nombreEdit,
+    setNombreEdit,
+    productoSeleccionado,
+    setProductoSeleccionado,
+    // Funciones
+    handleEliminarProducto,
+    handleEliminarLabor,
+    handleCrearLabor,
+    handleCrearProducto,
+    handleGuardarNombre,
+    handleDuplicarProducto,
+  }
+}

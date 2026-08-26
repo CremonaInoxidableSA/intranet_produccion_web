@@ -83,7 +83,7 @@ export default function HeaderPrincipal() {
             className="text-base opacity-70 transition-opacity hover:opacity-100"
             rel="noopener noreferrer"
           >
-            Intranet
+            INTRANET
           </Link>
           <Link
             href={urlConfig.externalUrl}
@@ -131,7 +131,7 @@ export default function HeaderPrincipal() {
               className="text-base opacity-70 transition-opacity hover:opacity-100"
               rel="noopener noreferrer"
             >
-              Intranet
+              INTRANET
             </Link>
           </div>
           <button
