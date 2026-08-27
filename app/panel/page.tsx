@@ -65,7 +65,7 @@ export default function Monitoreo() {
       <div className="flex w-full flex-1 flex-col gap-5 bg-background1 p-5">
         <div className="flex flex-col gap-1 text-sm opacity-70">
           <p>Tabla actualizada: {horaActualizacion}</p>
-          <p>Actualización automática cada 2 minutos.</p>
+          <p>Actualización automática cada minuto.</p>
         </div>
 
         <Selector

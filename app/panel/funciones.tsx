@@ -125,7 +125,7 @@ export function usePanelOperarios(enabled = true) {
 
     const intervalId = window.setInterval(() => {
       void cargarListado()
-    }, 120000)
+    }, 60000)
 
     return () => window.clearInterval(intervalId)
   }, [cargarListado, enabled])
