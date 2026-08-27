@@ -107,7 +107,11 @@ export function usePanelOperarios() {
   }, [])
 
   useEffect(() => {
-    cargarListado()
+    const initialLoadTimeout = window.setTimeout(() => {
+      void cargarListado()
+    }, 0)
+
+    return () => window.clearTimeout(initialLoadTimeout)
   }, [cargarListado])
 
   useEffect(() => {
