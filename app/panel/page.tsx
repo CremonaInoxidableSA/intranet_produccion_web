@@ -18,7 +18,7 @@ export default function Monitoreo() {
     setEstadoSeleccionado,
     opcionesEstado,
     updatedAt,
-  } = usePanelOperarios()
+  } = usePanelOperarios(accesoPermitido)
 
   const horaActualizacion = updatedAt
     ? new Intl.DateTimeFormat("es-AR", {
@@ -53,6 +53,7 @@ export default function Monitoreo() {
     () => rowsFiltrados.map((row) => row.key),
     [rowsFiltrados]
   )
+  const mostrarLoadingEnLista = loading && rowsFiltrados.length === 0
 
   if (!accesoPermitido) {
     return null
@@ -88,16 +89,22 @@ export default function Monitoreo() {
           <p>Operarios sin tareas: {totales.inactivos}</p>
         </div>
 
-        {loading && <p className="text-sm opacity-70">Cargando panel...</p>}
-
         <TextScrollArea
-          tags={rowKeys}
+          tags={mostrarLoadingEnLista ? ["__loading__"] : rowKeys}
           placeholder="ESTADO DE LOS OPERARIOS"
           extraClass="flex flex-1 flex-col gap-3 rounded"
           placeholderExtraClass="xl:text-lg text-md"
           withHover={false}
           withPointer={false}
           renderItem={({ index }) => {
+            if (mostrarLoadingEnLista) {
+              return (
+                <div className="flex w-full items-center justify-center py-4 text-sm opacity-70">
+                  Cargando lista...
+                </div>
+              )
+            }
+
             const row = rowsFiltrados[index]
             if (!row) return null
 

@@ -64,7 +64,7 @@ function mapOperarioToRow(
   }
 }
 
-export function usePanelOperarios() {
+export function usePanelOperarios(enabled = true) {
   const [listado, setListado] = useState<OperarioPanel[]>([])
   const [estadoSeleccionado, setEstadoSeleccionado] =
     useState<string>("__all__")
@@ -107,20 +107,28 @@ export function usePanelOperarios() {
   }, [])
 
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
     const initialLoadTimeout = window.setTimeout(() => {
       void cargarListado()
     }, 0)
 
     return () => window.clearTimeout(initialLoadTimeout)
-  }, [cargarListado])
+  }, [cargarListado, enabled])
 
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
+
     const intervalId = window.setInterval(() => {
-      cargarListado()
+      void cargarListado()
     }, 120000)
 
     return () => window.clearInterval(intervalId)
-  }, [cargarListado])
+  }, [cargarListado, enabled])
 
   const listadoFiltrado = useMemo(() => {
     if (!estadoSeleccionado || estadoSeleccionado === "__all__") {
