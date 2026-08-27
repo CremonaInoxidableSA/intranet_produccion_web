@@ -31,7 +31,11 @@ export type OperarioPanelRow = {
   tieneTareaActiva: boolean
 }
 
-const ESTADOS_PANEL = ["activa", "inactivo"]
+const ESTADOS_PANEL = [
+  { id: "__all__", nombre: "TODOS" },
+  { id: "activa", nombre: "ACTIVA" },
+  { id: "inactivo", nombre: "INACTIVA" },
+]
 
 export function toOptions(items: (string | number)[]) {
   return items.map((item) => ({ id: String(item), nombre: String(item) }))
@@ -62,8 +66,10 @@ function mapOperarioToRow(
 
 export function usePanelOperarios() {
   const [listado, setListado] = useState<OperarioPanel[]>([])
-  const [estadosSeleccionados, setEstadosSeleccionados] = useState<string[]>([])
+  const [estadoSeleccionado, setEstadoSeleccionado] =
+    useState<string>("__all__")
   const [totales, setTotales] = useState({ activos: 0, inactivos: 0 })
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null)
   const [loading, setLoading] = useState(false)
 
   const cargarListado = useCallback(async () => {
@@ -91,6 +97,7 @@ export function usePanelOperarios() {
             ? data.total_operarios_inactivos
             : operarios.filter((operario) => !esActivo(operario.estado)).length,
       })
+      setUpdatedAt(new Date())
     } catch {
       setListado([])
       setTotales({ activos: 0, inactivos: 0 })
@@ -103,15 +110,23 @@ export function usePanelOperarios() {
     cargarListado()
   }, [cargarListado])
 
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      cargarListado()
+    }, 120000)
+
+    return () => window.clearInterval(intervalId)
+  }, [cargarListado])
+
   const listadoFiltrado = useMemo(() => {
-    if (estadosSeleccionados.length === 0) {
+    if (!estadoSeleccionado || estadoSeleccionado === "__all__") {
       return listado
     }
 
-    return listado.filter((operario) =>
-      estadosSeleccionados.includes(operario.estado.toLowerCase())
+    return listado.filter(
+      (operario) => operario.estado.toLowerCase() === estadoSeleccionado
     )
-  }, [listado, estadosSeleccionados])
+  }, [listado, estadoSeleccionado])
 
   const rows = useMemo(
     () =>
@@ -125,8 +140,9 @@ export function usePanelOperarios() {
     loading,
     rows,
     totales,
-    estadosSeleccionados,
-    setEstadosSeleccionados,
-    opcionesEstado: toOptions(ESTADOS_PANEL),
+    estadoSeleccionado,
+    setEstadoSeleccionado,
+    opcionesEstado: ESTADOS_PANEL,
+    updatedAt,
   }
 }

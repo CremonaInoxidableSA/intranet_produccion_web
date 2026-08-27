@@ -1,23 +1,58 @@
 "use client"
 
-import { TextScrollArea, SelectorConBusqueda } from "@/components/components"
-import { useMemo } from "react"
+import { TextScrollArea, Selector } from "@/components/components"
+import { Input } from "@/components/ui/input"
+import { useMemo, useState } from "react"
 import { useSubmoduloGuard } from "@/hooks/useSubmoduloGuard"
 import { AUTORIZACIONES } from "@/lib/permisos"
 import { usePanelOperarios } from "./funciones"
 
 export default function Monitoreo() {
   const accesoPermitido = useSubmoduloGuard(AUTORIZACIONES.SUBMODULO_PANEL)
+  const [busquedaOperario, setBusquedaOperario] = useState("")
   const {
     loading,
     rows,
     totales,
-    estadosSeleccionados,
-    setEstadosSeleccionados,
+    estadoSeleccionado,
+    setEstadoSeleccionado,
     opcionesEstado,
+    updatedAt,
   } = usePanelOperarios()
 
-  const rowKeys = useMemo(() => rows.map((row) => row.key), [rows])
+  const horaActualizacion = updatedAt
+    ? new Intl.DateTimeFormat("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }).format(updatedAt)
+    : "pendiente"
+
+  const rowsFiltrados = useMemo(() => {
+    const query = busquedaOperario.trim().toLowerCase()
+
+    if (!query) {
+      return rows
+    }
+
+    return rows.filter((row) => {
+      const texto = [
+        row.nombreCompleto,
+        row.numeroOp ?? "",
+        row.productoSector,
+        row.estado,
+      ]
+        .join(" ")
+        .toLowerCase()
+
+      return texto.includes(query)
+    })
+  }, [busquedaOperario, rows])
+
+  const rowKeys = useMemo(
+    () => rowsFiltrados.map((row) => row.key),
+    [rowsFiltrados]
+  )
 
   if (!accesoPermitido) {
     return null
@@ -27,14 +62,25 @@ export default function Monitoreo() {
     <div className="flex h-full flex-1 flex-col items-center gap-5 p-5">
       <h1 className="text-xl font-bold xl:text-2xl">PANEL</h1>
       <div className="flex w-full flex-1 flex-col gap-5 bg-background1 p-5">
-        <SelectorConBusqueda
+        <div className="flex flex-col gap-1 text-sm opacity-70">
+          <p>Tabla actualizada: {horaActualizacion}</p>
+          <p>Actualización automática cada 2 minutos.</p>
+        </div>
+
+        <Selector
           placeholder="SELECCIONE EL ESTADO"
-          searchPlaceholder="ESTADO..."
           data={opcionesEstado}
           keyId="id"
           keyLabel="nombre"
-          values={estadosSeleccionados}
-          onValuesChange={setEstadosSeleccionados}
+          value={estadoSeleccionado}
+          onValueChange={setEstadoSeleccionado}
+        />
+
+        <Input
+          value={busquedaOperario}
+          onChange={(event) => setBusquedaOperario(event.target.value)}
+          placeholder="BUSCAR POR NOMBRE, NÚMERO OP, SECTOR O PRODUCTO"
+          className="min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6"
         />
 
         <div className="flex flex-row justify-between opacity-70">
@@ -46,13 +92,13 @@ export default function Monitoreo() {
 
         <TextScrollArea
           tags={rowKeys}
-          placeholder="ESTADO DE LOS USUARIOS"
+          placeholder="ESTADO DE LOS OPERARIOS"
           extraClass="flex flex-1 flex-col gap-3 rounded"
           placeholderExtraClass="xl:text-lg text-md"
           withHover={false}
           withPointer={false}
           renderItem={({ index }) => {
-            const row = rows[index]
+            const row = rowsFiltrados[index]
             if (!row) return null
 
             return (
