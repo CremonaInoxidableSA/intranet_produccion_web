@@ -94,6 +94,7 @@ export function useAutorizacion() {
         productos: tienePermiso(AUTORIZACIONES.SUBMODULO_PRODUCTOS),
         monitoreo: tienePermiso(AUTORIZACIONES.SUBMODULO_MONITOREO),
         backup: tienePermiso(AUTORIZACIONES.SUBMODULO_BACKUP),
+        panel: tienePermiso(AUTORIZACIONES.SUBMODULO_PANEL),
       },
       productos: {
         editar: tienePermiso(AUTORIZACIONES.PRODUCTOS_EDITAR),

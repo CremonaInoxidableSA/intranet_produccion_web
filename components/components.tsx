@@ -509,6 +509,9 @@ export const TextScrollArea = React.memo(function TextScrollArea({
   placeholderExtraClass,
   extras,
   onTagClick,
+  withHover = true,
+  withPointer = true,
+  renderItem,
 }: {
   tags: string[]
   subtitles?: string[]
@@ -518,6 +521,14 @@ export const TextScrollArea = React.memo(function TextScrollArea({
   placeholderExtraClass?: string
   extras?: (tag: string, index: number) => React.ReactNode
   onTagClick?: (tag: string, index: number) => void
+  withHover?: boolean
+  withPointer?: boolean
+  renderItem?: (params: {
+    tag: string
+    subtitle?: string
+    index: number
+    isSelected: boolean
+  }) => React.ReactNode
 }) {
   return (
     <div className={`flex flex-col rounded ${extraClass || ""}`}>
@@ -547,25 +558,33 @@ export const TextScrollArea = React.memo(function TextScrollArea({
             const tag = tags[index]
             const subtitle = subtitles?.[index]
             const isSelected = selectedIndex === index
-            return (
-              <div key={tag} className="mr-4">
-                <span
-                  className={`flex flex-row items-center rounded px-2 hover:bg-foreground/10 ${isSelected ? "bg-foreground/10" : ""}`}
+            const rowContent = renderItem ? (
+              renderItem({ tag, subtitle, index, isSelected })
+            ) : (
+              <>
+                <div
+                  onClick={() => onTagClick?.(tag, index)}
+                  className={`flex flex-1 py-2 ${withPointer ? "cursor-pointer" : ""}`}
                 >
-                  <div
-                    onClick={() => onTagClick?.(tag, index)}
-                    className="flex flex-1 cursor-pointer py-2"
-                  >
-                    <div className="flex flex-col">
-                      <span className={isSelected ? "font-semibold" : ""}>
-                        {tag}
-                      </span>
-                      {subtitle && (
-                        <span className="text-xs opacity-50">{subtitle}</span>
-                      )}
-                    </div>
+                  <div className="flex flex-col">
+                    <span className={isSelected ? "font-semibold" : ""}>
+                      {tag}
+                    </span>
+                    {subtitle && (
+                      <span className="text-xs opacity-50">{subtitle}</span>
+                    )}
                   </div>
-                  <div>{extras?.(tag, index)}</div>
+                </div>
+                <div>{extras?.(tag, index)}</div>
+              </>
+            )
+
+            return (
+              <div key={`${tag}-${index}`} className="mr-4">
+                <span
+                  className={`flex flex-row items-center rounded px-2 ${withHover ? "hover:bg-foreground/10" : ""} ${isSelected ? "bg-foreground/10" : ""}`}
+                >
+                  {rowContent}
                 </span>
                 {index < tags.length - 1 && <Separator className="my-2" />}
               </div>
