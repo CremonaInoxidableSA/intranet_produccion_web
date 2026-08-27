@@ -69,23 +69,25 @@ export default function Monitoreo() {
           <p>Actualización automática cada minuto.</p>
         </div>
 
-        <Selector
-          placeholder="SELECCIONE EL ESTADO"
-          data={opcionesEstado}
-          keyId="id"
-          keyLabel="nombre"
-          value={estadoSeleccionado}
-          onValueChange={setEstadoSeleccionado}
-        />
+        <div className="flex w-full flex-col items-center gap-5 xl:flex-row">
+          <Selector
+            placeholder="SELECCIONE EL ESTADO"
+            data={opcionesEstado}
+            keyId="id"
+            keyLabel="nombre"
+            value={estadoSeleccionado}
+            onValueChange={setEstadoSeleccionado}
+          />
 
-        <Input
-          value={busquedaOperario}
-          onChange={(event) => setBusquedaOperario(event.target.value)}
-          placeholder="BUSCAR POR NOMBRE, NÚMERO OP, SECTOR O PRODUCTO"
-          className="min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6"
-        />
+          <Input
+            value={busquedaOperario}
+            onChange={(event) => setBusquedaOperario(event.target.value)}
+            placeholder="BUSCAR POR NOMBRE, NÚMERO OP, SECTOR O PRODUCTO"
+            className="min-h-10 w-full rounded border-2 border-background6 bg-background3 px-3 py-2 text-sm focus:border-background6"
+          />
+        </div>
 
-        <div className="flex flex-row justify-between opacity-70">
+        <div className="flex w-full flex-col justify-between gap-2 opacity-70 xl:flex-row">
           <p>Operarios con tareas activas: {totales.activos}</p>
           <p>Operarios sin tareas: {totales.inactivos}</p>
         </div>
